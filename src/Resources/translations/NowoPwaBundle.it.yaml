@@ -1,0 +1,13 @@
+install:
+    message: 'Installa questa app sul tuo dispositivo per un''esperienza più veloce.'
+    action: 'Installa'
+    dismiss: 'Non ora'
+    link: 'Installa l''app'
+    uninstall_link: 'Disinstalla l''app'
+    uninstall_help: 'Per disinstallare, rimuovi questa app dalla schermata Home, dal launcher o dall''elenco delle app installate nel browser.'
+
+offline:
+    title: Senza connessione
+    heading: Sei offline
+    body: 'Questa pagina non è disponibile senza connessione di rete. Controlla la connessione e riprova.'
+    retry: 'Riprova'

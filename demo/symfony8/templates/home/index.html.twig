@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PWA Demo — {{ parent() }}{% endblock %}
+
+{% block body %}
+    <h1>PWA Bundle Demo</h1>
+    <p>This Symfony 8 application is installable as a Progressive Web App.</p>
+
+    <section aria-labelledby="pwa-install-heading">
+        <h2 id="pwa-install-heading">Install</h2>
+        <p>Use the button below when your browser offers installation (Chrome/Edge on localhost or HTTPS).</p>
+        {{ nowo_pwa_install_links() }}
+        <p><small>The install link appears when the app is installable; the uninstall link when it is already installed.</small></p>
+    </section>
+
+    <ul>
+        <li><a href="/manifest.webmanifest">Web App Manifest</a></li>
+        <li><a href="/sw.js">Service Worker</a></li>
+        <li><a href="/offline">Offline fallback page</a></li>
+    </ul>
+    <p>Open DevTools → Application to inspect manifest and service worker registration.</p>
+{% endblock %}

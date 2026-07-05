@@ -1,0 +1,4 @@
+  * Add {{ nowo_pwa_head() }} to your base layout <head>.
+  * Add {{ nowo_pwa_install_prompt() }} before </body> if you want the install banner.
+  * Place PWA icons in public/ (see config/packages/nowo_pwa.yaml).
+  * Run: php bin/console assets:install

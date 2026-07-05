@@ -1,0 +1,48 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Symfony runtime
+/var/
+
+# Build outputs
+/dist/
+/build/
+/coverage/
+/coverage-html/
+/coverage-ts/
+/.vite/
+
+# Bundle public generated assets
+/src/Resources/public/pwa.js
+
+# Caches / analysis
+/.php-cs-fixer.cache
+/.phpstan.cache
+/.phpunit.cache/
+/phpunit.xml.cache
+
+# Package manager locks
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+composer.lock
+
+# IDE / local
+/.idea/
+/.vscode/
+/.env
+/.env.*
+!.env.example
+
+# Heavy / binary / logs
+*.log
+*.zip
+*.tar
+*.tar.gz
+*.gz
+
+# Secrets
+*.pem
+*.key
+*.p12

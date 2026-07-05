@@ -1,0 +1,124 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block toolbar %}
+    {% if not collector.enabled %}
+        {% set block_status = 'disabled' %}
+        {% set status_label = 'PWA disabled' %}
+    {% elseif collector.activeOnRoute %}
+        {% set block_status = '' %}
+        {% set status_label = 'Active on this route' %}
+    {% else %}
+        {% set block_status = 'yellow' %}
+        {% set status_label = 'Not active on this route' %}
+    {% endif %}
+
+    {% set icon %}
+        {{ source('@NowoPwaBundle/Icon/pwa.svg') }}
+        <span class="sf-toolbar-value">{{ collector.manifestShortName|default('PWA') }}</span>
+    {% endset %}
+
+    {% set text %}
+        <div class="sf-toolbar-info-piece">
+            <b>Status</b>
+            <span class="sf-toolbar-status">{{ status_label }}</span>
+        </div>
+        <div class="sf-toolbar-info-piece">
+            <b>Route</b>
+            <span>{{ collector.currentRoute ?: 'n/a' }}</span>
+        </div>
+        <div class="sf-toolbar-info-piece">
+            <b>Service worker</b>
+            <span>{{ collector.serviceWorkerStrategy }}</span>
+        </div>
+    {% endset %}
+
+    {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { link: profiler_url, name: 'nowo_pwa', status: block_status|default(''), icon: icon, text: text }) }}
+{% endblock %}
+
+{% block menu %}
+    <span class="label {{ collector.activeOnRoute ? '' : 'disabled' }}">
+        <span class="icon">{{ source('@NowoPwaBundle/Icon/pwa.svg') }}</span>
+        <strong>PWA</strong>
+    </span>
+{% endblock %}
+
+{% block panel %}
+    <h2>PWA Bundle</h2>
+
+    <div class="sf-tabs">
+        <div class="tab">
+            <h3 class="tab-title">Status</h3>
+            <div class="tab-content">
+                <table class="sf-table">
+                    <tbody>
+                        <tr>
+                            <th>Bundle enabled</th>
+                            <td>{{ collector.enabled ? 'yes' : 'no' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Active on current route</th>
+                            <td>{{ collector.activeOnRoute ? 'yes' : 'no' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Current route</th>
+                            <td><code>{{ collector.currentRoute ?: 'n/a' }}</code></td>
+                        </tr>
+                        <tr>
+                            <th>Route targeting</th>
+                            <td>
+                                <code>{{ collector.routeTargetingMode }}</code>
+                                {% if collector.routeTargetingRoutes %}
+                                    — {{ collector.routeTargetingRoutes|join(', ') }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab">
+            <h3 class="tab-title">Manifest</h3>
+            <div class="tab-content">
+                <table class="sf-table">
+                    <tbody>
+                        <tr><th>Name</th><td>{{ collector.manifestName }}</td></tr>
+                        <tr><th>Short name</th><td>{{ collector.manifestShortName }}</td></tr>
+                        <tr><th>Display</th><td><code>{{ collector.manifestDisplay }}</code></td></tr>
+                        <tr><th>Lang</th><td><code>{{ collector.manifestLang }}</code></td></tr>
+                        <tr><th>Start URL</th><td><code>{{ collector.manifestStartUrl }}</code></td></tr>
+                        <tr><th>Scope</th><td><code>{{ collector.manifestScope }}</code></td></tr>
+                        <tr>
+                            <th>Manifest URL</th>
+                            <td><a href="{{ collector.manifestUrl }}">{{ collector.manifestUrl }}</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab">
+            <h3 class="tab-title">Service worker &amp; client</h3>
+            <div class="tab-content">
+                <table class="sf-table">
+                    <tbody>
+                        <tr><th>Service worker</th><td>{{ collector.serviceWorkerEnabled ? 'enabled' : 'disabled' }}</td></tr>
+                        <tr><th>Strategy</th><td><code>{{ collector.serviceWorkerStrategy }}</code></td></tr>
+                        <tr><th>Cache version</th><td><code>{{ collector.serviceWorkerCacheVersion }}</code></td></tr>
+                        <tr>
+                            <th>Service worker URL</th>
+                            <td><a href="{{ collector.serviceWorkerUrl }}">{{ collector.serviceWorkerUrl }}</a></td>
+                        </tr>
+                        <tr>
+                            <th>Offline URL</th>
+                            <td><a href="{{ collector.offlineUrl }}">{{ collector.offlineUrl }}</a></td>
+                        </tr>
+                        <tr><th>Register on load</th><td>{{ collector.clientRegisterOnLoad ? 'yes' : 'no' }}</td></tr>
+                        <tr><th>Install prompt</th><td>{{ collector.installPromptEnabled ? 'enabled' : 'disabled' }}</td></tr>
+                        <tr><th>Install links</th><td>{{ collector.installLinksEnabled ? 'enabled' : 'disabled' }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

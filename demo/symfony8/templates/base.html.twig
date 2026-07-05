@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PWA Demo{% endblock %}</title>
+    {{ nowo_pwa_head() }}
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; }
+        h1 { color: #0f172a; }
+        a { color: #2563eb; }
+        .nowo-pwa-install-links { margin: 1.25rem 0; }
+        .nowo-pwa-install-links a {
+            display: inline-block;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+        .nowo-pwa-install-links__install {
+            background: #2563eb;
+            color: #fff !important;
+        }
+        .nowo-pwa-install-links__install:hover { background: #1d4ed8; }
+        .nowo-pwa-install-links__uninstall {
+            background: #e2e8f0;
+            color: #0f172a !important;
+        }
+        .nowo-pwa-install-links__uninstall:hover { background: #cbd5e1; }
+        .nowo-pwa-install {
+            position: fixed;
+            left: 1rem;
+            right: 1rem;
+            max-width: 38rem;
+            margin: 0 auto;
+            padding: 1rem 1.25rem;
+            background: #0f172a;
+            color: #f8fafc;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+            z-index: 1000;
+        }
+        .nowo-pwa-install--bottom { bottom: 1rem; }
+        .nowo-pwa-install--top { top: 1rem; }
+        .nowo-pwa-install__actions { display: flex; gap: 0.75rem; margin-top: 0.75rem; }
+        .nowo-pwa-install__actions button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .nowo-pwa-install__actions [data-pwa-install-action="install"] {
+            background: #2563eb;
+            color: #fff;
+        }
+        .nowo-pwa-install__actions [data-pwa-install-action="dismiss"] {
+            background: transparent;
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+<body>
+    {% block body %}{% endblock %}
+    {{ nowo_pwa_install_prompt() }}
+</body>
+</html>
