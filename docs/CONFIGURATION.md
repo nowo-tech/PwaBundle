@@ -211,8 +211,13 @@ nowo_pwa:
     templates:
         head: '@NowoPwaBundle/pwa/head.html.twig'
         install_prompt: '@NowoPwaBundle/pwa/install_prompt.html.twig'
+        install_links: '@NowoPwaBundle/pwa/install_links.html.twig'
         offline: '@NowoPwaBundle/pwa/offline.html.twig'
 ```
+
+## Share target and file handlers
+
+The bundle serializes `share_target`, `file_handlers`, and `protocol_handlers` into the manifest. **Your app must implement the target routes** (controllers or forms) that receive shared content or opened files. See [Usage — Share target](USAGE.md#share-target-web-share-target-api) for a full Symfony example.
 
 ## Full example
 
@@ -265,7 +270,7 @@ nowo_pwa:
         strategy: network-first
         precache_urls: ['/', '/offline']
         runtime_cache_patterns: ['/build/', '/bundles/']
-        deny_cache_patterns: ['/api/']
+        deny_cache_patterns: ['/api/', '/admin', '/_profiler', '/_wdt']
         navigation_preload: true
         cache_version: v1
 

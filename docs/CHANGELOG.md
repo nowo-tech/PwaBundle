@@ -11,6 +11,21 @@ _(none yet)_
 
 ---
 
+## [1.0.1] - 2026-07-05
+
+### Added
+
+- CI jobs: **PHPStan**, **Vitest** (100% coverage thresholds), translation YAML validation
+- Documentation: caching authenticated routes, CSP, trusted proxies, iOS/Safari limits, share target Symfony example, Flex recipe availability, AssetMapper note
+- Codecov badge in README
+- `REQ-TEST-010` traceability anchor for PHPStan in CI
+
+### Changed
+
+- CI Symfony matrix aligned with `composer.json` (**7.4**, 8.0, 8.1 — removed 7.0)
+
+---
+
 ## [1.0.0] - 2026-07-05
 
 Initial release of **PWA Bundle** — Progressive Web App integration for Symfony.
@@ -43,4 +58,5 @@ Initial release of **PWA Bundle** — Progressive Web App integration for Symfon
 - Service worker no longer intercepts or caches non-HTTP(S) requests (e.g. `chrome-extension://` from browser extensions)
 - Precache URL matching uses pathname equality instead of `url.includes('/')`, which previously matched almost every request
 
+[1.0.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.1
 [1.0.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.0

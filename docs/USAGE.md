@@ -62,6 +62,87 @@ Modes: `all` (default), `only`, `except`.
 
 Bump `service_worker.cache_version` when you change precache lists to invalidate old caches.
 
+### Exclude authenticated routes from cache
+
+The service worker can cache navigation responses that include session-specific HTML. Exclude sensitive paths:
+
+```yaml
+nowo_pwa:
+    service_worker:
+        deny_cache_patterns:
+            - '/admin'
+            - '/api/private'
+            - '/_profiler'
+            - '/_wdt'
+```
+
+See [Security — Caching authenticated routes](SECURITY.md#caching-authenticated-routes) for details.
+
+## Browser and platform notes
+
+| Platform | Install prompt / links | Service worker | Add to home screen |
+|----------|------------------------|----------------|--------------------|
+| **Chrome / Edge (desktop & Android)** | `beforeinstallprompt` supported | Full support | Via install UI |
+| **Firefox** | Limited install UI | Full support | Manual bookmark / install |
+| **Safari (macOS / iOS)** | No `beforeinstallprompt`; banner stays hidden | Supported (iOS 11.3+) | **Share → Add to Home Screen** only |
+| **iOS installed PWA** | Uninstall via home screen (no programmatic API) | Separate storage from Safari tab | Standalone display mode |
+
+On iOS, rely on translated copy in `install_links` / custom UI to explain **Add to Home Screen**; the bundle cannot trigger a native install dialog.
+
+## Share target (Web Share Target API)
+
+Manifest `share_target` declares that your PWA accepts shares from other apps. **You must implement the action route** in your application — the bundle only emits the manifest entry.
+
+**1. Manifest config:**
+
+```yaml
+nowo_pwa:
+    manifest:
+        share_target:
+            action: /share
+            method: POST
+            enctype: multipart/form-data
+            params:
+                title: title
+                text: text
+                url: url
+```
+
+**2. Symfony controller (example):**
+
+```php
+<?php
+
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+final class ShareController extends AbstractController
+{
+    #[Route('/share', name: 'app_share_target', methods: ['POST'])]
+    public function share(Request $request): Response
+    {
+        $title = $request->request->getString('title');
+        $text = $request->request->getString('text');
+        $url = $request->request->getString('url');
+
+        // Persist or redirect — e.g. create a draft note from shared content
+        return $this->redirectToRoute('app_home', [
+            'shared' => $url ?: $text ?: $title,
+        ]);
+    }
+}
+```
+
+Validate and sanitize shared input before storing or displaying it.
+
+## Content Security Policy
+
+If you enforce CSP in production, allow the service worker URL and `pwa.js`. See [Security — Content Security Policy](SECURITY.md#content-security-policy).
+
 ## Overrides
 
 | Resource | Override path |

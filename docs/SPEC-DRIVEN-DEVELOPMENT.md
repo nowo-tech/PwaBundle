@@ -15,7 +15,7 @@ There is no separate executable spec language (for example Gherkin); tests and s
 | --- | --- |
 | US-01 | **As a** Symfony integrator, **I want** to configure the Web App Manifest from YAML (`nowo_pwa.manifest`) **so that** `/manifest.webmanifest` reflects my app name, icons, theme, and advanced W3C fields without hand-writing JSON. |
 | US-02 | **As a** user, **I want** a service worker with precache and offline fallback **so that** I can use the installed PWA when the network is unavailable. |
-| US-03 | **As an** integrator, **I want** `nowo_pwa_head()` and `nowo_pwa_install_prompt()` with route targeting **so that** PWA tags appear only on the routes I choose. |
+| US-03 | **As an** integrator, **I want** `nowo_pwa_head()`, `nowo_pwa_install_prompt()`, and `nowo_pwa_install_links()` with route targeting **so that** PWA tags appear only on the routes I choose. |
 | US-04 | **As an** integrator, **I want** to override Twig templates and translations in my application **so that** markup and copy match my product without forking the bundle. |
 | US-05 | **As an** integrator, **I want** a TypeScript client (`pwa.js`) for SW registration, update checks, and install banner **so that** I do not maintain boilerplate in every layout. |
 | US-06 | **As a** maintainer, **I want** 100% PHP and TypeScript coverage in CI **so that** manifest builders and client behavior regressions are caught before release. |
@@ -36,10 +36,12 @@ There is no separate executable spec language (for example Gherkin); tests and s
 | `nowo_pwa.meta` | Inject mobile/Apple/Microsoft meta tags and theme variants via `nowo_pwa_head()`. |
 | `nowo_pwa.service_worker` | Generate a dynamic service worker script (`network-first`, `cache-first`, `stale-while-revalidate`) with precache, runtime patterns, deny patterns, and offline URL. |
 | `nowo_pwa.install_prompt` | Render a dismissible install banner when `beforeinstallprompt` fires. |
+| `nowo_pwa.install_links` | Render install / uninstall links that toggle based on PWA installation state. |
 | `nowo_pwa.client` | Pass client options to `pwa.js` (register on load, visibility update checks, reload on update). |
 | `nowo_pwa.http` | Set Cache-Control headers on manifest and service worker responses. |
 | `nowo_pwa.route_targeting` | Limit head tags and client script to routes (`all` / `only` / `except`). |
-| Twig API | `nowo_pwa_head()`, `nowo_pwa_install_prompt()`, `nowo_pwa_enabled()`. |
+| Twig API | `nowo_pwa_head()`, `nowo_pwa_install_prompt()`, `nowo_pwa_install_links()`, `nowo_pwa_enabled()`. |
+| Dev tooling | Web Profiler data collector (`nowo_pwa`) when `kernel.debug` is true. |
 | Overrides | Templates under `@NowoPwaBundle/pwa/` and translations domain `NowoPwaBundle` can be overridden from the app. |
 
 **Explicit non-goals**
@@ -71,7 +73,8 @@ There is no separate executable spec language (for example Gherkin); tests and s
 | `REQ-MAKE-008` | Root [`Makefile`](../Makefile), [`demo/Makefile`](../demo/Makefile) | `update-deps` across bundle and demos |
 | `REQ-TEST-001` | `composer test`, `make test` | PHPUnit unit + integration suites |
 | `REQ-TEST-006` | `make test-coverage-100` | 100% PHP line coverage threshold |
-| `REQ-TEST-009` | `make test-ts` | Vitest coverage for `pwa-client.ts` |
+| `REQ-TEST-009` | `make test-ts`, CI job **TypeScript (Vitest)** | Vitest coverage for `pwa-client.ts` |
+| `REQ-TEST-010` | CI job **PHPStan** | Static analysis at bundle `phpstan.neon.dist` level |
 | `REQ-DEMO-002` | [`docs/DEMO-FRANKENPHP.md`](DEMO-FRANKENPHP.md) | FrankenPHP demo stack |
 | `REQ-DEMO-005` | [`demo/symfony8/Makefile`](../demo/symfony8/Makefile) | Canonical `make up` → `Demo started at: http://localhost:<PORT>` |
 | `REQ-DEMO-007` | [`demo/symfony8/Makefile`](../demo/symfony8/Makefile) | `update-bundle`: sync mounted bundle, autoload, cache |

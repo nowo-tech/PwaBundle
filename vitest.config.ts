@@ -11,6 +11,12 @@ export default defineConfig({
             reportsDirectory: './coverage-ts',
             include: ['src/Resources/assets/src/pwa-client.ts'],
             exclude: ['**/*.test.ts', '**/node_modules/**'],
+            thresholds: {
+                statements: 100,
+                branches: 100,
+                functions: 100,
+                lines: 100,
+            },
         },
     },
 });
