@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        autowire: true
+
+    Nowo\PwaBundle\DataCollector\PwaDataCollector:
+        arguments:
+            $enabled: '%nowo_pwa.enabled%'
+            $manifestConfig: '%nowo_pwa.manifest%'
+            $serviceWorkerConfig: '%nowo_pwa.service_worker%'
+            $installPromptConfig: '%nowo_pwa.install_prompt%'
+            $installLinksConfig: '%nowo_pwa.install_links%'
+            $clientConfig: '%nowo_pwa.client%'
+            $routeTargetingConfig: '%nowo_pwa.route_targeting%'
+            $routes: '%nowo_pwa.routes%'
+        tags:
+            - { name: data_collector, template: '@NowoPwaBundle/Collector/pwa.html.twig', id: 'nowo_pwa', priority: 280 }

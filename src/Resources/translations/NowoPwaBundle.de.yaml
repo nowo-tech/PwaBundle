@@ -1,0 +1,13 @@
+install:
+    message: 'Installieren Sie diese App auf Ihrem Gerät für ein schnelleres Erlebnis.'
+    action: 'Installieren'
+    dismiss: 'Nicht jetzt'
+    link: 'App installieren'
+    uninstall_link: 'App deinstallieren'
+    uninstall_help: 'Zum Deinstallieren entfernen Sie diese App vom Startbildschirm, aus dem App-Launcher oder aus der Liste der installierten Browser-Apps.'
+
+offline:
+    title: Offline-Modus
+    heading: Sie sind offline
+    body: 'Diese Seite ist ohne Netzwerkverbindung nicht verfügbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.'
+    retry: 'Erneut versuchen'

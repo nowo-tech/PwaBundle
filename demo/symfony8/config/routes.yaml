@@ -1,0 +1,9 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+nowo_pwa:
+    resource: .
+    type: nowo_pwa

@@ -1,0 +1,225 @@
+# PWA Bundle demo configuration — see docs/CONFIGURATION.md for the full reference.
+nowo_pwa:
+    # Master switch: set to false to disable manifest, service worker, and Twig helpers.
+    enabled: true
+
+    # Optional prefix prepended to all PWA routes (manifest, service worker, offline page).
+    # route_prefix: ''
+
+    manifest:
+        # Full application name shown during install and in app switchers.
+        name: '%env(default::APP_NAME)%'
+        # Short label used on the home screen and in the task switcher (max ~12 chars recommended).
+        short_name: Demo
+        # Human-readable description for install prompts and app stores.
+        description: 'Symfony 8 demo with PWA Bundle'
+        # BCP 47 language tag for the application (e.g. en, es, fr-CA).
+        # lang: en
+        # Text direction: ltr, rtl, or auto.
+        # dir: ltr
+        # URL opened when the installed PWA is launched (relative path).
+        start_url: /
+        # When true (default), the manifest start_url is emitted as an absolute URL (recommended).
+        # absolute_start_url: true
+        # Navigation scope: URLs within this path are considered part of the PWA.
+        scope: /
+        # Unique manifest identifier; defaults to start_url when omitted.
+        # id: /
+        # Display mode: fullscreen | standalone | minimal-ui | browser.
+        display: standalone
+        # Ordered fallback display modes when the primary display is unsupported.
+        # display_override: [standalone, browser, window-controls-overlay]
+        # Screen orientation lock: any | natural | landscape | portrait | etc.
+        # orientation: any
+        # Browser UI / address bar colour (hex).
+        theme_color: '#0f172a'
+        # Splash screen background colour shown while the app loads (hex).
+        background_color: '#ffffff'
+        # Store categories for discovery (e.g. productivity, utilities, social).
+        # categories: [productivity]
+        # IARC content-rating UUID for store listings.
+        # iarc_rating_id: 'e84b072d-71b3-4071-8c3c-0445f7703fc9'
+        # When true, the OS should prefer native related apps over this web app.
+        # prefer_related_applications: false
+        # App icons: src (path), sizes (WxH), type (MIME), purpose (any | maskable | monochrome).
+        icons:
+            - { src: '/icons/icon-192.png', sizes: '192x192', type: image/png }
+            - { src: '/icons/icon-512.png', sizes: '512x512', type: image/png }
+        # Store screenshots: src, sizes, type; optional label and form_factor (narrow | wide).
+        # screenshots:
+        #     - { src: '/screenshots/wide.png', sizes: '1280x720', type: image/png, form_factor: wide, label: Home }
+        # App shortcuts shown in the launcher context menu.
+        # shortcuts:
+        #     - { name: Home, url: /, short_name: Home, description: 'Go to home', icons: [{ src: '/icons/shortcut.png', sizes: '96x96' }] }
+        # Related native or web applications: platform (required), url and/or id.
+        # related_applications:
+        #     - { platform: play, url: 'https://play.google.com/store/apps/details?id=com.example' }
+        # Extended scope origins beyond the primary scope (origin + optional type).
+        # scope_extensions:
+        #     - { origin: 'https://cdn.example.com', type: origin }
+        # How the app handles launch events: auto | navigate-existing | navigate-new | focus-existing.
+        # launch_handler:
+        #     client_mode: auto
+        # Custom protocol handlers: protocol (e.g. web+app) and url template with %s placeholder.
+        # protocol_handlers:
+        #     - { protocol: web+app, url: '/open?url=%s' }
+        # File type handlers: action route, accept_map (MIME → extensions), optional icons.
+        # file_handlers:
+        #     - action: /open-file
+        #       accept_map:
+        #           application/json: ['.json']
+        #       icons: [{ src: '/icons/json.png', sizes: '96x96' }]
+        # Web Share Target API — your app must implement the action route to receive shares.
+        # share_target:
+        #     action: /share
+        #     method: POST
+        #     enctype: multipart/form-data
+        #     params:
+        #         title: title
+        #         text: text
+        #         url: url
+        #         files: files
+        # Microsoft Edge side panel preferred width in pixels.
+        # edge_side_panel:
+        #     preferred_width: 400
+
+    # HTML meta tags injected by nowo_pwa_head() (in addition to the manifest link).
+    meta:
+        # Enables <meta name="mobile-web-app-capable"> for Android/Chrome.
+        # mobile_web_app_capable: true
+        # Enables Apple standalone mode meta tag.
+        # apple_mobile_web_app_capable: true
+        # Apple status bar style: default | black | black-translucent.
+        # apple_status_bar_style: default
+        # Overrides manifest short_name for Apple home screen title.
+        # apple_mobile_web_app_title: Demo
+        # Viewport fit for notched devices: auto | cover | contain.
+        # viewport_fit: cover
+        # Theme colour when the user prefers light colour scheme.
+        theme_color_light: '#ffffff'
+        # Theme colour when the user prefers dark colour scheme.
+        theme_color_dark: '#0f172a'
+        # CSS color-scheme meta value (e.g. 'light dark').
+        # color_scheme: 'light dark'
+        # Windows tile background colour.
+        # msapplication_tile_color: '#0f172a'
+        # Windows tile image URL.
+        # msapplication_tile_image: '/icons/tile.png'
+        # Path to browserconfig.xml for Windows tiles.
+        # msapplication_config: '/browserconfig.xml'
+        # Referrer policy meta tag value (e.g. strict-origin-when-cross-origin).
+        # referrer: strict-origin-when-cross-origin
+        # Disable automatic detection of phone numbers, emails, and addresses in Safari.
+        # format_detection:
+        #     telephone: false
+        #     email: false
+        #     address: false
+        # Apple touch icons — overrides icons derived from the manifest.
+        # apple_touch_icons:
+        #     - { href: '/icons/apple-touch-icon.png', sizes: '180x180' }
+        # Apple splash / startup images shown while the app loads.
+        # apple_startup_images:
+        #     - { href: '/splash/iphone.png', media: '(device-width: 390px) and (-webkit-device-pixel-ratio: 3)' }
+        # Safari pinned tab icon (SVG recommended).
+        # mask_icon:
+        #     href: '/icons/safari-pinned.svg'
+        #     color: '#0f172a'
+        # Arbitrary extra <link> tags injected into the document head.
+        # extra_link_tags:
+        #     - { rel: preconnect, href: 'https://fonts.googleapis.com' }
+
+    service_worker:
+        # Generate and serve a dynamic service worker at the configured route.
+        enabled: true
+        # Service worker scope (defaults to /).
+        # scope: /
+        # Bump this value to invalidate old caches when precache lists change.
+        # cache_version: v1
+        # Prefix used for Cache Storage bucket names.
+        # cache_name_prefix: nowo-pwa
+        # Caching strategy: network-first | cache-first | stale-while-revalidate.
+        strategy: network-first
+        # URLs to precache on service worker install (must be reachable).
+        precache_urls: ['/', '/offline']
+        # URL patterns cached at runtime on successful fetch (glob-like paths).
+        # runtime_cache_patterns: ['/build/', '/assets/']
+        # URL patterns never cached by the service worker.
+        # deny_cache_patterns: ['/api/']
+        # Fallback page served when offline and no cache match is found.
+        offline_url: '/offline'
+        # When true, a waiting service worker activates immediately on install.
+        # skip_waiting: true
+        # When true, the service worker takes control of open clients on activation.
+        # clients_claim: true
+        # Enable Navigation Preload API for faster navigations (requires HTTPS).
+        # navigation_preload: true
+        # Maximum number of runtime cache entries; 0 means unlimited.
+        # runtime_cache_max_entries: 0
+
+    install_prompt:
+        # Show a custom "Install app" banner when beforeinstallprompt fires.
+        enabled: true
+        # localStorage key used to remember user dismissal.
+        # dismiss_key: nowo_pwa_install_dismissed
+        # Days before the dismissed banner can reappear.
+        # dismiss_days: 7
+        # Banner position on screen: top | bottom.
+        # position: bottom
+        # CSS class applied to the install banner container.
+        # css_class: nowo-pwa-install
+        # Delay in milliseconds before showing the banner after the event fires.
+        # delay_ms: 0
+        # Device visibility: all | mobile | desktop.
+        # visibility: all
+
+    install_links:
+        # Toggle install / uninstall anchor links (only one visible at a time).
+        enabled: true
+        # CSS class applied to the links container.
+        # css_class: nowo-pwa-install-links
+        # Device visibility: all | mobile | desktop.
+        # visibility: all
+
+    # Options passed to pwa.js via data attributes on the script tag.
+    client:
+        # Register the service worker automatically when the page loads.
+        register_on_load: true
+        # Check for service worker updates when the tab becomes visible again.
+        check_updates_on_visibility: true
+        # Reload the page automatically when a new service worker takes control.
+        # reload_on_update: false
+
+    # Cache-Control headers for dynamically generated manifest and service worker responses.
+    http:
+        # Max-age in seconds for the Web App Manifest response.
+        manifest_cache_max_age: 3600
+        # Max-age in seconds for the service worker script (0 = no caching, recommended).
+        # service_worker_cache_max_age: 0
+        # When true, manifest responses include public cache visibility.
+        # manifest_public_cache: true
+
+    # Limit PWA head tags and client script to specific Symfony routes.
+    # route_targeting:
+    #     mode: all          # all | only | except
+    #     routes: []         # route names when mode is only or except
+
+    routes:
+        # Web App Manifest JSON endpoint.
+        manifest:
+            path: /manifest.webmanifest
+            # Symfony route name (defaults to nowo_pwa_manifest).
+            # name: nowo_pwa_manifest
+        # Dynamically generated service worker script endpoint.
+        service_worker:
+            path: /sw.js
+            # name: nowo_pwa_service_worker
+        # Offline fallback page route.
+        offline:
+            path: /offline
+            # name: nowo_pwa_offline
+
+    # Twig template overrides — use your own templates to customise markup.
+    # templates:
+    #     head: '@NowoPwaBundle/pwa/head.html.twig'
+    #     install_prompt: '@NowoPwaBundle/pwa/install_prompt.html.twig'
+    #     offline: '@NowoPwaBundle/pwa/offline.html.twig'

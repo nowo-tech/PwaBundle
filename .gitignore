@@ -1,0 +1,27 @@
+# Dependencies
+/vendor
+/node_modules
+/.pnpm-store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Coverage
+/coverage
+/coverage-html
+/coverage.xml
+/coverage-ts
+/coverage-php.txt
+/coverage-ts.txt
+
+# Tool caches
+/.php-cs-fixer.cache
+/.phpunit.cache
+/.phpunit.result.cache
+
+# Archives
+*.zip
+*.tar
+*.tar.gz

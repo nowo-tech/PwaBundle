@@ -1,0 +1,47 @@
+# Bundle service definitions.
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Nowo\PwaBundle\:
+        resource: '../../'
+        exclude:
+            - '../../DependencyInjection/'
+            - '../../PwaBundle.php'
+            - '../../DataCollector/'
+
+    Nowo\PwaBundle\Controller\:
+        resource: '../../Controller/'
+        public: true
+
+    Nowo\PwaBundle\Routing\PwaRouteLoader:
+        arguments:
+            $routes: '%nowo_pwa.routes%'
+            $routePrefix: '%nowo_pwa.route_prefix%'
+        tags:
+            - { name: routing.loader }
+
+    Nowo\PwaBundle\Controller\PwaController:
+        public: true
+        arguments:
+            $enabled: '%nowo_pwa.enabled%'
+            $manifestConfig: '%nowo_pwa.manifest%'
+            $serviceWorkerConfig: '%nowo_pwa.service_worker%'
+            $httpConfig: '%nowo_pwa.http%'
+            $templates: '%nowo_pwa.templates%'
+            $routes: '%nowo_pwa.routes%'
+
+    Nowo\PwaBundle\Twig\PwaTwigExtension:
+        arguments:
+            $enabled: '%nowo_pwa.enabled%'
+            $manifestConfig: '%nowo_pwa.manifest%'
+            $metaConfig: '%nowo_pwa.meta%'
+            $serviceWorkerConfig: '%nowo_pwa.service_worker%'
+            $installPromptConfig: '%nowo_pwa.install_prompt%'
+            $installLinksConfig: '%nowo_pwa.install_links%'
+            $clientConfig: '%nowo_pwa.client%'
+            $routeTargetingConfig: '%nowo_pwa.route_targeting%'
+            $templates: '%nowo_pwa.templates%'
+            $routes: '%nowo_pwa.routes%'

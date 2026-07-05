@@ -1,0 +1,14 @@
+{# Install prompt banner — dismissible, stored in localStorage #}
+<div id="nowo-pwa-install"
+     class="{{ install_prompt.css_class|default('nowo-pwa-install') }} nowo-pwa-install--{{ install_prompt.position|default('bottom') }}"
+     hidden
+     data-dismiss-key="{{ install_prompt.dismiss_key|default('nowo_pwa_install_dismissed') }}"
+     data-dismiss-days="{{ install_prompt.dismiss_days|default(7) }}"
+     data-delay-ms="{{ install_prompt.delay_ms|default(0) }}"
+     data-visibility="{{ install_prompt.visibility|default('all') }}">
+    <p>{{ 'install.message'|trans({}, 'NowoPwaBundle') }}</p>
+    <div class="nowo-pwa-install__actions">
+        <button type="button" data-pwa-install-action="install">{{ 'install.action'|trans({}, 'NowoPwaBundle') }}</button>
+        <button type="button" data-pwa-install-action="dismiss">{{ 'install.dismiss'|trans({}, 'NowoPwaBundle') }}</button>
+    </div>
+</div>

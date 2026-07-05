@@ -1,0 +1,3 @@
+when@dev:
+    nowo_twig_inspector:
+        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'

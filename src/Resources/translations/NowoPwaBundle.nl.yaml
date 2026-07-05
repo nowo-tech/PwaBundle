@@ -1,0 +1,13 @@
+install:
+    message: 'Installeer deze app op je apparaat voor een snellere ervaring.'
+    action: 'Installeren'
+    dismiss: 'Niet nu'
+    link: 'App installeren'
+    uninstall_link: 'App verwijderen'
+    uninstall_help: 'Om te verwijderen, haal deze app van je startscherm, app-launcher of de lijst met geïnstalleerde browserapps.'
+
+offline:
+    title: Geen verbinding
+    heading: Je bent offline
+    body: 'Deze pagina is niet beschikbaar zonder netwerkverbinding. Controleer je verbinding en probeer het opnieuw.'
+    retry: 'Opnieuw proberen'

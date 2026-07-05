@@ -1,0 +1,13 @@
+install:
+    message: 'Installez cette application sur votre appareil pour une expérience plus rapide.'
+    action: 'Installer'
+    dismiss: 'Pas maintenant'
+    link: 'Installer l''application'
+    uninstall_link: 'Désinstaller l''application'
+    uninstall_help: 'Pour désinstaller, supprimez cette application de l''écran d''accueil, du lanceur d''applications ou de la liste des applications installées du navigateur.'
+
+offline:
+    title: Hors ligne
+    heading: Vous êtes hors ligne
+    body: 'Cette page n''est pas disponible sans connexion réseau. Vérifiez votre connexion et réessayez.'
+    retry: 'Réessayer'

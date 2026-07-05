@@ -1,0 +1,13 @@
+install:
+    message: 'Instala esta aplicación en tu dispositivo para una experiencia más rápida.'
+    action: 'Instalar'
+    dismiss: 'Ahora no'
+    link: 'Instalar aplicación'
+    uninstall_link: 'Desinstalar aplicación'
+    uninstall_help: 'Para desinstalar, elimina esta aplicación de la pantalla de inicio, el lanzador de apps o la lista de apps instaladas del navegador.'
+
+offline:
+    title: Sin conexión
+    heading: Estás sin conexión
+    body: 'Esta página no está disponible sin conexión a internet. Comprueba tu red e inténtalo de nuevo.'
+    retry: 'Reintentar'
