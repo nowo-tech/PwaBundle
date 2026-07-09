@@ -21,6 +21,11 @@ final class ConfigurationTest extends TestCase
         self::assertTrue($config['service_worker']['enabled']);
         self::assertTrue($config['client']['register_on_load']);
         self::assertTrue($config['install_links']['enabled']);
+        self::assertSame('banner', $config['install_prompt']['display']);
+        self::assertSame('nowo_pwa_install_never', $config['install_prompt']['never_dismiss_key']);
+        self::assertTrue($config['install_prompt']['show_never_option']);
+        self::assertSame('name', $config['route_targeting']['match_by']);
+        self::assertSame('all', $config['install_prompt']['route_targeting']['mode']);
         self::assertSame(3600, $config['http']['manifest_cache_max_age']);
     }
 }

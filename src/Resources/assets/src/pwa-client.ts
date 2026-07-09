@@ -40,7 +40,7 @@ export async function registerServiceWorker(options: PwaClientOptions): Promise<
     }
 }
 
-/** Wires install prompt banner buttons when present in the DOM. */
+/** Wires install prompt UI when present in the DOM. */
 export function setupInstallPrompt(doc: Document): void {
     const banner = doc.getElementById('nowo-pwa-install');
     if (!banner) {
@@ -54,30 +54,44 @@ export function setupInstallPrompt(doc: Document): void {
 
     const dismissKey = banner.dataset.dismissKey ?? 'nowo_pwa_install_dismissed';
     const dismissDays = Number(banner.dataset.dismissDays ?? '7');
+    const neverDismissKey = banner.dataset.neverDismissKey ?? 'nowo_pwa_install_never';
     const delayMs = Number(banner.dataset.delayMs ?? '0');
+    const display = banner.dataset.display ?? 'banner';
 
-    if (shouldHideInstallPrompt(dismissKey, dismissDays)) {
+    if (shouldHideInstallPrompt(dismissKey, dismissDays, neverDismissKey)) {
         return;
     }
 
     let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
-    const showBanner = (): void => {
+    const hidePrompt = (): void => {
+        banner.hidden = true;
+        if (display === 'modal') {
+            doc.body.classList.remove('nowo-pwa-install-modal-open');
+        }
+    };
+
+    const showPrompt = (): void => {
+        const reveal = (): void => {
+            banner.hidden = false;
+            if (display === 'modal') {
+                doc.body.classList.add('nowo-pwa-install-modal-open');
+            }
+        };
+
         if (delayMs > 0) {
-            window.setTimeout(() => {
-                banner.hidden = false;
-            }, delayMs);
+            window.setTimeout(reveal, delayMs);
 
             return;
         }
 
-        banner.hidden = false;
+        reveal();
     };
 
     window.addEventListener('beforeinstallprompt', (event: Event) => {
         event.preventDefault();
         deferredPrompt = event as BeforeInstallPromptEvent;
-        showBanner();
+        showPrompt();
     });
 
     banner.querySelector('[data-pwa-install-action="install"]')?.addEventListener('click', async () => {
@@ -86,12 +100,23 @@ export function setupInstallPrompt(doc: Document): void {
         }
         await deferredPrompt.prompt();
         deferredPrompt = null;
-        banner.hidden = true;
+        hidePrompt();
     });
 
+    banner.querySelector('[data-pwa-install-action="dismiss-remind"]')?.addEventListener('click', () => {
+        storeDismiss(dismissKey, dismissDays);
+        hidePrompt();
+    });
+
+    banner.querySelector('[data-pwa-install-action="dismiss-never"]')?.addEventListener('click', () => {
+        storeNeverDismiss(neverDismissKey);
+        hidePrompt();
+    });
+
+    // Backward compatibility with legacy dismiss action name.
     banner.querySelector('[data-pwa-install-action="dismiss"]')?.addEventListener('click', () => {
         storeDismiss(dismissKey, dismissDays);
-        banner.hidden = true;
+        hidePrompt();
     });
 }
 
@@ -233,7 +258,16 @@ export function setupInstallLinks(doc: Document): void {
     }
 }
 
-export function shouldHideInstallPrompt(dismissKey: string, dismissDays: number, now = Date.now()): boolean {
+export function shouldHideInstallPrompt(
+    dismissKey: string,
+    dismissDays: number,
+    neverDismissKey = 'nowo_pwa_install_never',
+    now = Date.now(),
+): boolean {
+    if (localStorage.getItem(neverDismissKey) === '1') {
+        return true;
+    }
+
     const raw = localStorage.getItem(dismissKey);
     if (!raw) {
         return false;
@@ -257,6 +291,10 @@ export function storeDismiss(dismissKey: string, dismissDays: number, now = Date
     }
 
     localStorage.setItem(dismissKey, String(now));
+}
+
+export function storeNeverDismiss(neverDismissKey: string): void {
+    localStorage.setItem(neverDismissKey, '1');
 }
 
 function matchesVisibility(visibility: string): boolean {

@@ -10,8 +10,9 @@ Turn any Symfony application into a **Progressive Web App** with a fully configu
 
 - **Web App Manifest** generated from `nowo_pwa.yaml` (name, icons, shortcuts, theme, display mode, scope, start URL)
 - **Service worker** with configurable cache strategy (`network-first`, `cache-first`, `stale-while-revalidate`), precache URLs, and offline fallback
-- **Twig helpers** `nowo_pwa_head()`, `nowo_pwa_install_prompt()`, and `nowo_pwa_install_links()` with route targeting (`all` / `only` / `except`)
-- **Override-friendly** Twig templates and translations (**en**, **es**, **fr**, **it**, **pt**, **de**, **nl**; REQ-TWIG-001 / REQ-I18N-001)
+- **Twig helpers** `nowo_pwa_head()`, `nowo_pwa_install_prompt()`, and `nowo_pwa_install_links()` with route targeting (`all` / `only` / `except`, route names or URL paths)
+- **Install prompt modes** — `banner`, `flash` (inline), or `modal`; dismiss remind / never-ask-again options
+- **Override-friendly** Twig templates, bundled `pwa.css`, and translations (**en**, **es**, **fr**, **it**, **pt**, **de**, **nl**; REQ-TWIG-001 / REQ-I18N-001)
 - **TypeScript client** for SW registration and install banner (Vite build → `pwa.js`)
 - Works with Symfony **7.4+** and **8.x**; no database required
 
@@ -63,6 +64,7 @@ See [Installation](docs/INSTALLATION.md) and [Configuration](docs/CONFIGURATION.
 - [Security](docs/SECURITY.md)
 - [Engram](docs/ENGRAM.md)
 - [Spec-driven development](docs/SPEC-DRIVEN-DEVELOPMENT.md)
+- [GitHub Spec Kit](docs/SPEC-KIT.md)
 
 ### Additional documentation
 

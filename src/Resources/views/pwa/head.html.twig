@@ -1,4 +1,5 @@
 {# REQ-TWIG-001: override via templates/bundles/NowoPwaBundle/pwa/head.html.twig #}
+<link rel="stylesheet" href="{{ asset('pwa.css', 'nowo_pwa') }}">
 <link rel="manifest" href="{{ manifest_url }}">
 {% set theme_light = meta.theme_color_light|default(manifest.theme_color|default('#0f172a')) %}
 {% set theme_dark = meta.theme_color_dark|default(manifest.theme_color|default('#0f172a')) %}

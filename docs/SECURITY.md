@@ -87,19 +87,28 @@ Include:
 
 We aim to respond within 48 hours.
 
-## Release security checklist
+## Release security checklist (12.4.1)
 
-Before tagging a release:
+Before tagging a release, confirm:
 
 | Item | Notes |
 |------|--------|
+| **SECURITY.md** | This document is current and linked from the README where applicable. |
+| **`.gitignore` and `.env`** | `.env` and local env files are ignored; no committed secrets. |
+| **No secrets in repo** | No API keys, passwords, or tokens in tracked files. |
+| **Recipe / Flex** | Default recipe or installer templates do not ship production secrets. |
 | **HTTPS** | Document that production PWAs require TLS (except localhost). |
-| **No secrets in repo** | No API keys or tokens in tracked files or demo `.env`. |
 | **Scope review** | Default config uses site-wide `/` scope — tighten for multi-tenant apps if needed. |
 | **Auth routes** | Add `deny_cache_patterns` for admin, API, and profiler paths. |
 | **CSP** | Verify `worker-src` and `script-src` in production. |
 | **Trusted proxies** | Required when `absolute_start_url` is true behind a load balancer. |
-| **Dependencies** | Run `composer audit`; keep Symfony and JS build deps updated. |
-| **Overrides** | Document safe override paths for Twig templates in [USAGE.md](USAGE.md). |
+| **Input / output** | Manifest and SW paths validated; Twig overrides documented. |
+| **Dependencies** | `composer audit` run; keep Symfony and JS build deps updated. |
+| **Logging** | Logs do not print secrets, tokens, or session identifiers unnecessarily. |
+| **Cryptography** | N/A — no custom cryptography in this bundle. |
+| **Permissions / exposure** | Service worker scope and cache rules documented for integrators. |
+| **Limits / DoS** | Cache size and offline asset limits reviewed for production. |
+
+Record confirmation in the release PR or tag notes.
 
 See also [.github/SECURITY.md](../.github/SECURITY.md) for GitHub's security policy template.

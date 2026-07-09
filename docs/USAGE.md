@@ -39,18 +39,38 @@ nowo_pwa:
 
 ## Route targeting
 
-Limit PWA injection to specific pages:
+Limit PWA injection to specific pages by Symfony route name or URL path:
 
 ```yaml
 nowo_pwa:
     route_targeting:
+        match_by: name    # name (default) | path
         mode: except
         routes:
             - admin_dashboard
             - api_docs
 ```
 
+Path examples (`match_by: path`): exact `/vault`, prefix `/vault*`, regex `/^\\/admin/`.
+
 Modes: `all` (default), `only`, `except`.
+
+`install_prompt` and `install_links` support their own `route_targeting` block (independent from the global one). See [Configuration — Install prompt](CONFIGURATION.md#install-prompt).
+
+## Install prompt display modes
+
+| Mode | Where to place Twig | Behaviour |
+|------|---------------------|-----------|
+| `banner` (default) | Layout footer / end of `<body>` | Fixed bar at top or bottom |
+| `flash` | Inline in page content | Alert-style block where the helper is called |
+| `modal` | Layout footer / end of `<body>` | Centered dialog with backdrop |
+
+```yaml
+nowo_pwa:
+    install_prompt:
+        display: modal
+        show_never_option: true
+```
 
 ## Service worker strategies
 

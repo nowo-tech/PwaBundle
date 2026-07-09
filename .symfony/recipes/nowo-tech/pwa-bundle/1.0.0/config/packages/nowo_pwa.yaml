@@ -157,28 +157,41 @@ nowo_pwa:
         # runtime_cache_max_entries: 0
 
     install_prompt:
-        # Show a custom "Install app" banner when beforeinstallprompt fires.
+        # Show a custom "Install app" UI when beforeinstallprompt fires.
         enabled: true
-        # localStorage key used to remember user dismissal.
+        # banner: fixed bar | flash: inline alert | modal: centered dialog
+        # display: banner
+        # localStorage key used to remember user dismissal ("Not now").
         # dismiss_key: nowo_pwa_install_dismissed
-        # Days before the dismissed banner can reappear.
+        # Days before the dismissed prompt can reappear (0 = always show).
         # dismiss_days: 7
-        # Banner position on screen: top | bottom.
+        # localStorage key when user chooses "Don't ask again".
+        # never_dismiss_key: nowo_pwa_install_never
+        # show_never_option: true
+        # Banner position on screen (banner mode only): top | bottom.
         # position: bottom
-        # CSS class applied to the install banner container.
+        # CSS class applied to the install prompt container.
         # css_class: nowo-pwa-install
-        # Delay in milliseconds before showing the banner after the event fires.
+        # Delay in milliseconds before showing the prompt after the event fires.
         # delay_ms: 0
         # Device visibility: all | mobile | desktop.
         # visibility: all
+        # Limit where the install prompt is rendered (independent from route_targeting).
+        # route_targeting:
+        #     match_by: name
+        #     mode: only
+        #     routes: [app_home]
 
     install_links:
         # Toggle install / uninstall anchor links (only one visible at a time).
         enabled: true
         # CSS class applied to the links container.
         # css_class: nowo-pwa-install-links
-        # Device visibility: all | mobile | desktop.
         # visibility: all
+        # route_targeting:
+        #     match_by: name
+        #     mode: all
+        #     routes: []
 
     # Options passed to pwa.js via data attributes on the script tag.
     client:

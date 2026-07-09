@@ -30,7 +30,7 @@ final class PwaTwigExtensionTest extends TestCase
             'installPromptConfig'  => ['enabled' => $installPrompt],
             'installLinksConfig'   => ['enabled' => true],
             'clientConfig'         => ['register_on_load' => true, 'check_updates_on_visibility' => true, 'reload_on_update' => false],
-            'routeTargetingConfig' => ['mode' => 'all', 'routes' => []],
+            'routeTargetingConfig' => ['match_by' => 'name', 'mode' => 'all', 'routes' => []],
             'templates'            => [
                 'head'           => 'head.twig',
                 'install_prompt' => 'prompt.twig',
@@ -147,5 +147,59 @@ final class PwaTwigExtensionTest extends TestCase
         $extension = $this->createExtension();
         $names     = array_map(static fn (\Twig\TwigFunction $fn): string => $fn->getName(), $extension->getFunctions());
         self::assertSame(['nowo_pwa_enabled', 'nowo_pwa_head', 'nowo_pwa_install_prompt', 'nowo_pwa_install_links'], $names);
+    }
+
+    public function testInstallPromptUsesComponentRouteTargeting(): void
+    {
+        $extension = $this->createExtension([
+            'installPromptConfig' => [
+                'enabled'         => true,
+                'route_targeting' => ['match_by' => 'name', 'mode' => 'only', 'routes' => ['app_home']],
+            ],
+        ]);
+        self::assertStringContainsString('Install', $extension->renderInstallPrompt());
+        self::assertSame('', $extension->renderInstallPrompt('other'));
+    }
+
+    public function testInstallLinksUsesComponentRouteTargetingByPath(): void
+    {
+        $extension = $this->createExtension([
+            'installLinksConfig' => [
+                'enabled'         => true,
+                'route_targeting' => ['match_by' => 'path', 'mode' => 'only', 'routes' => ['/dashboard*']],
+            ],
+        ], route: 'any_route');
+
+        $requestStack = new RequestStack();
+        $request      = Request::create('/dashboard/stats');
+        $request->attributes->set('_route', 'any_route');
+        $requestStack->push($request);
+
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willReturn('/manifest.webmanifest');
+
+        $config    = $this->baseConfig();
+        $extension = new PwaTwigExtension(
+            $config['enabled'],
+            new Environment(new ArrayLoader(['links.twig' => '<div id="nowo-pwa-install-links">Links</div>'])),
+            $requestStack,
+            $urlGenerator,
+            new PwaRouteTargeting(),
+            $config['manifestConfig'],
+            $config['metaConfig'],
+            $config['serviceWorkerConfig'],
+            $config['installPromptConfig'],
+            [
+                'enabled'         => true,
+                'route_targeting' => ['match_by' => 'path', 'mode' => 'only', 'routes' => ['/dashboard*']],
+            ],
+            $config['clientConfig'],
+            $config['routeTargetingConfig'],
+            $config['templates'],
+            $config['routes'],
+        );
+
+        self::assertStringContainsString('Links', $extension->renderInstallLinks());
+        self::assertSame('', $extension->renderInstallLinks('any_route', '/other'));
     }
 }

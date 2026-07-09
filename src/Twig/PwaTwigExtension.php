@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Nowo\PwaBundle\Twig;
 
 use Nowo\PwaBundle\Service\PwaRouteTargeting;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
+use function is_array;
 use function is_string;
 
 /**
@@ -25,7 +27,7 @@ final class PwaTwigExtension extends AbstractExtension
      * @param array<string, mixed> $installPromptConfig
      * @param array<string, mixed> $installLinksConfig
      * @param array<string, mixed> $clientConfig
-     * @param array{mode: string, routes: list<string>} $routeTargetingConfig
+     * @param array{match_by?: string, mode: string, routes: list<string>} $routeTargetingConfig
      * @param array{head: string, install_prompt: string, install_links: string, offline: string} $templates
      * @param array<string, array{path: string, name: string}> $routes
      */
@@ -57,46 +59,76 @@ final class PwaTwigExtension extends AbstractExtension
         ];
     }
 
-    public function isEnabledOnCurrentRoute(?string $route = null): bool
+    public function isEnabledOnCurrentRoute(?string $route = null, ?string $path = null): bool
     {
         if (!$this->enabled) {
             return false;
         }
 
-        $currentRoute = $route ?? $this->resolveCurrentRoute();
-
-        return $this->routeTargeting->shouldApply(
-            $currentRoute,
-            (string) $this->routeTargetingConfig['mode'],
-            $this->routeTargetingConfig['routes'],
-        );
+        return $this->shouldApplyTargeting($this->routeTargetingConfig, $route, $path);
     }
 
-    public function renderHead(?string $route = null): string
+    public function renderHead(?string $route = null, ?string $path = null): string
     {
-        if (!$this->isEnabledOnCurrentRoute($route)) {
+        if (!$this->isEnabledOnCurrentRoute($route, $path)) {
             return '';
         }
 
         return $this->twig->render($this->templates['head'], $this->buildViewContext());
     }
 
-    public function renderInstallPrompt(?string $route = null): string
+    public function renderInstallPrompt(?string $route = null, ?string $path = null): string
     {
-        if (!$this->isEnabledOnCurrentRoute($route) || !($this->installPromptConfig['enabled'] ?? true)) {
+        if (!$this->enabled || !($this->installPromptConfig['enabled'] ?? true)) {
+            return '';
+        }
+
+        if (!$this->shouldApplyComponentTargeting($this->installPromptConfig, $route, $path)) {
             return '';
         }
 
         return $this->twig->render($this->templates['install_prompt'], $this->buildViewContext());
     }
 
-    public function renderInstallLinks(?string $route = null): string
+    public function renderInstallLinks(?string $route = null, ?string $path = null): string
     {
-        if (!$this->isEnabledOnCurrentRoute($route) || !($this->installLinksConfig['enabled'] ?? true)) {
+        if (!$this->enabled || !($this->installLinksConfig['enabled'] ?? true)) {
+            return '';
+        }
+
+        if (!$this->shouldApplyComponentTargeting($this->installLinksConfig, $route, $path)) {
             return '';
         }
 
         return $this->twig->render($this->templates['install_links'], $this->buildViewContext());
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function shouldApplyComponentTargeting(array $config, ?string $route, ?string $path): bool
+    {
+        $targeting = $config['route_targeting'] ?? null;
+
+        if (!is_array($targeting)) {
+            return true;
+        }
+
+        return $this->shouldApplyTargeting($targeting, $route, $path);
+    }
+
+    /**
+     * @param array{match_by?: string, mode?: string, routes?: list<string>} $targeting
+     */
+    private function shouldApplyTargeting(array $targeting, ?string $route, ?string $path): bool
+    {
+        return $this->routeTargeting->shouldApply(
+            $route ?? $this->resolveCurrentRoute(),
+            $path ?? $this->resolveCurrentPath(),
+            (string) ($targeting['mode'] ?? PwaRouteTargeting::MODE_ALL),
+            (array) ($targeting['routes'] ?? []),
+            (string) ($targeting['match_by'] ?? PwaRouteTargeting::MATCH_BY_NAME),
+        );
     }
 
     /**
@@ -120,12 +152,22 @@ final class PwaTwigExtension extends AbstractExtension
     private function resolveCurrentRoute(): string
     {
         $request = $this->requestStack->getCurrentRequest();
-        if (!$request instanceof \Symfony\Component\HttpFoundation\Request) {
+        if (!$request instanceof Request) {
             return '';
         }
 
         $route = $request->attributes->get('_route');
 
         return is_string($route) ? $route : '';
+    }
+
+    private function resolveCurrentPath(): string
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        if (!$request instanceof Request) {
+            return '';
+        }
+
+        return $request->getPathInfo();
     }
 }

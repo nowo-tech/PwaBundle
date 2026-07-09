@@ -126,13 +126,30 @@ Bump `cache_version` when precache lists change to invalidate old caches.
 nowo_pwa:
     install_prompt:
         enabled: true
+        display: banner              # banner | flash | modal
         dismiss_key: nowo_pwa_install_dismissed
-        dismiss_days: 7
-        position: bottom          # top | bottom
+        dismiss_days: 7              # remind again after N days (0 = always show)
+        never_dismiss_key: nowo_pwa_install_never
+        show_never_option: true      # "Don't ask again" button
+        position: bottom             # top | bottom (banner mode only)
         css_class: nowo-pwa-install
         delay_ms: 0
-        visibility: all           # all | mobile | desktop
+        visibility: all              # all | mobile | desktop
+        route_targeting:
+            match_by: name           # name | path
+            mode: only               # all | only | except
+            routes: [app_home]
 ```
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `display` | `banner` | `banner` (fixed bar), `flash` (inline, place `{{ nowo_pwa_install_prompt() }}` in content), `modal` (dialog) |
+| `dismiss_days` | 7 | Days before showing again after "Not now" |
+| `never_dismiss_key` | `nowo_pwa_install_never` | localStorage key when user chooses "Don't ask again" |
+| `show_never_option` | true | Show permanent dismiss button |
+| `route_targeting` | all routes | Limit where the prompt HTML is rendered (independent from global targeting) |
+
+Path patterns (when `match_by: path`): exact (`/vault`), prefix (`/vault*`), regex (`/^\\/admin/`).
 
 ## Install links
 
@@ -150,6 +167,10 @@ nowo_pwa:
         enabled: true
         css_class: nowo-pwa-install-links
         visibility: all
+        route_targeting:
+            match_by: name
+            mode: only
+            routes: [app_home]
 ```
 
 - **Install link** appears when the browser fires `beforeinstallprompt` (Chromium).
@@ -184,15 +205,26 @@ nowo_pwa:
 
 ## Route targeting
 
-Limit PWA injection to specific Symfony routes:
+Limit PWA head tags and client script to specific Symfony routes or URL paths:
 
 ```yaml
 nowo_pwa:
     route_targeting:
-        mode: except    # all | only | except
+        match_by: name    # name (default) | path
+        mode: except      # all | only | except
         routes:
             - admin_dashboard
 ```
+
+Path patterns when `match_by: path`:
+
+| Pattern | Matches |
+|---------|---------|
+| `/vault` | Exact path |
+| `/vault*` | Prefix |
+| `/^\\/admin/` | Regex (PCRE) |
+
+Per-component targeting: `install_prompt.route_targeting` and `install_links.route_targeting` use the same shape and override visibility for those helpers only.
 
 ## Routes & templates
 

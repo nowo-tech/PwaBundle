@@ -1,14 +1,30 @@
-{# Install prompt banner — dismissible, stored in localStorage #}
+{# Install prompt — dismissible (remind later / never ask again) #}
+{% set display = install_prompt.display|default('banner') %}
+{% set css_class = install_prompt.css_class|default('nowo-pwa-install') %}
 <div id="nowo-pwa-install"
-     class="{{ install_prompt.css_class|default('nowo-pwa-install') }} nowo-pwa-install--{{ install_prompt.position|default('bottom') }}"
+     class="{{ css_class }} {{ css_class }}--{{ display }} {{ css_class }}--{{ install_prompt.position|default('bottom') }}"
      hidden
+     role="dialog"
+     aria-labelledby="nowo-pwa-install-message"
+     aria-modal="{{ display == 'modal' ? 'true' : 'false' }}"
+     data-display="{{ display }}"
      data-dismiss-key="{{ install_prompt.dismiss_key|default('nowo_pwa_install_dismissed') }}"
      data-dismiss-days="{{ install_prompt.dismiss_days|default(7) }}"
+     data-never-dismiss-key="{{ install_prompt.never_dismiss_key|default('nowo_pwa_install_never') }}"
+     data-show-never-option="{{ install_prompt.show_never_option|default(true) ? '1' : '0' }}"
      data-delay-ms="{{ install_prompt.delay_ms|default(0) }}"
      data-visibility="{{ install_prompt.visibility|default('all') }}">
-    <p>{{ 'install.message'|trans({}, 'NowoPwaBundle') }}</p>
-    <div class="nowo-pwa-install__actions">
-        <button type="button" data-pwa-install-action="install">{{ 'install.action'|trans({}, 'NowoPwaBundle') }}</button>
-        <button type="button" data-pwa-install-action="dismiss">{{ 'install.dismiss'|trans({}, 'NowoPwaBundle') }}</button>
+    {% if display == 'modal' %}
+        <div class="{{ css_class }}__backdrop" data-pwa-install-action="dismiss-remind" aria-hidden="true"></div>
+    {% endif %}
+    <div class="{{ css_class }}__panel">
+        <p id="nowo-pwa-install-message">{{ 'install.message'|trans({}, 'NowoPwaBundle') }}</p>
+        <div class="{{ css_class }}__actions">
+            <button type="button" data-pwa-install-action="install">{{ 'install.action'|trans({}, 'NowoPwaBundle') }}</button>
+            <button type="button" data-pwa-install-action="dismiss-remind">{{ 'install.dismiss_remind'|trans({}, 'NowoPwaBundle') }}</button>
+            {% if install_prompt.show_never_option|default(true) %}
+                <button type="button" data-pwa-install-action="dismiss-never">{{ 'install.dismiss_never'|trans({}, 'NowoPwaBundle') }}</button>
+            {% endif %}
+        </div>
     </div>
 </div>
