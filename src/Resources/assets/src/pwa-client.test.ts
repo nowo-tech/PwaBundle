@@ -7,13 +7,15 @@ import {
     setupInstallPrompt,
     shouldHideInstallPrompt,
     storeDismiss,
+    storeNeverDismiss,
 } from './pwa-client';
 
 function installBannerHtml(): string {
     return `
-        <div id="nowo-pwa-install" hidden data-dismiss-key="dismiss" data-dismiss-days="7">
+        <div id="nowo-pwa-install" hidden data-dismiss-key="dismiss" data-dismiss-days="7" data-never-dismiss-key="never">
             <button type="button" data-pwa-install-action="install">Install</button>
-            <button type="button" data-pwa-install-action="dismiss">Dismiss</button>
+            <button type="button" data-pwa-install-action="dismiss-remind">Dismiss</button>
+            <button type="button" data-pwa-install-action="dismiss-never">Never</button>
         </div>
     `;
 }
@@ -128,31 +130,61 @@ describe('pwa-client', () => {
         expect(localStorage.getItem('nowo_pwa_install_dismissed')).not.toBeNull();
     });
 
-    it('setupInstallPrompt stores dismiss on dismiss click', () => {
+    it('setupInstallPrompt stores dismiss on dismiss-remind click', () => {
         document.body.innerHTML = installBannerHtml();
         setupInstallPrompt(document);
 
         const banner = document.getElementById('nowo-pwa-install') as HTMLElement;
-        const dismissBtn = banner.querySelector('[data-pwa-install-action="dismiss"]') as HTMLButtonElement;
+        const dismissBtn = banner.querySelector('[data-pwa-install-action="dismiss-remind"]') as HTMLButtonElement;
         dismissBtn.click();
 
         expect(localStorage.getItem('dismiss')).not.toBeNull();
         expect(banner.hidden).toBe(true);
     });
 
+    it('setupInstallPrompt stores never dismiss', () => {
+        document.body.innerHTML = installBannerHtml();
+        setupInstallPrompt(document);
+
+        const banner = document.getElementById('nowo-pwa-install') as HTMLElement;
+        const neverBtn = banner.querySelector('[data-pwa-install-action="dismiss-never"]') as HTMLButtonElement;
+        neverBtn.click();
+
+        expect(localStorage.getItem('never')).toBe('1');
+        expect(banner.hidden).toBe(true);
+    });
+
+    it('setupInstallPrompt hides when never dismiss is set', () => {
+        document.body.innerHTML = installBannerHtml();
+        localStorage.setItem('never', '1');
+        setupInstallPrompt(document);
+
+        window.dispatchEvent(new Event('beforeinstallprompt'));
+        expect(document.getElementById('nowo-pwa-install')?.hidden).toBe(true);
+    });
+
     it('shouldHideInstallPrompt covers ttl branches', () => {
         const now = 1_700_000_000_000;
 
-        expect(shouldHideInstallPrompt('missing', 7, now)).toBe(false);
+        expect(shouldHideInstallPrompt('missing', 7, 'never', now)).toBe(false);
 
+        localStorage.setItem('never', '1');
+        expect(shouldHideInstallPrompt('missing', 7, 'never', now)).toBe(true);
+
+        localStorage.removeItem('never');
         localStorage.setItem('bad', 'not-a-number');
-        expect(shouldHideInstallPrompt('bad', 7, now)).toBe(false);
+        expect(shouldHideInstallPrompt('bad', 7, 'never', now)).toBe(false);
 
         localStorage.setItem('fresh', String(now - 1_000));
-        expect(shouldHideInstallPrompt('fresh', 7, now)).toBe(true);
+        expect(shouldHideInstallPrompt('fresh', 7, 'never', now)).toBe(true);
 
         localStorage.setItem('expired', String(now - 8 * 24 * 60 * 60 * 1000));
-        expect(shouldHideInstallPrompt('expired', 7, now)).toBe(false);
+        expect(shouldHideInstallPrompt('expired', 7, 'never', now)).toBe(false);
+    });
+
+    it('storeNeverDismiss stores permanent flag', () => {
+        storeNeverDismiss('never-key');
+        expect(localStorage.getItem('never-key')).toBe('1');
     });
 
     it('storeDismiss removes key when dismiss days is zero', () => {
@@ -198,6 +230,21 @@ describe('pwa-client', () => {
         vi.advanceTimersByTime(500);
         expect(banner.hidden).toBe(false);
         vi.useRealTimers();
+    });
+
+    it('setupInstallPrompt opens modal body lock', () => {
+        document.body.innerHTML = installBannerHtml().replace(
+            'id="nowo-pwa-install"',
+            'id="nowo-pwa-install" data-display="modal"',
+        );
+        setupInstallPrompt(document);
+
+        window.dispatchEvent(new Event('beforeinstallprompt'));
+        expect(document.body.classList.contains('nowo-pwa-install-modal-open')).toBe(true);
+
+        const dismissBtn = document.querySelector('[data-pwa-install-action="dismiss-remind"]') as HTMLButtonElement;
+        dismissBtn.click();
+        expect(document.body.classList.contains('nowo-pwa-install-modal-open')).toBe(false);
     });
 
     it('setupInstallPrompt skips mobile when visibility is desktop', () => {

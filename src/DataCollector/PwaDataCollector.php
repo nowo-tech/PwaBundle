@@ -25,7 +25,7 @@ final class PwaDataCollector extends DataCollector
      * @param array<string, mixed> $installPromptConfig
      * @param array<string, mixed> $installLinksConfig
      * @param array<string, mixed> $clientConfig
-     * @param array{mode: string, routes: list<string>} $routeTargetingConfig
+     * @param array{match_by?: string, mode: string, routes: list<string>} $routeTargetingConfig
      * @param array<string, array{path: string, name: string}> $routes
      */
     public function __construct(
@@ -49,8 +49,10 @@ final class PwaDataCollector extends DataCollector
 
         $activeOnRoute = $this->enabled && $this->routeTargeting->shouldApply(
             $currentRoute,
-            (string) $this->routeTargetingConfig['mode'],
+            $request->getPathInfo(),
+            $this->routeTargetingConfig['mode'],
             $this->routeTargetingConfig['routes'],
+            $this->routeTargetingConfig['match_by'] ?? PwaRouteTargeting::MATCH_BY_NAME,
         );
 
         $this->data = [

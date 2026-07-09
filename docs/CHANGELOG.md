@@ -11,6 +11,26 @@ _(none yet)_
 
 ---
 
+## [1.1.0] - 2026-07-09
+
+### Added
+
+- **Install prompt display modes:** `banner` (fixed bar), `flash` (inline alert), `modal` (centered dialog with backdrop)
+- **Per-component route targeting** for `install_prompt` and `install_links` (independent from global `route_targeting`)
+- Route/path matching via `match_by: name|path` with exact paths, prefix wildcards (`/vault*`), and regex (`/^\\/admin/`)
+- **Dismiss options:** remind later (`dismiss_days`) or never ask again (`never_dismiss_key`, `show_never_option`)
+- Default stylesheet `pwa.css` (linked from `nowo_pwa_head()`)
+- Translations: `install.dismiss_remind`, `install.dismiss_never`
+- GitHub Spec Kit baseline (`specs/001-baseline/`) and operator manual [`docs/SPEC-KIT.md`](SPEC-KIT.md)
+
+### Changed
+
+- Global `route_targeting` now supports `match_by` (path patterns) in addition to route names
+- Install prompt template uses `dismiss-remind` / `dismiss-never` actions (legacy `dismiss` still supported in JS)
+- Expanded SECURITY release checklist (12.4.1)
+
+---
+
 ## [1.0.1] - 2026-07-05
 
 ### Added
@@ -58,5 +78,6 @@ Initial release of **PWA Bundle** — Progressive Web App integration for Symfon
 - Service worker no longer intercepts or caches non-HTTP(S) requests (e.g. `chrome-extension://` from browser extensions)
 - Precache URL matching uses pathname equality instead of `url.includes('/')`, which previously matched almost every request
 
+[1.1.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.0
 [1.0.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.1
 [1.0.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.0

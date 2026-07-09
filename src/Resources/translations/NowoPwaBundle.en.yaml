@@ -2,6 +2,8 @@ install:
     message: 'Install this app on your device for a faster experience.'
     action: 'Install'
     dismiss: 'Not now'
+    dismiss_remind: 'Not now'
+    dismiss_never: "Don't ask again"
     link: 'Install app'
     uninstall_link: 'Uninstall app'
     uninstall_help: 'To uninstall, remove this app from your home screen, app launcher, or browser installed apps list.'

@@ -2,6 +2,8 @@ install:
     message: 'Installeer deze app op je apparaat voor een snellere ervaring.'
     action: 'Installeren'
     dismiss: 'Niet nu'
+    dismiss_remind: 'Niet nu'
+    dismiss_never: 'Niet opnieuw vragen'
     link: 'App installeren'
     uninstall_link: 'App verwijderen'
     uninstall_help: 'Om te verwijderen, haal deze app van je startscherm, app-launcher of de lijst met geïnstalleerde browserapps.'

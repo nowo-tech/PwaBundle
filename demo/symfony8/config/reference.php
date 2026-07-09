@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 // This file is auto-generated and is for apps only. Bundles SHOULD NOT rely on its content.
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
@@ -875,17 +873,35 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     install_prompt?: array{
  *         enabled?: bool|Param, // Default: true
+ *         display?: "banner"|"flash"|"modal"|Param, // banner: fixed bar; flash: inline alert; modal: centered dialog. // Default: "banner"
  *         dismiss_key?: scalar|Param|null, // Default: "nowo_pwa_install_dismissed"
  *         dismiss_days?: int|Param, // Default: 7
+ *         never_dismiss_key?: scalar|Param|null, // Default: "nowo_pwa_install_never"
+ *         show_never_option?: bool|Param, // Default: true
  *         position?: "bottom"|"top"|Param, // Default: "bottom"
  *         css_class?: scalar|Param|null, // Default: "nowo-pwa-install"
  *         delay_ms?: int|Param, // Default: 0
  *         visibility?: "all"|"mobile"|"desktop"|Param, // Default: "all"
+ *         route_targeting?: array{
+ *             match_by?: "name"|"path"|Param, // Match routes by Symfony route name or request path pattern. // Default: "name"
+ *             mode?: "all"|"only"|"except"|Param, // all: every page; only: listed routes/paths; except: all except listed. // Default: "all"
+ *             routes?: mixed, // Route names or path patterns (exact, prefix with trailing *, or /regex/). // Default: []
+ *         },
  *     },
  *     install_links?: array{ // Toggle install / uninstall links (one visible at a time).
  *         enabled?: bool|Param, // Default: true
  *         css_class?: scalar|Param|null, // Default: "nowo-pwa-install-links"
  *         visibility?: "all"|"mobile"|"desktop"|Param, // Default: "all"
+ *         route_targeting?: array{
+ *             match_by?: "name"|"path"|Param, // Match routes by Symfony route name or request path pattern. // Default: "name"
+ *             mode?: "all"|"only"|"except"|Param, // all: every page; only: listed routes/paths; except: all except listed. // Default: "all"
+ *             routes?: mixed, // Route names or path patterns (exact, prefix with trailing *, or /regex/). // Default: []
+ *         },
+ *     },
+ *     route_targeting?: array{ // Limit where PWA head tags and client script are injected.
+ *         match_by?: "name"|"path"|Param, // Match routes by Symfony route name or request path pattern. // Default: "name"
+ *         mode?: "all"|"only"|"except"|Param, // all: every page; only: listed routes/paths; except: all except listed. // Default: "all"
+ *         routes?: mixed, // Route names or path patterns (exact, prefix with trailing *, or /regex/). // Default: []
  *     },
  *     client?: array{ // Browser client script behaviour (pwa.js).
  *         register_on_load?: bool|Param, // Default: true
@@ -896,10 +912,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         manifest_cache_max_age?: int|Param, // Default: 3600
  *         service_worker_cache_max_age?: int|Param, // Default: 0
  *         manifest_public_cache?: bool|Param, // Default: true
- *     },
- *     route_targeting?: array{ // Limit where PWA head tags and client script are injected.
- *         mode?: "all"|"only"|"except"|Param, // Default: "all"
- *         routes?: mixed, // Default: []
  *     },
  *     routes?: array{
  *         manifest?: array{

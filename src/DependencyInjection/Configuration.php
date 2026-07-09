@@ -6,6 +6,7 @@ namespace Nowo\PwaBundle\DependencyInjection;
 
 use Nowo\PwaBundle\DependencyInjection\Configuration\ManifestNodeDefinition;
 use Nowo\PwaBundle\DependencyInjection\Configuration\MetaNodeDefinition;
+use Nowo\PwaBundle\DependencyInjection\Configuration\RouteTargetingNodeDefinition;
 use Nowo\PwaBundle\DependencyInjection\Configuration\ServiceWorkerNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -38,29 +39,44 @@ final class Configuration implements ConfigurationInterface
         MetaNodeDefinition::configure($root->children()->arrayNode('meta'));
         ServiceWorkerNodeDefinition::configure($root->children()->arrayNode('service_worker'));
 
+        $installPromptNode = $root->children()->arrayNode('install_prompt');
+        $installPromptNode
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->booleanNode('enabled')->defaultTrue()->end()
+                ->enumNode('display')
+                    ->info('banner: fixed bar; flash: inline alert; modal: centered dialog.')
+                    ->values(['banner', 'flash', 'modal'])
+                    ->defaultValue('banner')
+                ->end()
+                ->scalarNode('dismiss_key')->defaultValue('nowo_pwa_install_dismissed')->end()
+                ->integerNode('dismiss_days')->defaultValue(7)->min(0)->end()
+                ->scalarNode('never_dismiss_key')->defaultValue('nowo_pwa_install_never')->end()
+                ->booleanNode('show_never_option')->defaultTrue()->end()
+                ->enumNode('position')->values(['bottom', 'top'])->defaultValue('bottom')->end()
+                ->scalarNode('css_class')->defaultValue('nowo-pwa-install')->end()
+                ->integerNode('delay_ms')->defaultValue(0)->min(0)->end()
+                ->enumNode('visibility')->values(['all', 'mobile', 'desktop'])->defaultValue('all')->end()
+            ->end();
+        RouteTargetingNodeDefinition::configure($installPromptNode->children()->arrayNode('route_targeting'));
+
+        $installLinksNode = $root->children()->arrayNode('install_links');
+        $installLinksNode
+            ->info('Toggle install / uninstall links (one visible at a time).')
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->booleanNode('enabled')->defaultTrue()->end()
+                ->scalarNode('css_class')->defaultValue('nowo-pwa-install-links')->end()
+                ->enumNode('visibility')->values(['all', 'mobile', 'desktop'])->defaultValue('all')->end()
+            ->end();
+        RouteTargetingNodeDefinition::configure($installLinksNode->children()->arrayNode('route_targeting'));
+
+        $globalRouteTargetingNode = $root->children()->arrayNode('route_targeting');
+        $globalRouteTargetingNode->info('Limit where PWA head tags and client script are injected.');
+        RouteTargetingNodeDefinition::configure($globalRouteTargetingNode);
+
         $root
             ->children()
-                ->arrayNode('install_prompt')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->booleanNode('enabled')->defaultTrue()->end()
-                        ->scalarNode('dismiss_key')->defaultValue('nowo_pwa_install_dismissed')->end()
-                        ->integerNode('dismiss_days')->defaultValue(7)->min(0)->end()
-                        ->enumNode('position')->values(['bottom', 'top'])->defaultValue('bottom')->end()
-                        ->scalarNode('css_class')->defaultValue('nowo-pwa-install')->end()
-                        ->integerNode('delay_ms')->defaultValue(0)->min(0)->end()
-                        ->enumNode('visibility')->values(['all', 'mobile', 'desktop'])->defaultValue('all')->end()
-                    ->end()
-                ->end()
-                ->arrayNode('install_links')
-                    ->info('Toggle install / uninstall links (one visible at a time).')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->booleanNode('enabled')->defaultTrue()->end()
-                        ->scalarNode('css_class')->defaultValue('nowo-pwa-install-links')->end()
-                        ->enumNode('visibility')->values(['all', 'mobile', 'desktop'])->defaultValue('all')->end()
-                    ->end()
-                ->end()
                 ->arrayNode('client')
                     ->info('Browser client script behaviour (pwa.js).')
                     ->addDefaultsIfNotSet()
@@ -77,14 +93,6 @@ final class Configuration implements ConfigurationInterface
                         ->integerNode('manifest_cache_max_age')->defaultValue(3600)->min(0)->end()
                         ->integerNode('service_worker_cache_max_age')->defaultValue(0)->min(0)->end()
                         ->booleanNode('manifest_public_cache')->defaultTrue()->end()
-                    ->end()
-                ->end()
-                ->arrayNode('route_targeting')
-                    ->info('Limit where PWA head tags and client script are injected.')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->enumNode('mode')->values(['all', 'only', 'except'])->defaultValue('all')->end()
-                        ->variableNode('routes')->defaultValue([])->end()
                     ->end()
                 ->end()
                 ->arrayNode('routes')
