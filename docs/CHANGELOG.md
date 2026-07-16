@@ -11,6 +11,21 @@ _(none yet)_
 
 ---
 
+## [1.1.1] - 2026-07-16
+
+### Added
+
+- **REQ-GIT-001:** git hooks (`.githooks/commit-msg`), CI job, and scripts to reject Cursor `Co-authored-by` trailers in commit history
+- [Code of Conduct](../CODE_OF_CONDUCT.md) (Contributor Covenant) and [GitHub Actions CI requirements](GITHUB_CI.md)
+- `make setup-hooks`, `make check-no-cursor-coauthor`, and `make strip-cursor-coauthor-from-history`
+
+### Changed
+
+- `make release-check` now runs `check-no-cursor-coauthor` first
+- Contributing and release docs document hook setup and history hygiene
+
+---
+
 ## [1.1.0] - 2026-07-09
 
 ### Added
@@ -78,6 +93,7 @@ Initial release of **PWA Bundle** — Progressive Web App integration for Symfon
 - Service worker no longer intercepts or caches non-HTTP(S) requests (e.g. `chrome-extension://` from browser extensions)
 - Precache URL matching uses pathname equality instead of `url.includes('/')`, which previously matched almost every request
 
+[1.1.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.1
 [1.1.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.0
 [1.0.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.1
 [1.0.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.0

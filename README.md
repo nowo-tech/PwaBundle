@@ -54,10 +54,12 @@ See [Installation](docs/INSTALLATION.md) and [Configuration](docs/CONFIGURATION.
 
 ## Documentation
 
+- [GitHub Actions CI requirements](docs/GITHUB_CI.md)
 - [Installation](docs/INSTALLATION.md)
 - [Configuration](docs/CONFIGURATION.md)
 - [Usage](docs/USAGE.md)
 - [Contributing](docs/CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Changelog](docs/CHANGELOG.md)
 - [Upgrading](docs/UPGRADING.md)
 - [Release process](docs/RELEASE.md)

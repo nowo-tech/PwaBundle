@@ -13,9 +13,11 @@ Use this checklist when cutting a new version. The workflow [.github/workflows/r
 
 3. **Run release-check**
    - From the bundle root: `make release-check` (validates composer, runs cs-fix, cs-check, rector-dry, phpstan, test-coverage, test-ts, and demo `release-verify` HTTP smoke).
+   - Includes `make check-no-cursor-coauthor` (REQ-GIT-001).
 
 4. **Commit**
    - Commit `docs/CHANGELOG.md`, `docs/UPGRADING.md` and any other release-related changes.
+   - After creating the release commit, run `make check-no-cursor-coauthor` again **before** `git push` (REQ-GIT-001). The release commit itself is not covered by an earlier `release-check` run.
    - Push to `main` (or merge your release branch).
 
 ## Tag and push
@@ -33,9 +35,18 @@ git push origin vX.Y.Z
 - After the push, GitHub Actions creates the release and appends the changelog entry for that version to the release body.
 - Packagist will pick up the new tag automatically.
 
-### Example for v1.1.0
+### Example for v1.1.1
 
 After running `make release-check` and committing all changes (CHANGELOG, UPGRADING, docs, and any CS/test fixes):
+
+```bash
+git checkout main
+git pull origin main
+git tag -a v1.1.1 -m "Release v1.1.1"
+git push origin v1.1.1
+```
+
+### Example for v1.1.0
 
 ```bash
 git checkout main
@@ -45,8 +56,6 @@ git push origin v1.1.0
 ```
 
 ### Example for v1.0.0
-
-After running `make release-check` and committing all changes (CHANGELOG, UPGRADING, docs, and any CS/test fixes):
 
 ```bash
 git checkout main

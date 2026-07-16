@@ -2,6 +2,18 @@
 
 This document describes how to upgrade between versions of **PWA Bundle**.
 
+## 1.1.1 (2026-07-16)
+
+Patch release: maintainer tooling, Code of Conduct, and CI git-hygiene (REQ-GIT-001). **No breaking changes** and no required config or code changes in consuming applications.
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
+
+Contributors cloning this repository should run `make setup-hooks` once (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+
+---
+
 ## 1.1.0 (2026-07-09)
 
 Minor release: install UI enhancements, path-based route targeting, and bundled default styles. **No breaking changes** — existing configs and Twig overrides keep working.
@@ -100,6 +112,7 @@ nowo_pwa:
 
 Browsers will drop old `nowo-pwa-*` caches on the next activation.
 
+[1.1.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.1
 [1.1.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.0
 [1.0.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.1
 [1.0.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.0
