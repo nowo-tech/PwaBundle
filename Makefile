@@ -82,12 +82,12 @@ test: ensure-up
 
 test-coverage: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer install --no-interaction
-	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage | tee coverage-php.txt
+	bash -c 'set -o pipefail; $(COMPOSE) exec $(SERVICE_PHP) composer test-coverage | tee coverage-php.txt'
 	sh .scripts/php-coverage-percent.sh coverage-php.txt
 
 test-coverage-100: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer install --no-interaction
-	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage-100 | tee coverage-php.txt
+	bash -c 'set -o pipefail; $(COMPOSE) exec $(SERVICE_PHP) composer test-coverage-100 | tee coverage-php.txt'
 	sh .scripts/php-coverage-percent.sh coverage-php.txt
 
 cs-check: ensure-up

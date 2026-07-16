@@ -32,4 +32,17 @@ final class PwaRouteTargetingTest extends TestCase
         self::assertTrue($targeting->shouldApply('', '/vault', PwaRouteTargeting::MODE_EXCEPT, ['/admin*'], PwaRouteTargeting::MATCH_BY_PATH));
         self::assertFalse($targeting->shouldApply('', '/admin/users', PwaRouteTargeting::MODE_EXCEPT, ['/admin*'], PwaRouteTargeting::MATCH_BY_PATH));
     }
+
+    public function testPathNormalizationAndWildcards(): void
+    {
+        $targeting = new PwaRouteTargeting();
+
+        self::assertTrue($targeting->shouldApply('', '', PwaRouteTargeting::MODE_ONLY, ['/'], PwaRouteTargeting::MATCH_BY_PATH));
+        self::assertTrue($targeting->shouldApply('', 'vault', PwaRouteTargeting::MODE_ONLY, ['/vault'], PwaRouteTargeting::MATCH_BY_PATH));
+        self::assertTrue($targeting->shouldApply('', '/anything', PwaRouteTargeting::MODE_ONLY, ['*'], PwaRouteTargeting::MATCH_BY_PATH));
+        self::assertTrue($targeting->shouldApply('', '/admin/users', PwaRouteTargeting::MODE_ONLY, ['/^\\/admin/'], PwaRouteTargeting::MATCH_BY_PATH));
+        self::assertFalse($targeting->shouldApply('', '/public', PwaRouteTargeting::MODE_ONLY, ['/^\\/admin/'], PwaRouteTargeting::MATCH_BY_PATH));
+        self::assertTrue($targeting->shouldApply('home', '/', 'unknown-mode', ['admin']));
+        self::assertTrue($targeting->shouldApply('home', '/', '', []));
+    }
 }

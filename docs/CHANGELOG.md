@@ -11,6 +11,15 @@ _(none yet)_
 
 ---
 
+## [1.1.2] - 2026-07-16
+
+### Fixed
+
+- `PwaRouteTargeting` path matching coverage: empty path, paths without leading `/`, wildcard `*`, regex patterns, and unknown mode fallback
+- `make test-coverage-100` now fails correctly when coverage drops below 100% (`pipefail` with `tee`)
+
+---
+
 ## [1.1.1] - 2026-07-16
 
 ### Added
@@ -93,6 +102,7 @@ Initial release of **PWA Bundle** — Progressive Web App integration for Symfon
 - Service worker no longer intercepts or caches non-HTTP(S) requests (e.g. `chrome-extension://` from browser extensions)
 - Precache URL matching uses pathname equality instead of `url.includes('/')`, which previously matched almost every request
 
+[1.1.2]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.2
 [1.1.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.1
 [1.1.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.0
 [1.0.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.1

@@ -2,6 +2,16 @@
 
 This document describes how to upgrade between versions of **PWA Bundle**.
 
+## 1.1.2 (2026-07-16)
+
+Patch release: restore 100% PHP coverage for path-based route targeting and make `make test-coverage-100` fail when coverage drops. **No breaking changes** and no required config changes in consuming applications.
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
+
+---
+
 ## 1.1.1 (2026-07-16)
 
 Patch release: maintainer tooling, Code of Conduct, and CI git-hygiene (REQ-GIT-001). **No breaking changes** and no required config or code changes in consuming applications.
@@ -112,6 +122,7 @@ nowo_pwa:
 
 Browsers will drop old `nowo-pwa-*` caches on the next activation.
 
+[1.1.2]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.2
 [1.1.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.1
 [1.1.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.0
 [1.0.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.1

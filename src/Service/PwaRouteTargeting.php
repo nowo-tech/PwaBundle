@@ -106,9 +106,6 @@ final class PwaRouteTargeting
     private function pathMatches(string $path, string $pattern): bool
     {
         $pattern = trim($pattern);
-        if ($pattern === '') {
-            return false;
-        }
 
         if (str_starts_with($pattern, '/') && str_ends_with($pattern, '/') && strlen($pattern) > 2) {
             return preg_match($pattern, $path) === 1;
