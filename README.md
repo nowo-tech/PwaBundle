@@ -4,11 +4,11 @@
 
 > ⭐ **Found this useful?** Give it a **star** on [GitHub](https://github.com/nowo-tech/PwaBundle) so more developers can find it.
 
+Turn any Symfony application into a **Progressive Web App** with a fully configurable manifest, service worker, offline page, and install prompt — no vendor lock-in, no hardcoded assets.
+
 ![FrankenPHP Friendly Worker Mode](docs/images/frankenphp-friendly.png)
 
 This bundle is **FrankenPHP worker mode friendly**.
-
-Turn any Symfony application into a **Progressive Web App** with a fully configurable manifest, service worker, offline page, and install prompt — no vendor lock-in, no hardcoded assets.
 
 ## Features
 
