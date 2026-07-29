@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\Tests\Integration;
 
+use Nowo\PwaBundle\DataCollector\PwaDataCollector;
 use Nowo\PwaBundle\DependencyInjection\PwaExtension;
 use Nowo\PwaBundle\PwaBundle;
 use Nowo\PwaBundle\Routing\PwaRouteLoader;
@@ -21,7 +22,7 @@ final class PwaBundleIntegrationTest extends TestCase
 
         self::assertTrue($container->hasDefinition(ManifestBuilder::class));
         self::assertTrue($container->hasDefinition(PwaRouteLoader::class));
-        self::assertTrue($container->hasDefinition(\Nowo\PwaBundle\DataCollector\PwaDataCollector::class));
+        self::assertTrue($container->hasDefinition(PwaDataCollector::class));
         self::assertSame('nowo_pwa', (new PwaBundle())->getContainerExtension()->getAlias());
     }
 
@@ -31,6 +32,6 @@ final class PwaBundleIntegrationTest extends TestCase
         $container->setParameter('kernel.debug', false);
         (new PwaExtension())->load([[]], $container);
 
-        self::assertFalse($container->hasDefinition(\Nowo\PwaBundle\DataCollector\PwaDataCollector::class));
+        self::assertFalse($container->hasDefinition(PwaDataCollector::class));
     }
 }

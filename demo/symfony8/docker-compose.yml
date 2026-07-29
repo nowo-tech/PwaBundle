@@ -22,6 +22,7 @@ services:
       - APP_DEBUG=1
       - APP_SECRET=${APP_SECRET:-demo-secret}
       - APP_NAME="PWA Demo"
+      - FRANKENPHP_MODE=${FRANKENPHP_MODE:-worker}
     dns:
       - 8.8.8.8
       - 8.8.4.4

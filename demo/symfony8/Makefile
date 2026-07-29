@@ -1,6 +1,12 @@
 # Makefile for Symfony 8.1 Demo (PWA Bundle)
 
-COMPOSE = /usr/bin/docker compose
+# Prefer Compose V2; absolute docker path avoids shadowing by local docker/ when PATH has "." (REQ-MAKE-010).
+DOCKER_BIN := $(shell command -v docker 2>/dev/null)
+ifeq ($(DOCKER_BIN),)
+COMPOSE ?= docker-compose
+else
+COMPOSE ?= $(shell $(DOCKER_BIN) compose version >/dev/null 2>&1 && echo "$(DOCKER_BIN) compose" || echo "docker-compose")
+endif
 SERVICE_PHP = php
 
 .PHONY: help up down build install shell test update-bundle ensure-up ensure-env
@@ -54,4 +60,5 @@ update-bundle: ensure-up
 	@$(COMPOSE) exec -T $(SERVICE_PHP) php bin/console cache:clear --env=dev --no-warmup || true
 
 BUNDLE_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../..)
-include $(BUNDLE_ROOT)/../.scripts/Makefile.demo-update-deps.mk
+# Optional: monorepo helper absent on standalone GitHub Actions checkout (REQ-MAKE-009).
+-include $(BUNDLE_ROOT)/../.scripts/Makefile.demo-update-deps.mk

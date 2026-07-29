@@ -22,4 +22,7 @@
             <directory>src/Controller</directory>
         </exclude>
     </source>
+    <php>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=0"/>
+    </php>
 </phpunit>

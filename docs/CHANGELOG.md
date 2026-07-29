@@ -7,7 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_(none yet)_
+---
+
+## [1.1.3] - 2026-07-29
+
+### Added
+
+- FrankenPHP Friendly Worker Mode banner in README (REQ-DOCS-017).
+- `make down-dev` and `make demo-smoke` (REQ-MAKE-007, REQ-TEST-011).
+- PHPUnit `SYMFONY_DEPRECATIONS_HELPER=max[direct]=0` (REQ-SF-005).
+- Packagist keyword `php` (REQ-PKG-004).
+- **REQ-CS-005:** `nowo-tech/phpstan-frankenphp` in `require-dev` with classic + worker rulesets in `phpstan.neon.dist`.
+
+### Changed
+
+- Demo Symfony 8 image bumped to FrankenPHP **PHP 8.5**; demo `require.php` `>=8.5,<8.6` (REQ-DEMO-010).
+- PHPStan `ignoreErrors: []` (REQ-CS-006).
+- Root `.gitignore` archive patterns include `*.tgz` / `*.rar` / `*.7z` (REQ-GITIGNORE-001).
+- Compose V2→V1 detection in Make (REQ-MAKE-010); optional monorepo `update-deps` include (REQ-MAKE-009).
+
+### Documentation
+
+- [UPGRADING.md](UPGRADING.md), [RELEASE.md](RELEASE.md) updated for 1.1.3.
 
 ---
 

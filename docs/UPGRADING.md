@@ -2,6 +2,18 @@
 
 This document describes how to upgrade between versions of **PWA Bundle**.
 
+## 1.1.3 (2026-07-29)
+
+Patch release: FrankenPHP banner, Make/demo polish, PHPStan FrankenPHP rulesets for contributors, and Packagist keyword. **No breaking changes** and no required config changes in consuming applications.
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
+
+Contributors: run `composer install` so `vendor/nowo-tech/phpstan-frankenphp` is available for `make phpstan`.
+
+---
+
 ## 1.1.2 (2026-07-16)
 
 Patch release: restore 100% PHP coverage for path-based route targeting and make `make test-coverage-100` fail when coverage drops. **No breaking changes** and no required config changes in consuming applications.

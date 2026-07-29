@@ -35,6 +35,18 @@ git push origin vX.Y.Z
 - After the push, GitHub Actions creates the release and appends the changelog entry for that version to the release body.
 - Packagist will pick up the new tag automatically.
 
+### Example for v1.1.3
+
+After running `make release-check` and committing all changes (CHANGELOG, UPGRADING, docs, and any CS/test fixes):
+
+```bash
+git checkout main
+git pull origin main
+git tag -a v1.1.3 -m "Release v1.1.3 - FrankenPHP banner, demo PHP 8.5, phpstan-frankenphp"
+git push origin main
+git push origin v1.1.3
+```
+
 ### Example for v1.1.1
 
 After running `make release-check` and committing all changes (CHANGELOG, UPGRADING, docs, and any CS/test fixes):

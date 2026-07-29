@@ -1,8 +1,10 @@
 # PWA Bundle - Development
-.PHONY: help up down build shell install test test-coverage coverage-php-percent cs-check cs-fix qa clean assets assets-build assets-watch assets-test test-ts ensure-up rector rector-dry phpstan release-check release-check-demos composer-sync update validate validate-translations check-no-cursor-coauthor strip-cursor-coauthor-from-history setup-hooks
+.PHONY: help up down down-dev build shell install test test-coverage coverage-php-percent cs-check cs-fix qa clean assets assets-build assets-watch assets-test test-ts ensure-up rector rector-dry phpstan release-check release-check-demos demo-smoke composer-sync update validate validate-translations check-no-cursor-coauthor strip-cursor-coauthor-from-history setup-hooks
 
 COMPOSE_FILE ?= docker-compose.yml
-COMPOSE     ?= /usr/bin/docker compose -f $(COMPOSE_FILE)
+# Prefer Compose V2 plugin (GitHub Actions / modern Docker Desktop); fall back to docker-compose V1 (REQ-MAKE-010).
+COMPOSE_BIN ?= $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
+COMPOSE     ?= $(COMPOSE_BIN) -f $(COMPOSE_FILE)
 SERVICE_PHP ?= php
 
 help:
@@ -10,6 +12,7 @@ help:
 	@echo ""
 	@echo "  up              Start Docker container"
 	@echo "  down            Stop Docker container"
+	@echo "  down-dev        Stop root compose (dev) and remove orphans"
 	@echo "  build           Rebuild Docker image (no cache)"
 	@echo "  shell           Open shell in container"
 	@echo "  install         Install Composer + pnpm dependencies"
@@ -25,6 +28,7 @@ help:
 	@echo "  phpstan         Static analysis"
 	@echo "  qa              cs-check + test"
 	@echo "  release-check   Pre-release checks"
+	@echo "  demo-smoke      REQ-TEST-011: boot demo + HTTP 200"
 	@echo "  composer-sync   Validate and align composer.lock"
 	@echo "  clean           Remove vendor and cache"
 	@echo "  update / validate  Composer"
@@ -44,6 +48,9 @@ up:
 
 down:
 	$(COMPOSE) down
+
+down-dev:
+	$(COMPOSE) down --remove-orphans
 
 ensure-up:
 	@if ! $(COMPOSE) exec -T $(SERVICE_PHP) true 2>/dev/null; then \
@@ -120,6 +127,9 @@ release-check: check-no-cursor-coauthor ensure-up composer-sync cs-fix cs-check 
 release-check-demos:
 	@$(MAKE) -C demo release-check
 
+demo-smoke:
+	@$(MAKE) -C demo demo-smoke
+
 clean:
 	rm -rf vendor node_modules .phpunit.cache coverage .php-cs-fixer.cache
 
@@ -139,7 +149,8 @@ setup-hooks:
 
 # REQ-MAKE-008: update-deps (REQ-MAKE-008)
 BUNDLE_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-include $(BUNDLE_ROOT)/../.scripts/Makefile.update-deps.mk
+# Optional: monorepo helper absent on standalone GitHub Actions checkout (REQ-MAKE-009).
+-include $(BUNDLE_ROOT)/../.scripts/Makefile.update-deps.mk
 check-no-cursor-coauthor:
 	@chmod +x .scripts/check-no-cursor-coauthor.sh
 	@./.scripts/check-no-cursor-coauthor.sh HEAD

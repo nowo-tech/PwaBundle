@@ -4,15 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7c770c5d0867e823f7d4259fecdc2d62",
+    "content-hash": "235e3c0aa7f7c1be2dbf9d587b8a53ed",
     "packages": [
         {
             "name": "nowo-tech/pwa-bundle",
-            "version": "1.1.0-dev",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "/var/pwa-bundle",
-                "reference": "83f48ea13ceb7c74e642fca5f0a67dcc2b084e9e"
+                "reference": "be5d3f4e19b918bf9e71b0baf3bc50495cb74535"
             },
             "require": {
                 "php": ">=8.2 <8.6",
@@ -26,6 +26,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.0",
+                "nowo-tech/phpstan-frankenphp": "^1.0",
                 "phpstan/extension-installer": "^1.0",
                 "phpstan/phpstan": "^2.0",
                 "phpstan/phpstan-phpunit": "^2.0",
@@ -111,6 +112,7 @@
             "homepage": "https://github.com/nowo-tech/PwaBundle",
             "keywords": [
                 "offline",
+                "php",
                 "progressive-web-app",
                 "pwa",
                 "service-worker",
@@ -3338,16 +3340,16 @@
         },
         {
             "name": "nowo-tech/twig-inspector-bundle",
-            "version": "v1.0.34",
+            "version": "v1.0.40",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nowo-tech/TwigInspectorBundle.git",
-                "reference": "e926c092b6df59edaded71ec011075e67190c783"
+                "reference": "38b44a33602670c6f4f44786dd529472be1aee3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nowo-tech/TwigInspectorBundle/zipball/e926c092b6df59edaded71ec011075e67190c783",
-                "reference": "e926c092b6df59edaded71ec011075e67190c783",
+                "url": "https://api.github.com/repos/nowo-tech/TwigInspectorBundle/zipball/38b44a33602670c6f4f44786dd529472be1aee3b",
+                "reference": "38b44a33602670c6f4f44786dd529472be1aee3b",
                 "shasum": ""
             },
             "require": {
@@ -3365,6 +3367,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.0",
+                "nowo-tech/phpstan-frankenphp": "^1.0",
                 "phpstan/extension-installer": "^1.4",
                 "phpstan/phpstan": "^2.0",
                 "phpstan/phpstan-symfony": "^2.0",
@@ -3375,7 +3378,7 @@
                 "symfony/yaml": "^6.0 || ^7.0 || ^8.0"
             },
             "suggest": {
-                "symfony/flex": "For automatic recipe installation (config and routes)"
+                "symfony/flex": "For automatic recipe installation (config and routes; registers this bundle for dev/test only — always install with composer require --dev)"
             },
             "type": "symfony-bundle",
             "autoload": {
@@ -3436,7 +3439,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-07T14:45:27+00:00"
+            "time": "2026-07-22T16:18:15+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -5351,7 +5354,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.2,<8.6"
+        "php": ">=8.5,<8.6"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"

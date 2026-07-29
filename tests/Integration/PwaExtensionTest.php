@@ -7,6 +7,7 @@ namespace Nowo\PwaBundle\Tests\Integration;
 use Nowo\PwaBundle\DependencyInjection\PwaExtension;
 use Nowo\PwaBundle\Twig\PwaTwigExtension;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\DependencyInjection\FrameworkExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class PwaExtensionTest extends TestCase
@@ -14,7 +15,7 @@ final class PwaExtensionTest extends TestCase
     public function testPrependConfiguresAssets(): void
     {
         $container = new ContainerBuilder();
-        $container->registerExtension(new \Symfony\Bundle\FrameworkBundle\DependencyInjection\FrameworkExtension());
+        $container->registerExtension(new FrameworkExtension());
         (new PwaExtension())->prepend($container);
         $configs = $container->getExtensionConfig('framework');
         self::assertSame('/bundles/pwa', $configs[0]['assets']['packages']['nowo_pwa']['base_path']);

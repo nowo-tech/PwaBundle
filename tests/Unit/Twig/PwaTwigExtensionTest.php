@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
+use Twig\TwigFunction;
 
 final class PwaTwigExtensionTest extends TestCase
 {
@@ -145,7 +146,7 @@ final class PwaTwigExtensionTest extends TestCase
     public function testExposesTwigFunctions(): void
     {
         $extension = $this->createExtension();
-        $names     = array_map(static fn (\Twig\TwigFunction $fn): string => $fn->getName(), $extension->getFunctions());
+        $names     = array_map(static fn (TwigFunction $fn): string => $fn->getName(), $extension->getFunctions());
         self::assertSame(['nowo_pwa_enabled', 'nowo_pwa_head', 'nowo_pwa_install_prompt', 'nowo_pwa_install_links'], $names);
     }
 
