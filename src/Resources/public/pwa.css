@@ -1,10 +1,44 @@
 /* Default install prompt styles — override in your app theme as needed. */
+:root {
+    --nowo-pwa-install-bg: #0f172a;
+    --nowo-pwa-install-color: #f8fafc;
+    --nowo-pwa-install-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+    --nowo-pwa-install-radius: 0.75rem;
+    --nowo-pwa-install-padding: 1rem 1.25rem;
+    --nowo-pwa-install-panel-width: 28rem;
+    --nowo-pwa-install-gap: 0.75rem;
+    --nowo-pwa-install-brand-gap: 0.75rem;
+    --nowo-pwa-install-mark-size: 2.5rem;
+    --nowo-pwa-install-mark-radius: 0.75rem;
+    --nowo-pwa-install-eyebrow-color: #cbd5e1;
+    --nowo-pwa-install-eyebrow-font-size: 0.75rem;
+    --nowo-pwa-install-title-color: inherit;
+    --nowo-pwa-install-title-font-size: 1.125rem;
+    --nowo-pwa-install-message-color: rgba(248, 250, 252, 0.92);
+    --nowo-pwa-install-button-radius: 0.375rem;
+    --nowo-pwa-install-button-padding: 0.5rem 1rem;
+    --nowo-pwa-install-button-font-weight: 600;
+    --nowo-pwa-install-primary-bg: #2563eb;
+    --nowo-pwa-install-primary-color: #ffffff;
+    --nowo-pwa-install-secondary-bg: transparent;
+    --nowo-pwa-install-secondary-color: #cbd5e1;
+    --nowo-pwa-install-backdrop-bg: rgba(15, 23, 42, 0.55);
+
+    --nowo-pwa-install-links-gap: 0.5rem;
+    --nowo-pwa-install-links-radius: 0.375rem;
+    --nowo-pwa-install-links-padding: 0.375rem 0.75rem;
+    --nowo-pwa-install-links-install-bg: #2563eb;
+    --nowo-pwa-install-links-install-color: #ffffff;
+    --nowo-pwa-install-links-uninstall-bg: #e2e8f0;
+    --nowo-pwa-install-links-uninstall-color: #0f172a;
+}
+
 .nowo-pwa-install {
     z-index: 1050;
-    color: #f8fafc;
-    background: #0f172a;
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+    color: var(--nowo-pwa-install-color);
+    background: var(--nowo-pwa-install-bg);
+    border-radius: var(--nowo-pwa-install-radius);
+    box-shadow: var(--nowo-pwa-install-shadow);
 }
 
 .nowo-pwa-install--banner {
@@ -13,7 +47,7 @@
     right: 1rem;
     max-width: 38rem;
     margin: 0 auto;
-    padding: 1rem 1.25rem;
+    padding: var(--nowo-pwa-install-padding);
 }
 
 .nowo-pwa-install--banner.nowo-pwa-install--bottom {
@@ -28,7 +62,7 @@
     position: relative;
     max-width: 42rem;
     margin: 0 0 1rem;
-    padding: 1rem 1.25rem;
+    padding: var(--nowo-pwa-install-padding);
 }
 
 .nowo-pwa-install--modal {
@@ -43,41 +77,88 @@
 .nowo-pwa-install--modal .nowo-pwa-install__backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(15, 23, 42, 0.55);
+    background: var(--nowo-pwa-install-backdrop-bg);
 }
 
 .nowo-pwa-install--modal .nowo-pwa-install__panel {
     position: relative;
     z-index: 1;
-    width: min(100%, 28rem);
+    width: min(100%, var(--nowo-pwa-install-panel-width));
     padding: 1.25rem 1.5rem;
+}
+
+.nowo-pwa-install__panel {
+    display: grid;
+    gap: var(--nowo-pwa-install-gap);
+}
+
+.nowo-pwa-install__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--nowo-pwa-install-brand-gap);
+}
+
+.nowo-pwa-install__mark {
+    display: block;
+    width: var(--nowo-pwa-install-mark-size);
+    height: var(--nowo-pwa-install-mark-size);
+    object-fit: contain;
+    border-radius: var(--nowo-pwa-install-mark-radius);
+}
+
+.nowo-pwa-install__eyebrow {
+    margin: 0;
+    color: var(--nowo-pwa-install-eyebrow-color);
+    font-size: var(--nowo-pwa-install-eyebrow-font-size);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.nowo-pwa-install__title {
+    margin: 0;
+    color: var(--nowo-pwa-install-title-color);
+    font-size: var(--nowo-pwa-install-title-font-size);
+    line-height: 1.25;
+}
+
+.nowo-pwa-install__message {
+    margin: 0;
+    color: var(--nowo-pwa-install-message-color);
 }
 
 .nowo-pwa-install__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
+    gap: var(--nowo-pwa-install-gap);
 }
 
+.nowo-pwa-install__button,
 .nowo-pwa-install__actions button {
-    padding: 0.5rem 1rem;
-    font-weight: 600;
+    padding: var(--nowo-pwa-install-button-padding);
+    font-weight: var(--nowo-pwa-install-button-font-weight);
     border: none;
-    border-radius: 0.375rem;
+    border-radius: var(--nowo-pwa-install-button-radius);
     cursor: pointer;
 }
 
+.nowo-pwa-install__button--install,
 .nowo-pwa-install__actions [data-pwa-install-action='install'] {
-    color: #fff;
-    background: #2563eb;
+    color: var(--nowo-pwa-install-primary-color);
+    background: var(--nowo-pwa-install-primary-bg);
 }
 
+.nowo-pwa-install__button--dismiss,
+.nowo-pwa-install__button--never,
 .nowo-pwa-install__actions [data-pwa-install-action='dismiss-remind'],
-.nowo-pwa-install__actions [data-pwa-install-action='dismiss-never'],
 .nowo-pwa-install__actions [data-pwa-install-action='dismiss'] {
-    color: #cbd5e1;
-    background: transparent;
+    color: var(--nowo-pwa-install-secondary-color);
+    background: var(--nowo-pwa-install-secondary-bg);
+}
+
+.nowo-pwa-install__actions [data-pwa-install-action='dismiss-never'] {
+    color: var(--nowo-pwa-install-secondary-color);
+    background: var(--nowo-pwa-install-secondary-bg);
 }
 
 body.nowo-pwa-install-modal-open {
@@ -87,26 +168,27 @@ body.nowo-pwa-install-modal-open {
 .nowo-pwa-install-links {
     display: inline-flex;
     align-items: center;
+    gap: var(--nowo-pwa-install-links-gap);
     margin: 0;
 }
 
 .nowo-pwa-install-links a {
     display: inline-flex;
     align-items: center;
-    padding: 0.375rem 0.75rem;
+    padding: var(--nowo-pwa-install-links-padding);
     font-size: 0.8125rem;
     font-weight: 600;
     line-height: 1.25;
     text-decoration: none;
-    border-radius: 0.375rem;
+    border-radius: var(--nowo-pwa-install-links-radius);
 }
 
 .nowo-pwa-install-links__install {
-    color: #fff;
-    background: #2563eb;
+    color: var(--nowo-pwa-install-links-install-color);
+    background: var(--nowo-pwa-install-links-install-bg);
 }
 
 .nowo-pwa-install-links__uninstall {
-    color: #0f172a;
-    background: #e2e8f0;
+    color: var(--nowo-pwa-install-links-uninstall-color);
+    background: var(--nowo-pwa-install-links-uninstall-bg);
 }

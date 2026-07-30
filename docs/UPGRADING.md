@@ -2,6 +2,55 @@
 
 This document describes how to upgrade between versions of **PWA Bundle**.
 
+## 1.2.0 (2026-07-30)
+
+Minor release: install/offline templates are easier to brand without full Twig forks. **No breaking changes** — existing helper calls keep working.
+
+### Upgrade steps
+
+```bash
+composer update nowo-tech/pwa-bundle
+php bin/console assets:install
+php bin/console cache:clear
+```
+
+Republish bundle assets so the updated `pwa.css` with `--nowo-pwa-*` custom properties is available in `public/bundles/pwa/pwa.css`.
+
+### New install prompt options (optional)
+
+```yaml
+nowo_pwa:
+    install_prompt:
+        mark_asset: '/icons/brand-mark.svg'
+        eyebrow: 'Available offline'
+        title: 'Install Beacon'
+        button_class: ''
+        dismiss_button_class: null
+        never_button_class: null
+```
+
+- `button_class: ''` keeps the bundle-generated BEM classes based on `css_class`.
+- `dismiss_button_class: null` and `never_button_class: null` also derive BEM classes automatically.
+- `title` and `eyebrow` can be plain text or translation keys handled by your app translator.
+
+### New Twig blocks
+
+Install prompt:
+
+- `pwa_install_mark`
+- `pwa_install_eyebrow`
+- `pwa_install_title`
+- `pwa_install_actions`
+
+Offline page:
+
+- `pwa_offline_brand`
+- `pwa_offline_content`
+
+If you previously overrode the full `install_prompt.html.twig` or `offline.html.twig` just to change branding or button classes, consider deleting those forks and remapping config/CSS tokens instead.
+
+---
+
 ## 1.1.3 (2026-07-29)
 
 Patch release: FrankenPHP banner, Make/demo polish, PHPStan FrankenPHP rulesets for contributors, and Packagist keyword. **No breaking changes** and no required config changes in consuming applications.

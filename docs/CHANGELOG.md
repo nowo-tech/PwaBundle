@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-07-30
+
+### Added
+
+- Install prompt config options for lightweight branding: `mark_asset`, `title`, `eyebrow`, `button_class`, `dismiss_button_class`, and `never_button_class`.
+- New Twig blocks for install/offline overrides: `pwa_install_mark`, `pwa_install_eyebrow`, `pwa_install_title`, `pwa_install_actions`, `pwa_offline_brand`, and `pwa_offline_content`.
+- Neutral `--nowo-pwa-*` CSS custom properties for install prompt, install links, and offline branding remaps.
+- `.scripts/check-open-prs.sh` and `make check-open-prs`, now included in `make release-check` for GitHub-hosted releases.
+
+### Changed
+
+- The default install prompt now renders structured brand/title/message sections while preserving existing helper usage.
+- The offline fallback page now receives the manifest config and retry URL from the controller instead of relying on a hardcoded `/`.
+
+### Documentation
+
+- Updated [CONFIGURATION.md](CONFIGURATION.md), [UPGRADING.md](UPGRADING.md), and [RELEASE.md](RELEASE.md) for the new branding and release-check workflow.
+
+---
+
 ## [1.1.3] - 2026-07-29
 
 ### Added
@@ -124,6 +144,7 @@ Initial release of **PWA Bundle** — Progressive Web App integration for Symfon
 - Precache URL matching uses pathname equality instead of `url.includes('/')`, which previously matched almost every request
 
 [1.1.2]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.2
+[1.2.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.2.0
 [1.1.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.1
 [1.1.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.0
 [1.0.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.1

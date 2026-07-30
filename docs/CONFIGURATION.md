@@ -133,6 +133,12 @@ nowo_pwa:
         show_never_option: true      # "Don't ask again" button
         position: bottom             # top | bottom (banner mode only)
         css_class: nowo-pwa-install
+        mark_asset: null             # optional brand mark <img src>
+        title: null                  # optional title string or translation key
+        eyebrow: null                # optional eyebrow string or translation key
+        button_class: ''             # empty = derive BEM class from css_class
+        dismiss_button_class: null   # null = derive BEM class from css_class
+        never_button_class: null     # null = derive BEM class from css_class
         delay_ms: 0
         visibility: all              # all | mobile | desktop
         route_targeting:
@@ -144,12 +150,46 @@ nowo_pwa:
 | Key | Default | Description |
 |-----|---------|-------------|
 | `display` | `banner` | `banner` (fixed bar), `flash` (inline, place `{{ nowo_pwa_install_prompt() }}` in content), `modal` (dialog) |
+| `mark_asset` | `null` | Optional `<img src>` for the prompt brand mark; empty / null disables the image |
+| `title` | `null` | Optional title override; when omitted, the bundle falls back to the translated install action label |
+| `eyebrow` | `null` | Optional eyebrow text shown above the title |
+| `button_class` | `''` | Install button class; empty string derives BEM classes from `css_class` |
+| `dismiss_button_class` | `null` | Remind-later button class; `null` derives BEM classes from `css_class` |
+| `never_button_class` | `null` | Never-again button class; `null` derives BEM classes from `css_class` |
 | `dismiss_days` | 7 | Days before showing again after "Not now" |
 | `never_dismiss_key` | `nowo_pwa_install_never` | localStorage key when user chooses "Don't ask again" |
 | `show_never_option` | true | Show permanent dismiss button |
 | `route_targeting` | all routes | Limit where the prompt HTML is rendered (independent from global targeting) |
 
 Path patterns (when `match_by: path`): exact (`/vault`), prefix (`/vault*`), regex (`/^\\/admin/`).
+
+### Install prompt blocks and CSS tokens
+
+Override only the parts you need instead of forking the whole template:
+
+- `pwa_install_mark`
+- `pwa_install_eyebrow`
+- `pwa_install_title`
+- `pwa_install_actions`
+
+The bundled stylesheet exposes neutral custom properties such as:
+
+- `--nowo-pwa-install-bg`
+- `--nowo-pwa-install-color`
+- `--nowo-pwa-install-mark-size`
+- `--nowo-pwa-install-eyebrow-color`
+- `--nowo-pwa-install-primary-bg`
+- `--nowo-pwa-install-secondary-color`
+
+Remap them from your app theme:
+
+```css
+:root {
+    --nowo-pwa-install-bg: var(--brand-surface-900);
+    --nowo-pwa-install-primary-bg: var(--brand-primary-600);
+    --nowo-pwa-install-mark-size: 3rem;
+}
+```
 
 ## Install links
 
@@ -178,6 +218,8 @@ nowo_pwa:
 - Uninstall opens a translated help dialog (browsers do not expose a programmatic uninstall API from the page).
 
 Override template: `templates/bundles/NowoPwaBundle/pwa/install_links.html.twig`.
+
+Install links also inherit CSS tokens from `pwa.css`, including `--nowo-pwa-install-links-install-bg`, `--nowo-pwa-install-links-install-color`, `--nowo-pwa-install-links-uninstall-bg`, and `--nowo-pwa-install-links-uninstall-color`.
 
 ## Client script
 
@@ -247,6 +289,11 @@ nowo_pwa:
         offline: '@NowoPwaBundle/pwa/offline.html.twig'
 ```
 
+The bundled offline page exposes two Twig blocks for light-touch overrides:
+
+- `pwa_offline_brand`
+- `pwa_offline_content`
+
 ## Share target and file handlers
 
 The bundle serializes `share_target`, `file_handlers`, and `protocol_handlers` into the manifest. **Your app must implement the target routes** (controllers or forms) that receive shared content or opened files. See [Usage — Share target](USAGE.md#share-target-web-share-target-api) for a full Symfony example.
@@ -311,6 +358,8 @@ nowo_pwa:
         position: bottom
         visibility: mobile
         delay_ms: 1500
+        mark_asset: '/icons/mark.svg'
+        eyebrow: 'Available offline'
 
     client:
         check_updates_on_visibility: true

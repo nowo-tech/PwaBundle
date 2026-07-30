@@ -55,6 +55,12 @@ final class Configuration implements ConfigurationInterface
                 ->booleanNode('show_never_option')->defaultTrue()->end()
                 ->enumNode('position')->values(['bottom', 'top'])->defaultValue('bottom')->end()
                 ->scalarNode('css_class')->defaultValue('nowo-pwa-install')->end()
+                ->scalarNode('mark_asset')->defaultNull()->end()
+                ->scalarNode('title')->defaultNull()->end()
+                ->scalarNode('eyebrow')->defaultNull()->end()
+                ->scalarNode('button_class')->defaultValue('')->end()
+                ->scalarNode('dismiss_button_class')->defaultNull()->end()
+                ->scalarNode('never_button_class')->defaultNull()->end()
                 ->integerNode('delay_ms')->defaultValue(0)->min(0)->end()
                 ->enumNode('visibility')->values(['all', 'mobile', 'desktop'])->defaultValue('all')->end()
             ->end();

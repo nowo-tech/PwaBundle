@@ -24,6 +24,12 @@ final class ConfigurationTest extends TestCase
         self::assertSame('banner', $config['install_prompt']['display']);
         self::assertSame('nowo_pwa_install_never', $config['install_prompt']['never_dismiss_key']);
         self::assertTrue($config['install_prompt']['show_never_option']);
+        self::assertNull($config['install_prompt']['mark_asset']);
+        self::assertNull($config['install_prompt']['title']);
+        self::assertNull($config['install_prompt']['eyebrow']);
+        self::assertSame('', $config['install_prompt']['button_class']);
+        self::assertNull($config['install_prompt']['dismiss_button_class']);
+        self::assertNull($config['install_prompt']['never_button_class']);
         self::assertSame('name', $config['route_targeting']['match_by']);
         self::assertSame('all', $config['install_prompt']['route_targeting']['mode']);
         self::assertSame(3600, $config['http']['manifest_cache_max_age']);

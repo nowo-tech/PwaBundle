@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 // This file is auto-generated and is for apps only. Bundles SHOULD NOT rely on its content.
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
@@ -882,6 +880,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         show_never_option?: bool|Param, // Default: true
  *         position?: "bottom"|"top"|Param, // Default: "bottom"
  *         css_class?: scalar|Param|null, // Default: "nowo-pwa-install"
+ *         mark_asset?: scalar|Param|null, // Default: null
+ *         title?: scalar|Param|null, // Default: null
+ *         eyebrow?: scalar|Param|null, // Default: null
+ *         button_class?: scalar|Param|null, // Default: ""
+ *         dismiss_button_class?: scalar|Param|null, // Default: null
+ *         never_button_class?: scalar|Param|null, // Default: null
  *         delay_ms?: int|Param, // Default: 0
  *         visibility?: "all"|"mobile"|"desktop"|Param, // Default: "all"
  *         route_targeting?: array{

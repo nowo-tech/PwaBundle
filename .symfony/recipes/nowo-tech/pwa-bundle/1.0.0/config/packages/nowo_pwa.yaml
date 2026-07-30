@@ -172,6 +172,15 @@ nowo_pwa:
         # position: bottom
         # CSS class applied to the install prompt container.
         # css_class: nowo-pwa-install
+        # Optional brand mark image URL/path rendered above the title.
+        # mark_asset: '/icons/mark.svg'
+        # Optional title/eyebrow strings (or translation keys resolved by your app translator).
+        # title: 'Install App'
+        # eyebrow: 'Available offline'
+        # Install button class. Empty string keeps bundle-generated BEM classes.
+        # button_class: ''
+        # dismiss_button_class: null
+        # never_button_class: null
         # Delay in milliseconds before showing the prompt after the event fires.
         # delay_ms: 0
         # Device visibility: all | mobile | desktop.

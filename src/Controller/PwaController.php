@@ -89,8 +89,12 @@ final class PwaController extends AbstractController
             throw $this->createNotFoundException('PWA is disabled.');
         }
 
+        $startUrl = (string) ($this->manifestConfig['start_url'] ?? '/');
+
         return $this->render($this->templates['offline'], [
             'manifest_name' => (string) ($this->manifestConfig['name'] ?? 'App'),
+            'manifest'      => $this->manifestConfig,
+            'retry_url'     => $startUrl !== '' ? $startUrl : '/',
         ]);
     }
 

@@ -159,14 +159,28 @@ nowo_pwa:
     install_prompt:
         # Show a custom "Install app" banner when beforeinstallprompt fires.
         enabled: true
+        # Display mode: banner | flash | modal.
+        # display: banner
         # localStorage key used to remember user dismissal.
         # dismiss_key: nowo_pwa_install_dismissed
         # Days before the dismissed banner can reappear.
         # dismiss_days: 7
+        # localStorage key when the user chooses "Don't ask again".
+        # never_dismiss_key: nowo_pwa_install_never
+        # show_never_option: true
         # Banner position on screen: top | bottom.
         # position: bottom
         # CSS class applied to the install banner container.
         # css_class: nowo-pwa-install
+        # Optional brand mark image URL/path rendered above the title.
+        # mark_asset: '/icons/mark.svg'
+        # Optional title/eyebrow strings (or translation keys resolved by your app translator).
+        # title: 'Install Demo'
+        # eyebrow: 'Available offline'
+        # Install button class. Empty string keeps bundle-generated BEM classes.
+        # button_class: ''
+        # dismiss_button_class: null
+        # never_button_class: null
         # Delay in milliseconds before showing the banner after the event fires.
         # delay_ms: 0
         # Device visibility: all | mobile | desktop.

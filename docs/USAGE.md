@@ -175,6 +175,13 @@ If you enforce CSP in production, allow the service worker URL and `pwa.js`. See
 
 Bundled locales: **en**, **es**, **fr**, **it**, **pt**, **de**, **nl** (domain `NowoPwaBundle`). Symfony uses the request locale; override or add languages from your app as shown above.
 
+For lighter customisation, prefer the bundled Twig blocks instead of copying full templates:
+
+- Install prompt: `pwa_install_mark`, `pwa_install_eyebrow`, `pwa_install_title`, `pwa_install_actions`
+- Offline page: `pwa_offline_brand`, `pwa_offline_content`
+
+The default stylesheet also exposes `--nowo-pwa-*` custom properties for brand remapping. See [Configuration — Install prompt](CONFIGURATION.md#install-prompt).
+
 ## Assets
 
 After installing the bundle in your app:
