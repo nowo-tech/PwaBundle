@@ -1,5 +1,7 @@
 # Release checklist
 
+Current stable: **v1.2.1** (2026-08-03).
+
 Use this checklist when cutting a new version. The workflow [.github/workflows/release.yml](../.github/workflows/release.yml) runs on push of a tag `v*` and creates the GitHub Release with body from the tag message and the matching changelog section.
 
 ## Before tagging
@@ -34,6 +36,18 @@ git push origin vX.Y.Z
 - Tag format must be **`vX.Y.Z`** (e.g. `v1.0.0`) so the workflow and Packagist recognize it.
 - After the push, GitHub Actions creates the release and appends the changelog entry for that version to the release body.
 - Packagist will pick up the new tag automatically.
+
+### Example for v1.2.1
+
+After running `make release-check` and committing all changes (CHANGELOG, UPGRADING, docs, and any CS/test fixes):
+
+```bash
+git checkout main
+git pull origin main
+git tag -a v1.2.1 -m "Release v1.2.1 - SW cache hardening and install prompt BEM fix"
+git push origin main
+git push origin v1.2.1
+```
 
 ### Example for v1.1.3
 

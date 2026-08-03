@@ -7,6 +7,7 @@ namespace Nowo\PwaBundle\Service;
 use function is_array;
 use function is_string;
 use function json_encode;
+use function str_contains;
 use function str_replace;
 
 use const JSON_THROW_ON_ERROR;
@@ -26,13 +27,19 @@ final class ServiceWorkerScriptBuilder
         $prefix = (string) ($serviceWorkerConfig['cache_name_prefix'] ?? 'nowo-pwa');
         $prefix = preg_replace('/[^a-zA-Z0-9_-]/', '', $prefix) ?: 'nowo-pwa';
 
+        $denyPatterns = $this->stringList($serviceWorkerConfig['deny_cache_patterns'] ?? []);
+        $precacheUrls = $this->filterDeniedUrls(
+            $this->stringList($serviceWorkerConfig['precache_urls'] ?? []),
+            $denyPatterns,
+        );
+
         $config = [
             'cachePrefix'            => $prefix,
             'cacheVersion'           => (string) ($serviceWorkerConfig['cache_version'] ?? 'v1'),
             'strategy'               => (string) ($serviceWorkerConfig['strategy'] ?? 'network-first'),
-            'precacheUrls'           => $this->stringList($serviceWorkerConfig['precache_urls'] ?? []),
+            'precacheUrls'           => $precacheUrls,
             'runtimeCachePatterns'   => $this->stringList($serviceWorkerConfig['runtime_cache_patterns'] ?? []),
-            'denyCachePatterns'      => $this->stringList($serviceWorkerConfig['deny_cache_patterns'] ?? []),
+            'denyCachePatterns'      => $denyPatterns,
             'offlineUrl'             => $offlineUrl,
             'skipWaiting'            => (bool) ($serviceWorkerConfig['skip_waiting'] ?? true),
             'clientsClaim'           => (bool) ($serviceWorkerConfig['clients_claim'] ?? true),
@@ -64,6 +71,42 @@ final class ServiceWorkerScriptBuilder
         return $list;
     }
 
+    /**
+     * @param list<string> $urls
+     * @param list<string> $denyPatterns
+     *
+     * @return list<string>
+     */
+    private function filterDeniedUrls(array $urls, array $denyPatterns): array
+    {
+        if ($denyPatterns === []) {
+            return $urls;
+        }
+
+        $filtered = [];
+        foreach ($urls as $url) {
+            if (!$this->matchesDenyPattern($url, $denyPatterns)) {
+                $filtered[] = $url;
+            }
+        }
+
+        return $filtered;
+    }
+
+    /**
+     * @param list<string> $denyPatterns
+     */
+    private function matchesDenyPattern(string $url, array $denyPatterns): bool
+    {
+        foreach ($denyPatterns as $pattern) {
+            if (str_contains($url, $pattern)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private function template(): string
     {
         return <<<'JS'
@@ -73,7 +116,10 @@ const CACHE_NAME = `${CONFIG.cachePrefix}-${CONFIG.cacheVersion}`;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(CONFIG.precacheUrls)).then(() => {
+    caches.open(CACHE_NAME).then((cache) => {
+      const urls = CONFIG.precacheUrls.filter((url) => !isDenied(url));
+      return cache.addAll(urls);
+    }).then(() => {
       if (CONFIG.skipWaiting) {
         return self.skipWaiting();
       }
@@ -104,6 +150,21 @@ function isDenied(url) {
 
 function isHttpOrHttps(url) {
   return url.startsWith('http://') || url.startsWith('https://');
+}
+
+function isCacheableResponse(response) {
+  if (!response || response.status !== 200) {
+    return false;
+  }
+
+  // Honor HTTP cache directives: Symfony session pages typically send "private".
+  // Caching them causes stale login/admin HTML and auth redirect loops.
+  const cacheControl = (response.headers.get('Cache-Control') || '').toLowerCase();
+  if (cacheControl.includes('no-store') || cacheControl.includes('private')) {
+    return false;
+  }
+
+  return true;
 }
 
 function requestPathname(url) {
@@ -156,7 +217,7 @@ async function trimRuntimeCache(cache) {
 }
 
 async function putInCache(cache, request, response) {
-  if (!response || response.status !== 200 || !isHttpOrHttps(request.url) || isDenied(request.url)) {
+  if (!response || !isHttpOrHttps(request.url) || isDenied(request.url) || !isCacheableResponse(response)) {
     return;
   }
 

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 // This file is auto-generated and is for apps only. Bundles SHOULD NOT rely on its content.
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
@@ -869,7 +867,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         strategy?: "network-first"|"cache-first"|"stale-while-revalidate"|Param, // Default: "network-first"
  *         precache_urls?: mixed, // Default: ["/"]
  *         runtime_cache_patterns?: mixed, // Default: []
- *         deny_cache_patterns?: mixed, // Default: []
+ *         deny_cache_patterns?: mixed, // Substring patterns never cached. Defaults exclude auth/admin/API/profiler paths. An explicit empty list disables the defaults. // Default: ["/login","/logout","/register","/reset-password","/admin","/api/","/_profiler","/_wdt","/setup","/_site_backup"]
  *         offline_url?: scalar|Param|null, // Default: null
  *         runtime_cache_max_entries?: int|Param, // Default: 0
  *     },

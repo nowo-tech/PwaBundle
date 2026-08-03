@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\DependencyInjection\Configuration;
 
+use Nowo\PwaBundle\Service\ServiceWorkerCacheDefaults;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
 final class ServiceWorkerNodeDefinition
@@ -26,7 +27,10 @@ final class ServiceWorkerNodeDefinition
                 ->end()
                 ->variableNode('precache_urls')->defaultValue(['/'])->end()
                 ->variableNode('runtime_cache_patterns')->defaultValue([])->end()
-                ->variableNode('deny_cache_patterns')->defaultValue([])->end()
+                ->variableNode('deny_cache_patterns')
+                    ->defaultValue(ServiceWorkerCacheDefaults::denyCachePatterns())
+                    ->info('Substring patterns never cached. Defaults exclude auth/admin/API/profiler paths. An explicit empty list disables the defaults.')
+                ->end()
                 ->scalarNode('offline_url')->defaultNull()->end()
                 ->integerNode('runtime_cache_max_entries')->defaultValue(0)->min(0)->end()
             ->end();

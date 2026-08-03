@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\PwaBundle\Tests\Unit\DependencyInjection;
 
 use Nowo\PwaBundle\DependencyInjection\Configuration;
+use Nowo\PwaBundle\Service\ServiceWorkerCacheDefaults;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Processor;
 
@@ -19,6 +20,10 @@ final class ConfigurationTest extends TestCase
         self::assertTrue($config['manifest']['absolute_start_url']);
         self::assertSame('/sw.js', $config['routes']['service_worker']['path']);
         self::assertTrue($config['service_worker']['enabled']);
+        self::assertSame(
+            ServiceWorkerCacheDefaults::denyCachePatterns(),
+            $config['service_worker']['deny_cache_patterns'],
+        );
         self::assertTrue($config['client']['register_on_load']);
         self::assertTrue($config['install_links']['enabled']);
         self::assertSame('banner', $config['install_prompt']['display']);
@@ -33,5 +38,16 @@ final class ConfigurationTest extends TestCase
         self::assertSame('name', $config['route_targeting']['match_by']);
         self::assertSame('all', $config['install_prompt']['route_targeting']['mode']);
         self::assertSame(3600, $config['http']['manifest_cache_max_age']);
+    }
+
+    public function testExplicitEmptyDenyCachePatternsDisablesDefaults(): void
+    {
+        $config = (new Processor())->processConfiguration(new Configuration(), [[
+            'service_worker' => [
+                'deny_cache_patterns' => [],
+            ],
+        ]]);
+
+        self::assertSame([], $config['service_worker']['deny_cache_patterns']);
     }
 }

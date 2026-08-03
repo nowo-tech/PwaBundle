@@ -2,6 +2,38 @@
 
 This document describes how to upgrade between versions of **PWA Bundle**.
 
+## 1.2.1 (2026-08-03)
+
+Security hardening for service worker caching (plus install-prompt BEM fix). **Behaviour change** for apps that relied on caching Symfony `Cache-Control: private` HTML — that is no longer stored at runtime (correct for session pages). Offline still works via `precache_urls` and `offline_url`.
+
+### Upgrade steps
+
+```bash
+composer update nowo-tech/pwa-bundle
+php bin/console cache:clear
+```
+
+Bump `service_worker.cache_version` so browsers activate the new SW and drop old caches:
+
+```yaml
+nowo_pwa:
+    service_worker:
+        cache_version: v2   # or any new value
+```
+
+### Default deny patterns
+
+If you omit `deny_cache_patterns`, the bundle now denies `/login`, `/logout`, `/register`, `/reset-password`, `/admin`, `/api/`, `/_profiler`, `/_wdt`, `/setup`, and `/_site_backup`.
+
+- To **extend** defaults, list the defaults plus your paths (config replaces, it does not merge).
+- To **disable** defaults entirely: `deny_cache_patterns: []`.
+
+Never put `/login` (or locale variants) in `precache_urls` — denied URLs are filtered out, but precaching auth HTML remains a footgun.
+
+See [SECURITY.md — Caching authenticated routes](SECURITY.md#caching-authenticated-routes).
+
+---
+
 ## 1.2.0 (2026-07-30)
 
 Minor release: install/offline templates are easier to brand without full Twig forks. **No breaking changes** — existing helper calls keep working.

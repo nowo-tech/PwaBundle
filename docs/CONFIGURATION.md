@@ -110,7 +110,8 @@ nowo_pwa:
         strategy: network-first   # cache-first | stale-while-revalidate
         precache_urls: ['/', '/offline']
         runtime_cache_patterns: ['/build/', '/assets/']
-        deny_cache_patterns: ['/api/']
+        # Defaults deny auth/admin/API/profiler/setup. Explicit [] disables defaults.
+        # deny_cache_patterns: ['/login', '/admin', '/api/', '/_profiler', '/_wdt']
         offline_url: /offline
         skip_waiting: true
         clients_claim: true
@@ -150,6 +151,7 @@ nowo_pwa:
 | Key | Default | Description |
 |-----|---------|-------------|
 | `display` | `banner` | `banner` (fixed bar), `flash` (inline, place `{{ nowo_pwa_install_prompt() }}` in content), `modal` (dialog) |
+| `css_class` | `nowo-pwa-install` | Root class(es). BEM suffixes (`__mark`, `--banner`, …) use the **first** token only — prefer a single root class |
 | `mark_asset` | `null` | Optional `<img src>` for the prompt brand mark; empty / null disables the image |
 | `title` | `null` | Optional title override; when omitted, the bundle falls back to the translated install action label |
 | `eyebrow` | `null` | Optional eyebrow text shown above the title |
@@ -349,7 +351,7 @@ nowo_pwa:
         strategy: network-first
         precache_urls: ['/', '/offline']
         runtime_cache_patterns: ['/build/', '/bundles/']
-        deny_cache_patterns: ['/api/', '/admin', '/_profiler', '/_wdt']
+        deny_cache_patterns: ['/login', '/logout', '/register', '/reset-password', '/admin', '/api/', '/_profiler', '/_wdt', '/setup', '/_site_backup']
         navigation_preload: true
         cache_version: v1
 

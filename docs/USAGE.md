@@ -84,19 +84,26 @@ Bump `service_worker.cache_version` when you change precache lists to invalidate
 
 ### Exclude authenticated routes from cache
 
-The service worker can cache navigation responses that include session-specific HTML. Exclude sensitive paths:
+The service worker skips responses with `Cache-Control: private` / `no-store`, and ships default `deny_cache_patterns` for login, admin, API, and profiler paths. Extend the list for app-specific private areas (config replaces defaults; it does not merge):
 
 ```yaml
 nowo_pwa:
     service_worker:
         deny_cache_patterns:
+            - '/login'
+            - '/logout'
+            - '/register'
+            - '/reset-password'
             - '/admin'
-            - '/api/private'
+            - '/api/'
             - '/_profiler'
             - '/_wdt'
+            - '/setup'
+            - '/_site_backup'
+            - '/staff'   # example app path
 ```
 
-See [Security — Caching authenticated routes](SECURITY.md#caching-authenticated-routes) for details.
+Do not put auth URLs in `precache_urls`. See [Security — Caching authenticated routes](SECURITY.md#caching-authenticated-routes).
 
 ## Browser and platform notes
 

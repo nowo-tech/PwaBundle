@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\Tests\Unit\Service;
 
+use Nowo\PwaBundle\Service\ServiceWorkerCacheDefaults;
 use Nowo\PwaBundle\Service\ServiceWorkerScriptBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -74,6 +75,29 @@ final class ServiceWorkerScriptBuilderTest extends TestCase
         self::assertStringContainsString('function shouldHandleRequest(request)', $script);
         self::assertStringContainsString('function matchesPrecacheEntry(url, entry)', $script);
         self::assertStringContainsString('async function putInCache(cache, request, response)', $script);
+        self::assertStringContainsString('function isCacheableResponse(response)', $script);
+        self::assertStringContainsString("cacheControl.includes('no-store')", $script);
+        self::assertStringContainsString("cacheControl.includes('private')", $script);
         self::assertStringNotContainsString('url.includes(entry)', $script);
+    }
+
+    public function testFiltersDeniedUrlsFromPrecache(): void
+    {
+        $script = (new ServiceWorkerScriptBuilder())->build([
+            'precache_urls'       => ['/', '/en/login', '/offline', '/es/register'],
+            'deny_cache_patterns' => ServiceWorkerCacheDefaults::denyCachePatterns(),
+        ], '/offline');
+
+        self::assertStringContainsString('"/offline"', $script);
+        self::assertStringNotContainsString('/en/login', $script);
+        self::assertStringNotContainsString('/es/register', $script);
+        self::assertStringContainsString('"precacheUrls":["/","/offline"]', $script);
+    }
+
+    public function testInstallFiltersDeniedPrecacheAtRuntime(): void
+    {
+        $script = (new ServiceWorkerScriptBuilder())->build([], '/offline');
+
+        self::assertStringContainsString('CONFIG.precacheUrls.filter((url) => !isDenied(url))', $script);
     }
 }

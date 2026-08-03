@@ -66,6 +66,7 @@ See user stories US-01…US-06 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 
 - **FR-SVC-001**: `ManifestBuilder` MUST normalize icons, shortcuts, share_target, and omit empty optional W3C fields.
 - **FR-SVC-002**: `ServiceWorkerScriptBuilder` MUST support `network-first`, `cache-first`, `stale-while-revalidate`, precache list, deny/runtime patterns.
+- **FR-SVC-002b**: The generated service worker MUST NOT store responses with `Cache-Control: private` or `no-store`, MUST filter `precache_urls` against deny patterns, and MUST ship safe default deny patterns for auth/admin/API/profiler paths.
 - **FR-SVC-003**: `PwaRouteTargeting` MUST support modes `all`, `only`, `except` with name/path matching (prefix `*`, regex `/…/`).
 
 ### Twig

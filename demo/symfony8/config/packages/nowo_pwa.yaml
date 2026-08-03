@@ -140,11 +140,13 @@ nowo_pwa:
         # Caching strategy: network-first | cache-first | stale-while-revalidate.
         strategy: network-first
         # URLs to precache on service worker install (must be reachable).
+        # Do not precache /login or other auth HTML — that causes redirect loops.
         precache_urls: ['/', '/offline']
         # URL patterns cached at runtime on successful fetch (glob-like paths).
         # runtime_cache_patterns: ['/build/', '/assets/']
-        # URL patterns never cached by the service worker.
-        # deny_cache_patterns: ['/api/']
+        # Substring patterns never cached. Defaults already deny login/admin/API/profiler/setup.
+        # Set [] to disable defaults, or list defaults + app paths (list replaces, does not merge).
+        # deny_cache_patterns: ['/login', '/admin', '/api/', '/_profiler', '/_wdt', '/account']
         # Fallback page served when offline and no cache match is found.
         offline_url: '/offline'
         # When true, a waiting service worker activates immediately on install.

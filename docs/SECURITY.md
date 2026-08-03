@@ -15,7 +15,7 @@
 | Area | Risk | Mitigation |
 |------|------|------------|
 | Service worker scope | Over-broad caching or interception | Keep `service_worker.scope` and `manifest.scope` minimal; review `precache_urls` and `runtime_cache_patterns` |
-| Authenticated pages cached | Private HTML/API responses stored on device | Use `deny_cache_patterns` for `/admin`, `/api/private`, profiler routes; see [Caching authenticated routes](#caching-authenticated-routes) |
+| Authenticated pages cached | Private HTML/API responses stored on device | SW skips `Cache-Control: private`/`no-store`; default `deny_cache_patterns` for auth/admin/API; see [Caching authenticated routes](#caching-authenticated-routes) |
 | Offline page | Misleading content if compromised | Override `@NowoPwaBundle/pwa/offline.html.twig` in your app; serve over HTTPS |
 | Manifest | User deception (fake app name/icons) | Control `nowo_pwa.yaml`; only deploy trusted icon assets |
 | Install prompt | UX spam | Use `install_prompt.dismiss_days`; disable with `install_prompt.enabled: false` if not needed |
@@ -27,21 +27,37 @@ This bundle does **not** store user secrets or perform server-side encryption. I
 
 ## Caching authenticated routes
 
-By default the service worker intercepts **navigation** requests (`request.mode === 'navigate'`) within scope. With `network-first`, successful responses can be written to the Cache API — including pages that require a session cookie.
+By default the service worker intercepts **navigation** requests (`request.mode === 'navigate'`) within scope. With `network-first`, successful responses can be written to the Cache API.
 
-**Recommended:** exclude sensitive paths from caching:
+### Built-in protections
+
+1. **HTTP cache directives** — responses with `Cache-Control: private` or `no-store` are never written to the Cache API. Symfony session/security pages typically send `private`, so login and authenticated HTML are not stored even if a path is missing from deny lists.
+2. **Default `deny_cache_patterns`** — auth, admin, API, profiler, and setup paths are denied by substring match (`/login` also matches `/es/login`). Setting an explicit empty list disables those defaults.
+3. **Precache filtering** — URLs in `precache_urls` that match a deny pattern are dropped at script build time and again during the SW `install` event.
+
+**Still recommended:** extend deny patterns for app-specific private areas:
 
 ```yaml
 nowo_pwa:
     service_worker:
         deny_cache_patterns:
+            - '/login'
+            - '/logout'
+            - '/register'
+            - '/reset-password'
             - '/admin'
-            - '/api/private'
+            - '/api/'
             - '/_profiler'
             - '/_wdt'
+            - '/setup'
+            - '/_site_backup'
+            # App-specific:
+            - '/staff'
+            - '/cookie-consent-config'
+            - '/account'
 ```
 
-Also review `precache_urls` and `runtime_cache_patterns` — avoid precaching URLs that return user-specific content.
+Also review `precache_urls` and `runtime_cache_patterns` — never precache login or other URLs that return user-specific or unauthenticated redirect HTML. Bump `cache_version` after changing cache rules.
 
 ## Content Security Policy
 
@@ -99,7 +115,7 @@ Before tagging a release, confirm:
 | **Recipe / Flex** | Default recipe or installer templates do not ship production secrets. |
 | **HTTPS** | Document that production PWAs require TLS (except localhost). |
 | **Scope review** | Default config uses site-wide `/` scope — tighten for multi-tenant apps if needed. |
-| **Auth routes** | Add `deny_cache_patterns` for admin, API, and profiler paths. |
+| **Auth routes** | Defaults deny login/admin/API/profiler; SW skips `Cache-Control: private`/`no-store`. Extend deny patterns for app-specific private paths. |
 | **CSP** | Verify `worker-src` and `script-src` in production. |
 | **Trusted proxies** | Required when `absolute_start_url` is true behind a load balancer. |
 | **Input / output** | Manifest and SW paths validated; Twig overrides documented. |

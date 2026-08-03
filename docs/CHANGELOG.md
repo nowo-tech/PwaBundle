@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.1] - 2026-08-03
+
+### Fixed
+
+- Install prompt BEM classes (`__mark`, `--banner`, …) now derive from the **first** `css_class` token so multi-class roots no longer leave the brand mark unconstrained (SVG filling the panel).
+- Service worker no longer stores HTTP responses with `Cache-Control: private` or `no-store` (Symfony session/auth pages). This prevents stale login HTML and auth redirect loops when `network-first` intercepts navigations.
+- Precache install now skips URLs that match `deny_cache_patterns` (builder + runtime filter).
+
+### Changed
+
+- Default `service_worker.deny_cache_patterns` now excludes common auth/admin/API/profiler paths (`/login`, `/logout`, `/register`, `/reset-password`, `/admin`, `/api/`, `/_profiler`, `/_wdt`, `/setup`, `/_site_backup`). An explicit empty list disables the defaults. Bump `cache_version` after upgrading so browsers drop stale SW caches.
+- Dev dependencies: `nowo-tech/phpstan-frankenphp` 1.0.3, `rector/rector` 2.6.0
+
+### Documentation
+
+- Updated [SECURITY.md](SECURITY.md), [USAGE.md](USAGE.md), [CONFIGURATION.md](CONFIGURATION.md), and [UPGRADING.md](UPGRADING.md) for cache hardening and BEM `css_class` guidance.
+
+---
+
 ## [1.2.0] - 2026-07-30
 
 ### Added
@@ -143,8 +162,9 @@ Initial release of **PWA Bundle** — Progressive Web App integration for Symfon
 - Service worker no longer intercepts or caches non-HTTP(S) requests (e.g. `chrome-extension://` from browser extensions)
 - Precache URL matching uses pathname equality instead of `url.includes('/')`, which previously matched almost every request
 
-[1.1.2]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.2
+[1.2.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.2.1
 [1.2.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.2.0
+[1.1.2]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.2
 [1.1.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.1
 [1.1.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.0
 [1.0.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.1
