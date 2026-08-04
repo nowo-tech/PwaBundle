@@ -108,6 +108,16 @@ Configure [trusted proxies](https://symfony.com/doc/current/deployment/proxies.h
 
 To explore the bundle locally, clone the repository and run the FrankenPHP demo — see [demo/README.md](../demo/README.md) and [DEMO-FRANKENPHP.md](DEMO-FRANKENPHP.md).
 
+## Twig Extra Bundle (REQ-TWIG-004)
+
+This package ships Twig templates. Host applications **must** install and enable Twig Extra:
+
+```bash
+composer require twig/extra-bundle twig/string-extra
+```
+
+Register `Twig\Extra\TwigExtraBundle\TwigExtraBundle` in `config/bundles.php` (Flex usually does this). Demos already include the same stack. The package `release-check` runs `make check-twig-extra` to guard this contract.
+
 ## Next steps
 
 - [Configuration](CONFIGURATION.md)
