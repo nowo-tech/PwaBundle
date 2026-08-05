@@ -124,6 +124,7 @@ Before tagging a release, confirm:
 | **Cryptography** | N/A — no custom cryptography in this bundle. |
 | **Permissions / exposure** | Service worker scope and cache rules documented for integrators. |
 | **Limits / DoS** | Cache size and offline asset limits reviewed for production. |
+| **AI security audit (REQ-SEC-004)** | Grade **Pass (conditional)** / date **~2026-07-29**. Residual: default site-wide service worker **scope** (`/`) — tighten `service_worker.scope` / `manifest.scope` for multi-tenant or sensitive apps; keep deny_cache_patterns reviewed. |
 
 Record confirmation in the release PR or tag notes.
 
