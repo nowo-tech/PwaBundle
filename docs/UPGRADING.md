@@ -223,6 +223,15 @@ Browsers will drop old `nowo-pwa-*` caches on the next activation.
 
 ## Unreleased
 
+## To 1.3.1
+
+No application upgrade steps. **Demos only:** Hot Reload Bundle `^1.4` (FrankenPHP Mercure/`hot_reload`, `dev`/`test`).
+
+```bash
+composer update nowo-tech/pwa-bundle
+php bin/console cache:clear
+```
+
 ## To 1.3.0
 
 From **1.2.1** — Adds required Twig Extra (REQ-TWIG-004) and Twig-CS-Fixer. Register TwigExtraBundle if Flex did not.
