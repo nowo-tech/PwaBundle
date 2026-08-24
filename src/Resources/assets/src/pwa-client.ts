@@ -5,7 +5,12 @@ export interface PwaClientOptions {
     reloadOnUpdate?: boolean;
 }
 
-/** Registers the service worker when supported. */
+/**
+ * Registers the service worker when the browser supports it.
+ *
+ * @param options - Service worker URL, scope, and optional update behaviour.
+ * @returns The registration, or `null` when unsupported or registration fails.
+ */
 export async function registerServiceWorker(options: PwaClientOptions): Promise<ServiceWorkerRegistration | null> {
     if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) {
         return null;
