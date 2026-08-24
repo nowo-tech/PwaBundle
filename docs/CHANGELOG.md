@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [1.3.3] - 2026-08-24
+
+### Changed
+
+- **QA:** add `phpstan-frankenphp` extension (REQ-CS-005).
+- **Assets:** English JSDoc on TypeScript sources (REQ-ASSETS-002).
+- **Docs:** PHP-FIG PSR evaluation (REQ-CS-007).
+
+### Notes
+
+- **No API or configuration changes** for integrators unless noted above.
+
+[1.3.3]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.3.3
+
 ## [1.3.2] - 2026-08-19
 
 ### Security
