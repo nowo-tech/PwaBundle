@@ -8,6 +8,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
+use function in_array;
+
 /**
  * Keep PWA bootstrap endpoints from minting / rotating session cookies.
  *
@@ -40,7 +42,7 @@ final class PwaBootstrapStatelessCookieSubscriber implements EventSubscriberInte
 
         $path = $event->getRequest()->getPathInfo();
 
-        if (!\in_array($path, $this->bootstrapPaths, true)) {
+        if (!in_array($path, $this->bootstrapPaths, true)) {
             return;
         }
 

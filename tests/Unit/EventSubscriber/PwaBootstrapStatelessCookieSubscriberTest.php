@@ -48,7 +48,7 @@ final class PwaBootstrapStatelessCookieSubscriberTest extends TestCase
     public function testDisabledDoesNothing(): void
     {
         $subscriber = new PwaBootstrapStatelessCookieSubscriber(false, ['/sw.js']);
-        $response = new Response('js');
+        $response   = new Response('js');
         $response->headers->setCookie(new Cookie('PHPHFASESSID', 'guest'));
         $event = $this->event('/sw.js', $response);
 
@@ -59,7 +59,7 @@ final class PwaBootstrapStatelessCookieSubscriberTest extends TestCase
 
     private function event(string $path, Response $response): ResponseEvent
     {
-        $kernel = $this->createMock(HttpKernelInterface::class);
+        $kernel  = $this->createMock(HttpKernelInterface::class);
         $request = Request::create($path);
 
         return new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
