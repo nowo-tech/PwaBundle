@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [1.4.0] - 2026-08-29
+
+### Added
+
+- **`service_worker.append_script`:** optional raw JavaScript appended to the generated service
+  worker (Web Push handlers, etc.) so hosts need not patch the response.
+- **`http.strip_set_cookie_on_bootstrap`** (default `true`): strip `Set-Cookie` from manifest and
+  service-worker responses so anonymous browser fetches cannot overwrite the session cookie.
+
+### Notes
+
+- Hosts that already strip Set-Cookie or append SW scripts can remove their shims after upgrading.
+
+[1.4.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.4.0
+
 ## [1.3.3] - 2026-08-24
 
 ### Changed

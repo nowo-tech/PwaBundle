@@ -100,4 +100,14 @@ final class ServiceWorkerScriptBuilderTest extends TestCase
 
         self::assertStringContainsString('CONFIG.precacheUrls.filter((url) => !isDenied(url))', $script);
     }
+
+    public function testAppendsOptionalScript(): void
+    {
+        $script = (new ServiceWorkerScriptBuilder())->build([
+            'append_script' => "/* push */\nself.addEventListener('push', () => {});",
+        ], '/offline');
+
+        self::assertStringContainsString('/* push */', $script);
+        self::assertStringContainsString("self.addEventListener('push'", $script);
+    }
 }

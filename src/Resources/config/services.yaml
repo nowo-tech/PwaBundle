@@ -11,6 +11,14 @@ services:
             - '../../DependencyInjection/'
             - '../../PwaBundle.php'
             - '../../DataCollector/'
+            - '../../EventSubscriber/PwaBootstrapStatelessCookieSubscriber.php'
+
+    Nowo\PwaBundle\EventSubscriber\PwaBootstrapStatelessCookieSubscriber:
+        arguments:
+            $enabled: '%nowo_pwa.http.strip_set_cookie_on_bootstrap%'
+            $bootstrapPaths: '%nowo_pwa.bootstrap_paths%'
+        tags:
+            - { name: kernel.event_subscriber }
 
     Nowo\PwaBundle\Controller\:
         resource: '../../Controller/'

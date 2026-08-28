@@ -2,15 +2,23 @@
 
 ## Table of contents
 
+- [From 1.3.3 to 1.4.0](#from-133-to-140)
 - [From 1.3.2 to 1.3.3](#from-132-to-133)
 
-## From 1.3.2 to 1.3.3
+## From 1.3.3 to 1.4.0
 
-No breaking changes. **No application upgrade steps.**
+Additive service-worker / HTTP bootstrap options. **No required application changes.**
 
 ```bash
 composer update nowo-tech/pwa-bundle
+php bin/console cache:clear
 ```
+
+### Notes
+
+1. Optional `service_worker.append_script` for Web Push (or other) handlers — prefer this over response subscribers that rewrite `/sw.js`.
+2. `http.strip_set_cookie_on_bootstrap` defaults to `true` (strips `Set-Cookie` on manifest + SW). Set to `false` only if you intentionally need cookies on those endpoints.
+3. Host shims that append SW scripts or strip bootstrap cookies can be removed after upgrading.
 
 ## From 1.3.2 to 1.3.3
 
@@ -242,8 +250,6 @@ Browsers will drop old `nowo-pwa-*` caches on the next activation.
 [1.1.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.1.0
 [1.0.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.1
 [1.0.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.0.0
-
-## Unreleased
 
 ## To 1.3.2
 

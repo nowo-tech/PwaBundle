@@ -33,6 +33,10 @@ final class ServiceWorkerNodeDefinition
                 ->end()
                 ->scalarNode('offline_url')->defaultNull()->end()
                 ->integerNode('runtime_cache_max_entries')->defaultValue(0)->min(0)->end()
+                ->scalarNode('append_script')
+                    ->defaultNull()
+                    ->info('Optional raw JavaScript appended to the generated service worker (e.g. Web Push handlers).')
+                ->end()
             ->end();
     }
 }

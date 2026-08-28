@@ -35,6 +35,14 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
         $container->setParameter('nowo_pwa.route_targeting', $config['route_targeting']);
         $container->setParameter('nowo_pwa.routes', $config['routes']);
         $container->setParameter('nowo_pwa.templates', $config['templates']);
+        $container->setParameter(
+            'nowo_pwa.http.strip_set_cookie_on_bootstrap',
+            (bool) ($config['http']['strip_set_cookie_on_bootstrap'] ?? true),
+        );
+        $container->setParameter('nowo_pwa.bootstrap_paths', [
+            (string) $config['routes']['manifest']['path'],
+            (string) $config['routes']['service_worker']['path'],
+        ]);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');

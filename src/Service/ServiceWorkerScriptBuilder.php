@@ -49,7 +49,14 @@ final class ServiceWorkerScriptBuilder
 
         $json = json_encode($config, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-        return str_replace('__CONFIG__', $json, $this->template());
+        $script = str_replace('__CONFIG__', $json, $this->template());
+        $append = trim((string) ($serviceWorkerConfig['append_script'] ?? ''));
+
+        if ($append !== '') {
+            $script .= "\n" . $append;
+        }
+
+        return $script;
     }
 
     /**
