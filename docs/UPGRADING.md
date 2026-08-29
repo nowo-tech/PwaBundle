@@ -2,8 +2,24 @@
 
 ## Table of contents
 
+- [From 1.4.0 to 1.5.0](#from-140-to-150)
 - [From 1.3.3 to 1.4.0](#from-133-to-140)
 - [From 1.3.2 to 1.3.3](#from-132-to-133)
+
+## From 1.4.0 to 1.5.0
+
+Additive kit Web Push SW handlers. **No migrations.**
+
+```bash
+composer update nowo-tech/pwa-bundle
+php bin/console cache:clear
+```
+
+### Notes
+
+1. Prefer `service_worker.web_push: true` (+ optional `web_push_defaults`) over a host-maintained `append_script` file for standard push / `notificationclick` UI.
+2. Compose notification `title` / `body` / `url` in the push JSON on the server; bump `cache_version` after enabling.
+3. Hosts that already ship a full push append script can delete it and switch to `web_push: true`, or keep `append_script` for extras only (runs after the kit script).
 
 ## From 1.3.3 to 1.4.0
 

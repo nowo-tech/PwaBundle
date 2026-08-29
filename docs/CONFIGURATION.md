@@ -117,9 +117,33 @@ nowo_pwa:
         clients_claim: true
         navigation_preload: false
         runtime_cache_max_entries: 0   # 0 = unlimited
+        # Optional kit Web Push handlers (JSON: title, body, url, icon, badge, tag).
+        # web_push: true
+        # web_push_defaults:
+        #     title: Notification
+        #     icon: /icons/icon-192.png
+        #     badge: /icons/icon-192.png
+        #     url: /
+        #     tag: nowo-pwa
+        # Optional extra JS after kit web_push (raw string or env(file:…) contents).
+        # append_script: null
 ```
 
-Bump `cache_version` when precache lists change to invalidate old caches.
+Bump `cache_version` when precache lists or `web_push` / `append_script` change to invalidate old caches.
+
+### Web Push SW handlers (`web_push`)
+
+When `service_worker.web_push: true`, the kit appends `src/Resources/js/web_push_sw_append.js` to the generated service worker. The push event expects a JSON body:
+
+| Field | Purpose |
+| ----- | ------- |
+| `title` | Notification title (fallback: `web_push_defaults.title`) |
+| `body` | Notification body |
+| `url` | Click target (same-origin; off-origin falls back to `/`) |
+| `icon` / `badge` | Optional icons |
+| `tag` | Notification tag / renotify key |
+
+Hosts should **compose** `title` / `body` / `url` in PHP (or another producer) before sending the push. Do not put product domain mapping in a forked SW. Extra host JS still goes in `append_script` (concatenated after the kit script).
 
 ## Install prompt
 

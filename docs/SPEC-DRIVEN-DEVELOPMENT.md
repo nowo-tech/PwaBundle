@@ -47,7 +47,8 @@ There is no separate executable spec language (for example Gherkin); tests and s
 
 **Explicit non-goals**
 
-- **Push notifications** or subscription management.
+- **Push subscription management / VAPID** (keys, subscribe API, backend fan-out) — hosts own that.
+- **Product-specific notification copy** in the service worker — send resolved `title` / `body` / `url` in the push JSON; optional kit SW handlers via `service_worker.web_push` are generic glue only.
 - **Background sync** / periodic sync APIs beyond what the generated service worker provides.
 - **Native app wrappers** (Capacitor, Tauri, etc.).
 - **Guaranteeing** installability on every browser (install criteria remain platform-defined).

@@ -38,6 +38,12 @@ final class ConfigurationTest extends TestCase
         self::assertSame('name', $config['route_targeting']['match_by']);
         self::assertSame('all', $config['install_prompt']['route_targeting']['mode']);
         self::assertSame(3600, $config['http']['manifest_cache_max_age']);
+        self::assertFalse($config['service_worker']['web_push']);
+        self::assertNull($config['service_worker']['append_script']);
+        self::assertSame('Notification', $config['service_worker']['web_push_defaults']['title']);
+        self::assertSame('/icons/icon-192.png', $config['service_worker']['web_push_defaults']['icon']);
+        self::assertSame('/', $config['service_worker']['web_push_defaults']['url']);
+        self::assertSame('nowo-pwa', $config['service_worker']['web_push_defaults']['tag']);
     }
 
     public function testExplicitEmptyDenyCachePatternsDisablesDefaults(): void
@@ -49,5 +55,25 @@ final class ConfigurationTest extends TestCase
         ]]);
 
         self::assertSame([], $config['service_worker']['deny_cache_patterns']);
+    }
+
+    public function testWebPushDefaultsCanBeCustomized(): void
+    {
+        $config = (new Processor())->processConfiguration(new Configuration(), [[
+            'service_worker' => [
+                'web_push' => true,
+                'web_push_defaults' => [
+                    'title' => 'Beacon',
+                    'url' => '/dashboard',
+                    'tag' => 'beacon',
+                ],
+            ],
+        ]]);
+
+        self::assertTrue($config['service_worker']['web_push']);
+        self::assertSame('Beacon', $config['service_worker']['web_push_defaults']['title']);
+        self::assertSame('/dashboard', $config['service_worker']['web_push_defaults']['url']);
+        self::assertSame('beacon', $config['service_worker']['web_push_defaults']['tag']);
+        self::assertSame('/icons/icon-192.png', $config['service_worker']['web_push_defaults']['icon']);
     }
 }

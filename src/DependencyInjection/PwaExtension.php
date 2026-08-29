@@ -23,6 +23,8 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
         $configuration = new Configuration();
         $config        = $this->processConfiguration($configuration, $configs);
 
+        $config['service_worker'] = $this->resolveServiceWorkerAppendScript($config['service_worker']);
+
         $container->setParameter('nowo_pwa.enabled', $config['enabled']);
         $container->setParameter('nowo_pwa.route_prefix', $config['route_prefix']);
         $container->setParameter('nowo_pwa.manifest', $config['manifest']);
@@ -50,6 +52,69 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
         if ($container->hasParameter('kernel.debug') && $container->getParameter('kernel.debug')) {
             $loader->load('data_collector.yaml');
         }
+    }
+
+    /**
+     * Merge kit Web Push handlers into {@code append_script} when {@code web_push} is enabled.
+     *
+     * @param array<string, mixed> $serviceWorker
+     *
+     * @return array<string, mixed>
+     */
+    private function resolveServiceWorkerAppendScript(array $serviceWorker): array
+    {
+        $parts = [];
+
+        if (!empty($serviceWorker['web_push'])) {
+            $parts[] = $this->loadWebPushAppendScript(
+                \is_array($serviceWorker['web_push_defaults'] ?? null)
+                    ? $serviceWorker['web_push_defaults']
+                    : [],
+            );
+        }
+
+        $hostAppend = trim((string) ($serviceWorker['append_script'] ?? ''));
+        if ('' !== $hostAppend) {
+            $parts[] = $hostAppend;
+        }
+
+        $serviceWorker['append_script'] = [] === $parts ? null : implode("\n", $parts);
+
+        return $serviceWorker;
+    }
+
+    /**
+     * @param array<string, mixed> $defaults
+     */
+    private function loadWebPushAppendScript(array $defaults): string
+    {
+        $path = __DIR__ . '/../Resources/js/web_push_sw_append.js';
+        $script = file_get_contents($path);
+        if (false === $script || '' === $script) {
+            throw new \RuntimeException(\sprintf('Unable to read PwaBundle Web Push SW append script at "%s".', $path));
+        }
+
+        $replacements = [
+            '__NOWO_PWA_PUSH_TITLE__' => $this->jsStringLiteral((string) ($defaults['title'] ?? 'Notification')),
+            '__NOWO_PWA_PUSH_ICON__' => $this->jsStringLiteral((string) ($defaults['icon'] ?? '/icons/icon-192.png')),
+            '__NOWO_PWA_PUSH_BADGE__' => $this->jsStringLiteral((string) ($defaults['badge'] ?? '/icons/icon-192.png')),
+            '__NOWO_PWA_PUSH_URL__' => $this->jsStringLiteral((string) ($defaults['url'] ?? '/')),
+            '__NOWO_PWA_PUSH_TAG__' => $this->jsStringLiteral((string) ($defaults['tag'] ?? 'nowo-pwa')),
+        ];
+
+        return str_replace(array_keys($replacements), array_values($replacements), $script);
+    }
+
+    /**
+     * Encode a PHP string as a JS string literal contents (no surrounding quotes — placeholders sit inside quotes in the template).
+     */
+    private function jsStringLiteral(string $value): string
+    {
+        return str_replace(
+            ['\\', "'", "\n", "\r", '</'],
+            ['\\\\', "\\'", '\\n', '', '<\\/'],
+            $value,
+        );
     }
 
     /**

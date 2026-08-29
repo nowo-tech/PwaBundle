@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-08-29
+
+### Added
+
+- **`service_worker.web_push`** (default `false`): ships kit Web Push / `notificationclick` handlers into `/sw.js`
+  (JSON payload: `title`, `body`, `icon`, `badge`, `url`, `tag`). Optional `web_push_defaults` for fallbacks.
+  Host `append_script` still works and is appended **after** the kit handlers.
 
 ## [1.4.0] - 2026-08-29
 
@@ -21,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Hosts that already strip Set-Cookie or append SW scripts can remove their shims after upgrading.
 
+[1.5.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.5.0
 [1.4.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.4.0
 
 ## [1.3.3] - 2026-08-24
