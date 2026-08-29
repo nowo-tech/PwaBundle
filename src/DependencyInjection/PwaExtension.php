@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\DependencyInjection;
 
+use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+use function is_array;
+use function sprintf;
 
 /**
  * Loads PwaBundle services and framework asset package configuration.
@@ -67,18 +71,18 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
 
         if (!empty($serviceWorker['web_push'])) {
             $parts[] = $this->loadWebPushAppendScript(
-                \is_array($serviceWorker['web_push_defaults'] ?? null)
+                is_array($serviceWorker['web_push_defaults'] ?? null)
                     ? $serviceWorker['web_push_defaults']
                     : [],
             );
         }
 
         $hostAppend = trim((string) ($serviceWorker['append_script'] ?? ''));
-        if ('' !== $hostAppend) {
+        if ($hostAppend !== '') {
             $parts[] = $hostAppend;
         }
 
-        $serviceWorker['append_script'] = [] === $parts ? null : implode("\n", $parts);
+        $serviceWorker['append_script'] = $parts === [] ? null : implode("\n", $parts);
 
         return $serviceWorker;
     }
@@ -88,18 +92,18 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
      */
     private function loadWebPushAppendScript(array $defaults): string
     {
-        $path = __DIR__ . '/../Resources/js/web_push_sw_append.js';
+        $path   = __DIR__ . '/../Resources/js/web_push_sw_append.js';
         $script = file_get_contents($path);
-        if (false === $script || '' === $script) {
-            throw new \RuntimeException(\sprintf('Unable to read PwaBundle Web Push SW append script at "%s".', $path));
+        if ($script === false || $script === '') {
+            throw new RuntimeException(sprintf('Unable to read PwaBundle Web Push SW append script at "%s".', $path));
         }
 
         $replacements = [
             '__NOWO_PWA_PUSH_TITLE__' => $this->jsStringLiteral((string) ($defaults['title'] ?? 'Notification')),
-            '__NOWO_PWA_PUSH_ICON__' => $this->jsStringLiteral((string) ($defaults['icon'] ?? '/icons/icon-192.png')),
+            '__NOWO_PWA_PUSH_ICON__'  => $this->jsStringLiteral((string) ($defaults['icon'] ?? '/icons/icon-192.png')),
             '__NOWO_PWA_PUSH_BADGE__' => $this->jsStringLiteral((string) ($defaults['badge'] ?? '/icons/icon-192.png')),
-            '__NOWO_PWA_PUSH_URL__' => $this->jsStringLiteral((string) ($defaults['url'] ?? '/')),
-            '__NOWO_PWA_PUSH_TAG__' => $this->jsStringLiteral((string) ($defaults['tag'] ?? 'nowo-pwa')),
+            '__NOWO_PWA_PUSH_URL__'   => $this->jsStringLiteral((string) ($defaults['url'] ?? '/')),
+            '__NOWO_PWA_PUSH_TAG__'   => $this->jsStringLiteral((string) ($defaults['tag'] ?? 'nowo-pwa')),
         ];
 
         return str_replace(array_keys($replacements), array_values($replacements), $script);

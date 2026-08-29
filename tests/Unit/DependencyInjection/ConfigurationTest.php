@@ -61,11 +61,11 @@ final class ConfigurationTest extends TestCase
     {
         $config = (new Processor())->processConfiguration(new Configuration(), [[
             'service_worker' => [
-                'web_push' => true,
+                'web_push'          => true,
                 'web_push_defaults' => [
                     'title' => 'Beacon',
-                    'url' => '/dashboard',
-                    'tag' => 'beacon',
+                    'url'   => '/dashboard',
+                    'tag'   => 'beacon',
                 ],
             ],
         ]]);

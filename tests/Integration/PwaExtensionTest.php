@@ -42,17 +42,17 @@ final class PwaExtensionTest extends TestCase
         $container->setParameter('kernel.debug', false);
         (new PwaExtension())->load([[
             'service_worker' => [
-                'web_push' => true,
+                'web_push'          => true,
                 'web_push_defaults' => [
                     'title' => "O'Brien",
-                    'url' => '/dashboard',
-                    'tag' => 'beacon',
+                    'url'   => '/dashboard',
+                    'tag'   => 'beacon',
                 ],
             ],
         ]], $container);
 
         /** @var array<string, mixed> $sw */
-        $sw = $container->getParameter('nowo_pwa.service_worker');
+        $sw     = $container->getParameter('nowo_pwa.service_worker');
         $append = (string) ($sw['append_script'] ?? '');
 
         self::assertStringContainsString('nowo-pwa-web-push', $append);
@@ -69,18 +69,18 @@ final class PwaExtensionTest extends TestCase
         $container->setParameter('kernel.debug', false);
         (new PwaExtension())->load([[
             'service_worker' => [
-                'web_push' => true,
+                'web_push'      => true,
                 'append_script' => '/* host extra */',
             ],
         ]], $container);
 
         /** @var array<string, mixed> $sw */
-        $sw = $container->getParameter('nowo_pwa.service_worker');
+        $sw     = $container->getParameter('nowo_pwa.service_worker');
         $append = (string) ($sw['append_script'] ?? '');
 
         self::assertStringContainsString('nowo-pwa-web-push', $append);
         self::assertStringContainsString('/* host extra */', $append);
-        $kitPos = strpos($append, 'nowo-pwa-web-push');
+        $kitPos  = strpos($append, 'nowo-pwa-web-push');
         $hostPos = strpos($append, '/* host extra */');
         self::assertNotFalse($kitPos);
         self::assertNotFalse($hostPos);
