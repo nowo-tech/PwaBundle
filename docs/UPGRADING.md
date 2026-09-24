@@ -2,9 +2,24 @@
 
 ## Table of contents
 
+- [From 1.5.0 to 1.5.1](#from-150-to-151)
 - [From 1.4.0 to 1.5.0](#from-140-to-150)
 - [From 1.3.3 to 1.4.0](#from-133-to-140)
 - [From 1.3.2 to 1.3.3](#from-132-to-133)
+
+## From 1.5.0 to 1.5.1
+
+FrankenPHP worker hardening. **No migrations** and no required config changes.
+
+```bash
+composer update nowo-tech/pwa-bundle
+php bin/console cache:clear
+```
+
+### Notes
+
+1. Safe under FrankenPHP workers that keep the same kernel between requests (`reset_kernel` / reboot disabled) — see [FRANKENPHP-WORKER-AUDIT.md](FRANKENPHP-WORKER-AUDIT.md).
+2. `PwaRouteLoader` no longer throws if `load()` is invoked more than once in the same process (stateless collections).
 
 ## From 1.4.0 to 1.5.0
 

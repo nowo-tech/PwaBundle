@@ -43,6 +43,7 @@ There is no separate executable spec language (for example Gherkin); tests and s
 | `nowo_pwa.route_targeting` | Limit head tags and client script to routes (`all` / `only` / `except`). |
 | Twig API | `nowo_pwa_head()`, `nowo_pwa_install_prompt()`, `nowo_pwa_install_links()`, `nowo_pwa_enabled()`. |
 | Dev tooling | Web Profiler data collector (`nowo_pwa`) when `kernel.debug` is true. |
+| FrankenPHP worker | Stateless shared services; safe with kernel not rebooted between requests — see [`FRANKENPHP-WORKER-AUDIT.md`](FRANKENPHP-WORKER-AUDIT.md). |
 | Overrides | Templates under `@NowoPwaBundle/pwa/` and translations domain `NowoPwaBundle` can be overridden from the app. |
 
 **Explicit non-goals**

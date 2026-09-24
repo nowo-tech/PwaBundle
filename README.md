@@ -8,7 +8,7 @@ Turn any Symfony application into a **Progressive Web App** with a fully configu
 
 ![FrankenPHP Friendly Worker Mode](docs/images/frankenphp-friendly.png)
 
-This bundle is **FrankenPHP worker mode friendly**.
+This bundle is **FrankenPHP worker mode friendly** — including when the kernel is **not** rebooted between requests (`reset_kernel` false). See [FrankenPHP worker audit](docs/FRANKENPHP-WORKER-AUDIT.md).
 
 ## Features
 
@@ -77,6 +77,7 @@ See [Installation](docs/INSTALLATION.md) and [Configuration](docs/CONFIGURATION.
 ### Additional documentation
 
 - [Demo with FrankenPHP](docs/DEMO-FRANKENPHP.md)
+- [FrankenPHP worker audit](docs/FRANKENPHP-WORKER-AUDIT.md)
 
 ## Tests and coverage
 

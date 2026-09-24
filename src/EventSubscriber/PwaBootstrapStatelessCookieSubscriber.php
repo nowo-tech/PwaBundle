@@ -17,14 +17,14 @@ use function in_array;
  * sending the authenticated session cookie. If Symfony starts a guest session and
  * returns Set-Cookie, the browser overwrites the logged-in session cookie.
  */
-final class PwaBootstrapStatelessCookieSubscriber implements EventSubscriberInterface
+final readonly class PwaBootstrapStatelessCookieSubscriber implements EventSubscriberInterface
 {
     /**
      * @param list<string> $bootstrapPaths Absolute path prefixes/paths to strip (e.g. /manifest.webmanifest, /sw.js)
      */
     public function __construct(
-        private readonly bool $enabled,
-        private readonly array $bootstrapPaths,
+        private bool $enabled,
+        private array $bootstrapPaths,
     ) {
     }
 

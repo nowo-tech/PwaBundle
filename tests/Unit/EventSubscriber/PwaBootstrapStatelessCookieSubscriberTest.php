@@ -11,9 +11,20 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 final class PwaBootstrapStatelessCookieSubscriberTest extends TestCase
 {
+    public function testSubscribesToKernelResponseWithLatePriority(): void
+    {
+        $events = PwaBootstrapStatelessCookieSubscriber::getSubscribedEvents();
+
+        self::assertSame(
+            ['onKernelResponse', -3072],
+            $events[KernelEvents::RESPONSE],
+        );
+    }
+
     public function testStripsSetCookieOnManifest(): void
     {
         $subscriber = new PwaBootstrapStatelessCookieSubscriber(true, [

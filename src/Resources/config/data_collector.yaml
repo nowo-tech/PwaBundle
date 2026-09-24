@@ -14,3 +14,4 @@ services:
             $routes: '%nowo_pwa.routes%'
         tags:
             - { name: data_collector, template: '@NowoPwaBundle/Collector/pwa.html.twig', id: 'nowo_pwa', priority: 280 }
+            - { name: kernel.reset, method: reset }

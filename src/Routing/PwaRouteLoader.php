@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Nowo\PwaBundle\Routing;
 
 use Nowo\PwaBundle\Controller\PwaController;
-use RuntimeException;
 use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
+/**
+ * Stateless route loader — safe under FrankenPHP workers that keep the same
+ * container when the kernel is not rebooted between requests (reset_kernel false).
+ */
 final class PwaRouteLoader extends Loader
 {
-    private bool $loaded = false;
-
     /**
      * @param array<string, array{path: string, name: string}> $routes
      */
@@ -25,13 +26,8 @@ final class PwaRouteLoader extends Loader
 
     public function load(mixed $resource, ?string $type = null): RouteCollection
     {
-        if ($this->loaded) {
-            throw new RuntimeException('PWA routes already loaded.');
-        }
-
-        $this->loaded = true;
-        $collection   = new RouteCollection();
-        $controller   = PwaController::class;
+        $collection = new RouteCollection();
+        $controller = PwaController::class;
 
         /** @var array<string, array{0: string, 1: list<string>}> $map */
         $map = [

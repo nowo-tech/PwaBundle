@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_(none yet)_
+
+---
+
+## [1.5.1] - 2026-09-24
+
+### Fixed
+
+- **FrankenPHP worker / `reset_kernel` false:** `PwaRouteLoader` is fully **stateless** (removed one-shot `$loaded` guard) so a long-lived worker can rebuild routes in-process without throwing.
+- Explicit `kernel.reset` tag on `PwaDataCollector` for ServicesResetter when the profiler is enabled.
+
+### Documentation
+
+- Published / refreshed [FrankenPHP worker audit](FRANKENPHP-WORKER-AUDIT.md) (scenario A + B, 100% compatible verdict).
+- Spec baseline: `FR-ROUTE-002`, `FR-HTTP-001`; code inventory synced (subscriber, SW cache defaults, web push kit script).
+
+---
+
 ## [1.5.0] - 2026-08-29
 
 ### Added
@@ -28,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Hosts that already strip Set-Cookie or append SW scripts can remove their shims after upgrading.
 
+[1.5.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.5.1
 [1.5.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.5.0
 [1.4.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.4.0
 

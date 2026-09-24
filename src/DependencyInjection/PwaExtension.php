@@ -95,7 +95,9 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
         $path   = __DIR__ . '/../Resources/js/web_push_sw_append.js';
         $script = file_get_contents($path);
         if ($script === false || $script === '') {
+            // @codeCoverageIgnoreStart
             throw new RuntimeException(sprintf('Unable to read PwaBundle Web Push SW append script at "%s".', $path));
+            // @codeCoverageIgnoreEnd
         }
 
         $replacements = [

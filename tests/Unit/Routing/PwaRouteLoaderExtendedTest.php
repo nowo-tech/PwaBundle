@@ -6,7 +6,6 @@ namespace Nowo\PwaBundle\Tests\Unit\Routing;
 
 use Nowo\PwaBundle\Routing\PwaRouteLoader;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 final class PwaRouteLoaderExtendedTest extends TestCase
 {
@@ -27,11 +26,14 @@ final class PwaRouteLoaderExtendedTest extends TestCase
         self::assertSame('/app/manifest.webmanifest', $route->getPath());
     }
 
-    public function testCannotLoadTwice(): void
+    public function testLoadIsIdempotent(): void
     {
         $loader = new PwaRouteLoader($this->routes(), '');
-        $loader->load('.', 'nowo_pwa');
-        $this->expectException(RuntimeException::class);
-        $loader->load('.', 'nowo_pwa');
+        $first  = $loader->load('.', 'nowo_pwa');
+        $second = $loader->load('.', 'nowo_pwa');
+
+        self::assertNotSame($first, $second);
+        self::assertNotNull($second->get('nowo_pwa_manifest'));
+        self::assertSame('/manifest.webmanifest', $second->get('nowo_pwa_manifest')?->getPath());
     }
 }

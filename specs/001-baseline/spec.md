@@ -58,9 +58,11 @@ See user stories US-01…US-06 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 ### Routing & HTTP
 
 - **FR-ROUTE-001**: `PwaRouteLoader` (type `nowo_pwa`) MUST register manifest, service worker, and offline routes with configurable prefix.
+- **FR-ROUTE-002**: `PwaRouteLoader` MUST be **stateless** across requests (no instance flags that block a second `load()`) so FrankenPHP workers with kernel not rebooted (`reset_kernel` false) remain safe if the router is rebuilt in-process.
 - **FR-CTRL-001**: Manifest action MUST 404 when disabled; return `application/manifest+json`.
 - **FR-CTRL-002**: Service worker action MUST return `application/javascript` with generated script.
 - **FR-CTRL-003**: Offline action MUST render `@NowoPwaBundle/pwa/offline.html.twig`.
+- **FR-HTTP-001**: Bootstrap paths (manifest / SW) MUST support stripping `Set-Cookie` via `PwaBootstrapStatelessCookieSubscriber` when `http.strip_set_cookie_on_bootstrap` is true.
 
 ### Services
 

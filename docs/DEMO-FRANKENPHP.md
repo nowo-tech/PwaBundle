@@ -86,6 +86,8 @@ Demos select the FrankenPHP runtime via **`FRANKENPHP_MODE`** in `.env` / `.env.
 
 Compose passes `FRANKENPHP_MODE=${FRANKENPHP_MODE:-worker}` into the PHP service. After changing `.env`, run `docker compose up -d` (or `make up`) so the container is **recreated** — a plain `restart` does not reload env. No image rebuild is required.
 
+**Worker + kernel not rebooted:** the bundle keeps no per-request state on shared services (`PwaRouteLoader` is stateless; Twig helpers read `RequestStack` per call). Full matrix: [FRANKENPHP-WORKER-AUDIT.md](FRANKENPHP-WORKER-AUDIT.md).
+
 ## Troubleshooting
 
 - **Port in use:** set `PORT=8026` (or another free port) in `demo/symfony8/.env` and restart.
