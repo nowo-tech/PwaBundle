@@ -55,6 +55,7 @@ final class PwaDataCollector extends DataCollector
             $this->routeTargetingConfig['match_by'] ?? PwaRouteTargeting::MATCH_BY_NAME,
         );
 
+        // @igor-ignore - Symfony profiler data collector; debug-only per-request aggregation.
         $this->data = [
             'enabled'                      => $this->enabled,
             'active_on_route'              => $activeOnRoute,

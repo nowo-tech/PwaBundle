@@ -57,3 +57,7 @@ If CI fails because trailers are already on the remote, see [GITHUB_CI.md](GITHU
 ## License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
+
+## Igor worker audit (REQ-CS-008)
+
+Run `make igor` (or `composer igor`) before release. Igor audits package `src/` for FrankenPHP worker-state issues. It is require-dev only.
