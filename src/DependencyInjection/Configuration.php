@@ -156,17 +156,13 @@ final class Configuration implements ConfigurationInterface
         $root
             ->validate()
             ->always(static function (array $v): array {
-                $swScope = self::normalizePath((string) ($v['service_worker']['scope'] ?? '/'));
-                $startRaw = (string) ($v['manifest']['start_url'] ?? '/');
+                $swScope   = self::normalizePath((string) ($v['service_worker']['scope'] ?? '/'));
+                $startRaw  = (string) ($v['manifest']['start_url'] ?? '/');
                 $startPath = parse_url($startRaw, PHP_URL_PATH);
-                $start = self::normalizePath(is_string($startPath) && $startPath !== '' ? $startPath : $startRaw);
+                $start     = self::normalizePath(is_string($startPath) && $startPath !== '' ? $startPath : $startRaw);
 
                 if ($swScope !== '/' && !self::pathIsUnderScope($start, $swScope)) {
-                    throw new InvalidConfigurationException(sprintf(
-                        'nowo_pwa.manifest.start_url "%s" must be under service_worker.scope "%s".',
-                        $startRaw,
-                        $v['service_worker']['scope'] ?? '/',
-                    ));
+                    throw new InvalidConfigurationException(sprintf('nowo_pwa.manifest.start_url "%s" must be under service_worker.scope "%s".', $startRaw, $v['service_worker']['scope'] ?? '/'));
                 }
 
                 return $v;

@@ -7,6 +7,7 @@ namespace Nowo\PwaBundle\Tests\Unit\DependencyInjection;
 use Nowo\PwaBundle\DependencyInjection\Configuration;
 use Nowo\PwaBundle\Service\ServiceWorkerCacheDefaults;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 
 final class ConfigurationTest extends TestCase
@@ -79,7 +80,7 @@ final class ConfigurationTest extends TestCase
 
     public function testStartUrlMustBeUnderServiceWorkerScope(): void
     {
-        $this->expectException(\Symfony\Component\Config\Definition\Exception\InvalidConfigurationException::class);
+        $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('service_worker.scope');
 
         (new Processor())->processConfiguration(new Configuration(), [[
