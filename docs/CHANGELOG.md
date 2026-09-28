@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.3] - 2026-09-28
+
+### Security
+
+- Config validation requires `manifest.start_url` to sit under `service_worker.scope` (when scope is not `/`).
+
 ## [1.5.2] - 2026-09-27
 
 ### Added
@@ -20,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Worker safety (Igor):** justified `// @igor-ignore` annotations and/or `ResetInterface` / request-scoped fixes so `make igor` passes on package `src/`.
 
+[1.5.3]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.5.3
 [1.5.2]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.5.2
 
 ## [1.5.1] - 2026-09-24

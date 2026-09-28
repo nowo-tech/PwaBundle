@@ -14,7 +14,7 @@
 
 | Area | Risk | Mitigation |
 |------|------|------------|
-| Service worker scope | Over-broad caching or interception | Keep `service_worker.scope` and `manifest.scope` minimal; review `precache_urls` and `runtime_cache_patterns` |
+| Service worker scope | Over-broad caching or interception | Keep `service_worker.scope` and `manifest.scope` minimal; review `precache_urls` and `runtime_cache_patterns`. Config validation requires `manifest.start_url` to sit under `service_worker.scope` when scope ≠ `/`. |
 | Authenticated pages cached | Private HTML/API responses stored on device | SW skips `Cache-Control: private`/`no-store`; default `deny_cache_patterns` for auth/admin/API; see [Caching authenticated routes](#caching-authenticated-routes) |
 | Offline page | Misleading content if compromised | Override `@NowoPwaBundle/pwa/offline.html.twig` in your app; serve over HTTPS |
 | Manifest | User deception (fake app name/icons) | Control `nowo_pwa.yaml`; only deploy trusted icon assets |
@@ -24,6 +24,21 @@
 | Reverse proxy / Host header | Wrong absolute `start_url` in manifest | Configure Symfony trusted proxies when `manifest.absolute_start_url` is true; see [Trusted proxies](#trusted-proxies) |
 
 This bundle does **not** store user secrets or perform server-side encryption. It generates manifest and service worker responses from configuration.
+
+## Multi-tenant scope example
+
+Default `scope: /` is correct for a single-site PWA. For multi-tenant apps, narrow both scopes and keep `start_url` inside that prefix:
+
+```yaml
+nowo_pwa:
+    manifest:
+        start_url: /t/acme/app
+        scope: /t/acme/
+    service_worker:
+        scope: /t/acme/
+```
+
+Serve the service worker from a URL that can claim that scope (or rely on the bundle `Service-Worker-Allowed` header). Do not leave SW/manifest at `/` when tenants share a host.
 
 ## Caching authenticated routes
 
@@ -124,7 +139,7 @@ Before tagging a release, confirm:
 | **Cryptography** | N/A — no custom cryptography in this bundle. |
 | **Permissions / exposure** | Service worker scope and cache rules documented for integrators. |
 | **Limits / DoS** | Cache size and offline asset limits reviewed for production. |
-| **AI security audit (REQ-SEC-004)** | Grade **Pass (conditional)** / date **~2026-07-29**. Residual: default site-wide service worker **scope** (`/`) — tighten `service_worker.scope` / `manifest.scope` for multi-tenant or sensitive apps; keep deny_cache_patterns reviewed. |
+| **AI security audit (REQ-SEC-004)** | Grade **Pass (good)** / re-audit **2026-09-28**. Default site-wide SW scope `/` remains valid for full-site PWAs; `start_url` must stay under `service_worker.scope`; multi-tenant apps must set a narrower scope (documented above). |
 
 Record confirmation in the release PR or tag notes.
 

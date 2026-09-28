@@ -76,4 +76,35 @@ final class ConfigurationTest extends TestCase
         self::assertSame('beacon', $config['service_worker']['web_push_defaults']['tag']);
         self::assertSame('/icons/icon-192.png', $config['service_worker']['web_push_defaults']['icon']);
     }
+
+    public function testStartUrlMustBeUnderServiceWorkerScope(): void
+    {
+        $this->expectException(\Symfony\Component\Config\Definition\Exception\InvalidConfigurationException::class);
+        $this->expectExceptionMessage('service_worker.scope');
+
+        (new Processor())->processConfiguration(new Configuration(), [[
+            'manifest' => [
+                'start_url' => '/',
+            ],
+            'service_worker' => [
+                'scope' => '/tenant-a/',
+            ],
+        ]]);
+    }
+
+    public function testStartUrlUnderNarrowScopeAccepted(): void
+    {
+        $config = (new Processor())->processConfiguration(new Configuration(), [[
+            'manifest' => [
+                'start_url' => '/tenant-a/home',
+                'scope'     => '/tenant-a/',
+            ],
+            'service_worker' => [
+                'scope' => '/tenant-a/',
+            ],
+        ]]);
+
+        self::assertSame('/tenant-a/home', $config['manifest']['start_url']);
+        self::assertSame('/tenant-a/', $config['service_worker']['scope']);
+    }
 }

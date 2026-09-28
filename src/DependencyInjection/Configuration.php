@@ -10,6 +10,17 @@ use Nowo\PwaBundle\DependencyInjection\Configuration\RouteTargetingNodeDefinitio
 use Nowo\PwaBundle\DependencyInjection\Configuration\ServiceWorkerNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+
+use function is_string;
+use function ltrim;
+use function parse_url;
+use function rtrim;
+use function sprintf;
+use function str_ends_with;
+use function str_starts_with;
+
+use const PHP_URL_PATH;
 
 /**
  * Configuration tree for PwaBundle.
@@ -142,6 +153,48 @@ final class Configuration implements ConfigurationInterface
                 ->end()
             ->end();
 
+        $root
+            ->validate()
+            ->always(static function (array $v): array {
+                $swScope = self::normalizePath((string) ($v['service_worker']['scope'] ?? '/'));
+                $startRaw = (string) ($v['manifest']['start_url'] ?? '/');
+                $startPath = parse_url($startRaw, PHP_URL_PATH);
+                $start = self::normalizePath(is_string($startPath) && $startPath !== '' ? $startPath : $startRaw);
+
+                if ($swScope !== '/' && !self::pathIsUnderScope($start, $swScope)) {
+                    throw new InvalidConfigurationException(sprintf(
+                        'nowo_pwa.manifest.start_url "%s" must be under service_worker.scope "%s".',
+                        $startRaw,
+                        $v['service_worker']['scope'] ?? '/',
+                    ));
+                }
+
+                return $v;
+            })
+            ->end();
+
         return $treeBuilder;
+    }
+
+    private static function normalizePath(string $path): string
+    {
+        if ($path === '' || $path[0] !== '/') {
+            $path = '/' . ltrim($path, '/');
+        }
+        if ($path !== '/' && str_ends_with($path, '/')) {
+            $path = rtrim($path, '/');
+        }
+
+        return $path === '' ? '/' : $path;
+    }
+
+    private static function pathIsUnderScope(string $path, string $scope): bool
+    {
+        $scope = rtrim($scope, '/');
+        if ($scope === '') {
+            return true;
+        }
+
+        return $path === $scope || str_starts_with($path, $scope . '/');
     }
 }

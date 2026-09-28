@@ -3,6 +3,17 @@
 
 ## Unreleased
 
+## To 1.5.3
+
+From **1.5.2** — `start_url` must be under SW scope.
+
+```bash
+composer update nowo-tech/pwa-bundle
+php bin/console cache:clear
+```
+
+- If `service_worker.scope` is not `/`, ensure `manifest.start_url` is under that scope or config compile will fail.
+
 ## To 1.5.2
 
 From **1.5.1** — REQ-CS-008 Igor FrankenPHP worker audit (igor-php require-dev, igor.json, make igor).
