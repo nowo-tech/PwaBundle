@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\PwaBundle\Tests\Integration;
 
 use Nowo\PwaBundle\DependencyInjection\PwaExtension;
+use Nowo\PwaBundle\Service\ManifestOverlayProviderInterface;
 use Nowo\PwaBundle\Twig\PwaTwigExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\FrameworkExtension;
@@ -34,6 +35,20 @@ final class PwaExtensionTest extends TestCase
         $container->setParameter('kernel.debug', false);
         (new PwaExtension())->load([[]], $container);
         self::assertTrue($container->hasDefinition(PwaTwigExtension::class));
+    }
+
+    public function testManifestOverlayProviderInterfaceIsAutoconfigured(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.debug', false);
+        (new PwaExtension())->load([[]], $container);
+
+        $conditionals = $container->getAutoconfiguredInstanceof();
+        self::assertArrayHasKey(ManifestOverlayProviderInterface::class, $conditionals);
+        self::assertArrayHasKey(
+            ManifestOverlayProviderInterface::TAG,
+            $conditionals[ManifestOverlayProviderInterface::class]->getTags(),
+        );
     }
 
     public function testWebPushMergesKitAppendScript(): void

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\PwaBundle\Controller;
 
 use Nowo\PwaBundle\Service\ManifestBuilder;
+use Nowo\PwaBundle\Service\ManifestOverlayProviderInterface;
 use Nowo\PwaBundle\Service\ServiceWorkerScriptBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,6 +22,7 @@ final class PwaController extends AbstractController
      * @param array<string, mixed> $httpConfig
      * @param array{head: string, install_prompt: string, offline: string} $templates
      * @param array<string, array{path: string, name: string}> $routes
+     * @param iterable<ManifestOverlayProviderInterface> $manifestOverlayProviders
      */
     public function __construct(
         private readonly bool $enabled,
@@ -31,6 +33,7 @@ final class PwaController extends AbstractController
         private readonly array $httpConfig,
         private readonly array $templates,
         private readonly array $routes,
+        private readonly iterable $manifestOverlayProviders = [],
     ) {
     }
 
@@ -47,6 +50,10 @@ final class PwaController extends AbstractController
             : $startUrlPath;
 
         $manifest = $this->manifestBuilder->build($this->manifestConfig, $startUrl);
+
+        foreach ($this->manifestOverlayProviders as $provider) {
+            $manifest = $provider->overlay($manifest);
+        }
 
         $response = new JsonResponse($manifest);
         $response->headers->set('Content-Type', 'application/manifest+json');

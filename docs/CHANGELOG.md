@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-10-07
+
+### Added
+
+- `Nowo\PwaBundle\Service\ManifestOverlayProviderInterface` (`overlay(array $manifest): array`): hosts can overlay brand/colors onto the web manifest without listening to `ResponseEvent`. Implementations are autoconfigured with the `nowo_pwa.manifest_overlay_provider` tag and applied by `PwaController::manifest()` after `ManifestBuilder::build()`.
+
 ## [1.5.3] - 2026-09-28
 
 ### Security
@@ -26,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Worker safety (Igor):** justified `// @igor-ignore` annotations and/or `ResetInterface` / request-scoped fixes so `make igor` passes on package `src/`.
 
+[1.6.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.6.0
 [1.5.3]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.5.3
 [1.5.2]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.5.2
 

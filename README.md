@@ -13,6 +13,7 @@ This bundle is **FrankenPHP worker mode friendly** — including when the kernel
 ## Features
 
 - **Web App Manifest** generated from `nowo_pwa.yaml` (name, icons, shortcuts, theme, display mode, scope, start URL)
+- **Manifest overlay** — implement `ManifestOverlayProviderInterface` (tag `nowo_pwa.manifest_overlay_provider`, autoconfigured) to overlay brand/colors onto the manifest
 - **Service worker** with configurable cache strategy (`network-first`, `cache-first`, `stale-while-revalidate`), precache URLs, and offline fallback
 - **Twig helpers** `nowo_pwa_head()`, `nowo_pwa_install_prompt()`, `nowo_pwa_install_links()`, and `nowo_pwa_enabled()` with route targeting (`all` / `only` / `except`, route names or URL paths)
 - **Web Profiler** panel `nowo_pwa` (manifest/SW status in debug)

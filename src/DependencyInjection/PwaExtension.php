@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\DependencyInjection;
 
+use Nowo\PwaBundle\Service\ManifestOverlayProviderInterface;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -49,6 +50,9 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
             (string) $config['routes']['manifest']['path'],
             (string) $config['routes']['service_worker']['path'],
         ]);
+
+        $container->registerForAutoconfiguration(ManifestOverlayProviderInterface::class)
+            ->addTag(ManifestOverlayProviderInterface::TAG);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');

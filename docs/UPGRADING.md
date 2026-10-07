@@ -3,6 +3,17 @@
 
 ## Unreleased
 
+## To 1.6.0
+
+From **1.5.3** — new `ManifestOverlayProviderInterface`. No breaking changes.
+
+```bash
+composer update nowo-tech/pwa-bundle
+php bin/console cache:clear
+```
+
+- Optional: replace `ResponseEvent` listeners that rewrite `/manifest.webmanifest` with a service implementing `Nowo\PwaBundle\Service\ManifestOverlayProviderInterface` (`overlay(array $manifest): array`). It is autoconfigured with the `nowo_pwa.manifest_overlay_provider` tag (use that tag manually if autoconfigure is disabled).
+
 ## To 1.5.3
 
 From **1.5.2** — `start_url` must be under SW scope.
