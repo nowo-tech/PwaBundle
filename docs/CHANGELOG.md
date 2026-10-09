@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-10-09
+
+### Dependencies
+
+- Composer refresh: Symfony 7.4.20 components, `twig/twig` 3.30.0 (lockfile); dev tooling `phpstan/phpstan` 2.3.1, `phpstan/phpstan-phpunit` 2.1.1, `phpstan/phpstan-symfony` 2.1.0, `rector/rector` 2.7.0, `igor-php/igor-php` 0.10.1.
+- Demo: Symfony 8.1.8, `twig/twig` 3.30.0; regenerated `config/reference.php`.
+
+[1.6.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.6.1
+
 ## [1.6.0] - 2026-10-07
 
 ### Added

@@ -3,6 +3,16 @@
 
 ## Unreleased
 
+## To 1.6.1
+
+From **1.6.0** — dependency refresh only.
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
+
+- No breaking changes. No application upgrade steps.
+
 ## To 1.6.0
 
 From **1.5.3** — new `ManifestOverlayProviderInterface`. No breaking changes.
