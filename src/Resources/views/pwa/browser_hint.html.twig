@@ -1,0 +1,27 @@
+{#
+    Informative banner for the detected browser (Stimulus peer browser-hint reveals the matching one).
+    REQ-TWIG-001: override via templates/bundles/NowoPwaBundle/pwa/browser_hint.html.twig.
+
+    Variables (all optional):
+      guide_url           link target for "Open the setup guide" (a page rendering browser_guide.html.twig); omit to hide the link
+      browsers            browser ids (default: every id known by browser-detect.ts)
+      stimulus_controller default browser-hint
+      css_class           default nowo-pwa-browser-hint
+#}
+{% set _ctrl = stimulus_controller|default('browser-hint') %}
+{% set _bem = css_class|default('nowo-pwa-browser-hint') %}
+{% set _browsers = browsers|default(['brave', 'chrome', 'edge', 'firefox', 'safari', 'ios', 'opera', 'samsung', 'other']) %}
+<div class="{{ _bem }}__container" data-controller="{{ _ctrl }}" data-testid="browser-hint">
+    {% for id in _browsers %}
+        <div class="{{ _bem }}" role="note" data-{{ _ctrl }}-target="hint" data-browser-hint-id="{{ id }}" hidden>
+            <span class="{{ _bem }}__emoji" aria-hidden="true">{{ ('browser_hint.' ~ id ~ '.emoji')|trans({}, 'NowoPwaBundle') }}</span>
+            <p class="{{ _bem }}__text">
+                <strong>{{ 'browser_hint.detected'|trans({'%browser%': ('browser_hint.' ~ id ~ '.name')|trans({}, 'NowoPwaBundle')}, 'NowoPwaBundle') }}</strong>
+                {{ ('browser_hint.' ~ id ~ '.banner')|trans({}, 'NowoPwaBundle') }}
+                {% if guide_url|default('') is not same as('') %}
+                    <a class="{{ _bem }}__link" href="{{ guide_url }}#browser-{{ id }}">{{ 'browser_hint.open'|trans({}, 'NowoPwaBundle') }}</a>
+                {% endif %}
+            </p>
+        </div>
+    {% endfor %}
+</div>

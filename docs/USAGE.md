@@ -166,6 +166,104 @@ final class ShareController extends AbstractController
 
 Validate and sanitize shared input before storing or displaying it.
 
+## Push diagnostics, test notification and browser hints
+
+Optional building blocks extracted from Symfony Beacon (all host-agnostic, translated in the 7 bundle locales, domain `NowoPwaBundle`).
+
+### 1. Server side (optional)
+
+Enable the sender and the test endpoint (see [Configuration](CONFIGURATION.md#web-push-sender-and-test-notification)) and bridge your subscription storage:
+
+```php
+use Nowo\PwaBundle\WebPush\Exception\PushTestDeniedException;
+use Nowo\PwaBundle\WebPush\PushSubscriptionData;
+use Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+
+final class AppPushSubscriptionProvider implements PushSubscriptionProviderInterface
+{
+    public function __construct(private PushSubscriptionRepository $repository, private EntityManagerInterface $em) {}
+
+    public function findSubscriptions(UserInterface $user): iterable
+    {
+        if (!$user->isPushNotificationsEnabled()) {
+            throw new PushTestDeniedException('preference_disabled'); // JSON {"error":"preference_disabled"}, HTTP 400
+        }
+        foreach ($this->repository->findByUser($user) as $row) {
+            yield new PushSubscriptionData($row->getEndpoint(), $row->getP256dh(), $row->getAuthToken(), $row->getContentEncoding());
+        }
+    }
+
+    public function removeSubscription(UserInterface $user, PushSubscriptionData $subscription): void
+    {
+        $this->repository->deleteByEndpointHashForUser(hash('sha256', $subscription->endpoint), $user);
+    }
+}
+```
+
+`POST nowo_pwa_push_test` (default `/pwa/push/test`) answers JSON:
+
+| Status | Body |
+|--------|------|
+| 200 | `{ok: true, results: [{host, ok, status, reason, expired}]}` (at least one device accepted) |
+| 502 | `{ok: false, results: […]}` (every push service rejected it) |
+| 401 / 403 | `{ok: false, error: "unauthenticated" \| "forbidden" \| "invalid_csrf"}` |
+| 503 / 404 | `{ok: false, error: "push_not_configured" \| "no_subscription"}` |
+| 400 (or custom) | `{ok: false, error: <PushTestDeniedException::$errorCode>}` |
+| 500 | `{ok: false, error: "client_error", reason: "…"}` (missing PSR-18/PSR-17 implementation) |
+
+Subscriptions reported as gone (HTTP 404/410) or whose endpoint is not an allowed push host are passed to `removeSubscription()`. You can also inject `Nowo\PwaBundle\WebPush\WebPushSenderInterface` in your own handlers (`send(PushSubscriptionData, string $jsonPayload, ['TTL' => …, 'urgency' => …])`).
+
+### 2. Stimulus peers (Vite / AssetMapper)
+
+TypeScript sources (not part of `pwa.js`; the host compiles them and provides `@hotwired/stimulus`):
+
+| Path under `vendor/nowo-tech/pwa-bundle/src/Resources/assets/` | Purpose |
+|----------------------------------------------------------------|---------|
+| `src/push-checks.ts` | `runPushChecks()`, `applicableChecks()`, `urlBase64ToUint8Array()`, `PUSH_CHECK_ORDER`, types `PushConfig` / `PushCheck` / `PushCheckReport` |
+| `src/browser-detect.ts` | `detectBrowser()`, `BROWSER_IDS`, type `BrowserId` |
+| `stimulus-peers/push_diagnostics_controller.ts` | Stimulus controller, identifier **`push-diagnostics`** |
+| `stimulus-peers/browser_hint_controller.ts` | Stimulus controller, identifier **`browser-hint`** (also re-exports `detectBrowser`) |
+
+Vite + pnpm host (`assets/stimulus_bootstrap.ts`):
+
+```ts
+import PushDiagnosticsController from '../vendor/nowo-tech/pwa-bundle/src/Resources/assets/stimulus-peers/push_diagnostics_controller';
+import BrowserHintController from '../vendor/nowo-tech/pwa-bundle/src/Resources/assets/stimulus-peers/browser_hint_controller';
+
+app.register('push-diagnostics', PushDiagnosticsController);
+app.register('browser-hint', BrowserHintController);
+```
+
+Or keep `assets/controllers/*_controller.ts` files that re-export the peer (`export { default } from '../../vendor/nowo-tech/pwa-bundle/src/Resources/assets/stimulus-peers/push_diagnostics_controller';`). Keep the vendor layout intact (the peers import `../src/*.ts`). Silent re-subscription code can reuse the same flow: `import { runPushChecks } from '../vendor/nowo-tech/pwa-bundle/src/Resources/assets/src/push-checks';`.
+
+`push-checks` steps: `support` (SW + PushManager + Notification + secure context) → `server_config` (VAPID key) → `preference` (only when the config has `preferenceEnabled`) → `permission` → `service_worker` (ready, 8 s timeout) → `browser_subscription` (re-created when the browser subscription was made with another VAPID key) → `server_subscription` (only with a `subscribeUrl`). The first failure stops the run; later steps are reported as `skip`.
+
+### 3. Twig partials
+
+```twig
+{# VAPID key + test URL + CSRF token come from nowo_pwa_web_push() when web_push is enabled #}
+{% include '@NowoPwaBundle/pwa/push_diagnostics.html.twig' %}
+
+{# Host-owned config/subscribe endpoints (e.g. a preference flag and a custom CSRF id) #}
+{% include '@NowoPwaBundle/pwa/push_diagnostics.html.twig' with {
+    config_url: path('account_realtime_config'),
+    subscribe_url: path('account_push_subscribe'),
+    csrf_token: csrf_token('account_push'),
+    auto: user.pushNotificationsEnabled,
+    css_class: 'panel',
+    check_class_prefix: 'push-check',
+    button_class: 'btn-ghost',
+} %}
+
+{% include '@NowoPwaBundle/pwa/browser_hint.html.twig' with {guide_url: path('app_browser_guide')} %}
+{% include '@NowoPwaBundle/pwa/browser_guide.html.twig' %}   {# per-browser install + push steps, anchors #browser-<id> #}
+```
+
+`nowo_pwa_web_push()` returns `{enabled, configured, vapid_public_key, test_url, csrf_token_id, csrf_token}`.
+
+The diagnostics controller sets `<html data-push-blocked="1">` when the browser refuses the subscription; `browser-hint` sets `<html data-browser="brave|chrome|edge|firefox|safari|ios|opera|samsung|other">`, so CSS can show browser-specific hints. Default styles live in `pwa.css` (`.nowo-pwa-push-check*`, `.nowo-pwa-browser-hint*`).
+
 ## Content Security Policy
 
 If you enforce CSP in production, allow the service worker URL and `pwa.js`. See [Security — Content Security Policy](SECURITY.md#content-security-policy).

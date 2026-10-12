@@ -4,6 +4,7 @@
 
 - [Threat model](#threat-model)
 - [Caching authenticated routes](#caching-authenticated-routes)
+- [Web Push test endpoint](#web-push-test-endpoint)
 - [Content Security Policy](#content-security-policy)
 - [Trusted proxies](#trusted-proxies)
 - [Supported versions](#supported-versions)
@@ -73,6 +74,10 @@ nowo_pwa:
 ```
 
 Also review `precache_urls` and `runtime_cache_patterns` — never precache login or other URLs that return user-specific or unauthenticated redirect HTML. Bump `cache_version` after changing cache rules.
+
+## Web Push test endpoint
+
+`nowo_pwa.web_push.test_notification` is disabled by default. When enabled, `PushTestController` requires an authenticated user holding one of `roles`, a valid CSRF token (`X-CSRF-TOKEN` header, id `csrf_token_id`) and only POSTs to subscription endpoints whose host matches `web_push.allowed_endpoint_hosts` over HTTPS (no literal IPs) — `WebPushEndpointGuard` prevents SSRF through stored endpoints. At most `max_subscriptions` devices are notified per request; add a rate limiter on the route if your users can trigger it repeatedly. The Stimulus peers render server data with `textContent` only (no HTML sinks).
 
 ## Content Security Policy
 

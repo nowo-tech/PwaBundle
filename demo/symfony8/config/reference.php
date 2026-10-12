@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 // This file is auto-generated and is for apps only. Bundles SHOULD NOT rely on its content.
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
@@ -883,6 +881,30 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         },
  *         append_script?: scalar|Param|null, // Optional raw JavaScript appended after the kit web_push handlers (if enabled). Prefer web_push: true for standard push UI. // Default: null
  *     },
+ *     web_push?: array{ // Server-side Web Push sender (minishlink/web-push ^11 + a PSR-17/PSR-18 implementation such as nyholm/psr7) and the push diagnostics test endpoint.
+ *         enabled?: bool|Param, // Register the Web Push sender service (WebPushSenderInterface). Checks minishlink/web-push and PSR-17 factories at container compile time. // Default: false
+ *         vapid?: array{
+ *             public_key?: scalar|Param|null, // URL-safe base64 VAPID public key (e.g. %env(VAPID_PUBLIC_KEY)%). // Default: ""
+ *             private_key?: scalar|Param|null, // URL-safe base64 VAPID private key (e.g. %env(VAPID_PRIVATE_KEY)%). // Default: ""
+ *             subject?: scalar|Param|null, // mailto: or https: contact sent to push services. Empty falls back to mailto:webmaster@localhost. // Default: ""
+ *         },
+ *         allowed_endpoint_hosts?: list<scalar|Param|null>,
+ *         test_notification?: array{ // POST endpoint used by the push diagnostics panel to send a test notification to the current user's subscriptions.
+ *             enabled?: bool|Param, // Off by default: needs a host PushSubscriptionProviderInterface, symfony/security-bundle and symfony/security-csrf. // Default: false
+ *             roles?: list<scalar|Param|null>,
+ *             csrf_token_id?: scalar|Param|null, // CSRF token id expected in the X-CSRF-TOKEN header (or _token body field). // Default: "nowo_pwa_push"
+ *             max_subscriptions?: int|Param, // Upper bound of devices notified per test request. // Default: 10
+ *             title?: scalar|Param|null, // Translation key or text (default domain). Null: bundle catalogue push_diagnostics.test_title. // Default: null
+ *             body?: scalar|Param|null, // Translation key or text (default domain). Null: bundle catalogue push_diagnostics.test_body. // Default: null
+ *             url?: scalar|Param|null, // URL opened on notification click. Null: service_worker.web_push_defaults.url. // Default: null
+ *             route?: scalar|Param|null, // Route name generated for the click URL (wins over url). // Default: null
+ *             tag?: scalar|Param|null, // Default: "nowo-pwa-push-test"
+ *             icon?: scalar|Param|null, // Null: service_worker.web_push_defaults.icon. // Default: null
+ *             badge?: scalar|Param|null, // Null: service_worker.web_push_defaults.badge. // Default: null
+ *             ttl?: int|Param, // Seconds the push service keeps the test message when the device is offline. // Default: 300
+ *             urgency?: "very-low"|"low"|"normal"|"high"|Param, // Default: "high"
+ *         },
+ *     },
  *     install_prompt?: array{
  *         enabled?: bool|Param, // Default: true
  *         display?: "banner"|"flash"|"modal"|Param, // banner: fixed bar; flash: inline alert; modal: centered dialog. // Default: "banner"
@@ -944,6 +966,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         offline?: array{
  *             path?: scalar|Param|null, // Default: "/offline"
  *             name?: scalar|Param|null, // Default: "nowo_pwa_offline"
+ *         },
+ *         push_test?: array{ // POST test-notification endpoint (registered only when web_push.test_notification.enabled).
+ *             path?: scalar|Param|null, // Default: "/pwa/push/test"
+ *             name?: scalar|Param|null, // Default: "nowo_pwa_push_test"
  *         },
  *     },
  *     templates?: array{

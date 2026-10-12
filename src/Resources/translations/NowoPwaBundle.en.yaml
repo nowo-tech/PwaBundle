@@ -13,3 +13,136 @@ offline:
     heading: You are offline
     body: 'This page is not available without a network connection. Check your connection and try again.'
     retry: 'Try again'
+
+push_diagnostics:
+  title: Push check for this device
+  intro: Checks every step this browser needs to receive push notifications from this site and tells you what is OK and what is missing.
+  idle: Press “Check again” to run the check for this device.
+  running: Checking…
+  summary_ok: 'Everything is ready: this device will receive push notifications.'
+  summary_fail: Push is not active on this device. Fix the step marked ✗ and press “Check again”.
+  skipped: Not checked (an earlier step failed).
+  unexpected: Unexpected error.
+  check: Check again
+  test: Send test notification
+  test_title: Test notification
+  test_body: If you can read this, push notifications work on this device.
+  test_sending: Sending test notification…
+  test_ok: Test sent. The notification should appear within a few seconds; if it does not, check the operating system notification settings and Do Not Disturb.
+  test_fail: 'The push service rejected the test: %reason%'
+  test_no_subscription: This account has no saved push subscription yet. Press “Check again” first.
+  test_error: Could not send the test notification.
+  status:
+    ok: OK
+    warn: Warning
+    fail: Missing
+    skip: Not checked
+  step:
+    support: Browser support
+    server_config: Server configuration (VAPID)
+    preference: Account preference
+    permission: Notification permission
+    service_worker: Service worker
+    browser_subscription: Browser push subscription
+    server_subscription: Subscription saved on the server
+  code:
+    support:
+      ok: This browser supports Web Push.
+      unsupported: This browser does not support Web Push (Service Worker, Push API or Notifications missing).
+      insecure_context: Web Push requires HTTPS.
+    server_config:
+      ok: The server has VAPID keys configured.
+      vapid_missing: The server has no Web Push (VAPID) keys configured.
+      network: Could not reach the server to load the push configuration.
+      http_error: The server returned an error while loading the push configuration.
+      invalid_response: The server returned an invalid push configuration.
+    preference:
+      ok: Browser push is enabled in your account.
+      preference_disabled: Push notifications are turned off in your account settings. Turn them on and save.
+    permission:
+      ok: Notifications are allowed for this site.
+      denied: Notifications are blocked for this site. Allow them from the padlock in the address bar and reload the page.
+      not_granted: Permission not granted yet. Press “Check again” and accept the browser prompt.
+    service_worker:
+      ok: The service worker of this site is active.
+      not_ready: The service worker did not become active. Reload the page; if it persists, clear this site’s data.
+      error: The service worker failed to start.
+    browser_subscription:
+      created: Push subscription created in this browser.
+      existing: This browser already has an active push subscription.
+      renewed: Push subscription renewed for the current server key.
+      push_service_error: The browser’s push service rejected the subscription. On Brave, enable brave://settings/privacy → “Use Google services for push messaging” and restart Brave. On other browsers, check that no VPN, firewall or antivirus blocks the push service.
+      not_allowed: The browser refused the push subscription (permission).
+      error: The browser could not create the push subscription.
+    server_subscription:
+      ok: 'Subscription saved: this device will receive push notifications.'
+      network: Could not reach the server to save the subscription.
+      http_error: The server returned an error while saving the subscription.
+      invalid_csrf: Your session token expired. Reload the page and try again.
+      preference_disabled: Push notifications are turned off in your account settings. Turn them on and save.
+      push_not_configured: The server has no VAPID keys configured.
+      invalid_endpoint: The browser’s push endpoint is not on the allowed list.
+      endpoint_owned: This browser is already subscribed with another account.
+      default: The server did not save the subscription.
+browser_hint:
+  title: Browser setup guide
+  toc: Browsers
+  open: Open the setup guide
+  detected: You are using %browser%.
+  current: Your browser
+  install_heading: Install as an app
+  push_heading: Push notifications
+  brave:
+    emoji: 🦁
+    name: Brave
+    banner: Brave blocks Web Push by default — enable one privacy setting to receive notifications.
+    install: 'Desktop: menu ☰ → Save and share → Install page as app, or the install icon in the address bar. Android: menu ⋮ → Add to Home screen / Install app.'
+    push: Open brave://settings/privacy and turn on “Use Google services for push messaging”, then restart Brave. Make sure notifications are allowed for this site (padlock icon → Site settings → Notifications → Allow).
+  chrome:
+    emoji: 🌐
+    name: Google Chrome
+    banner: Check that notifications are allowed for this site.
+    install: 'Desktop: install icon in the address bar, or menu ⋮ → Cast, save and share → Install page as app. Android: menu ⋮ → Add to Home screen → Install.'
+    push: Padlock icon → Site settings → Notifications → Allow. If the prompt never appears, check chrome://settings/content/notifications and the operating system notification settings for Chrome.
+  edge:
+    emoji: 🌊
+    name: Microsoft Edge
+    banner: Allow notifications for this site; Edge may hide the request with “quiet” prompts.
+    install: Menu ⋯ → Apps → Install this site as an app, or the install icon in the address bar.
+    push: Padlock icon → Permissions for this site → Notifications → Allow. In edge://settings/content/notifications, turn off “Quiet notification requests” if the prompt does not show.
+  firefox:
+    emoji: 🦊
+    name: Firefox
+    banner: Push works, but desktop Firefox cannot install this site as an app.
+    install: 'Desktop Firefox does not install web apps — keep this site pinned as a tab. Android: menu ⋮ → Add to Home screen / Install.'
+    push: Padlock icon → Connection / permissions → Send notifications → Allow. In Settings → Privacy & Security → Permissions → Notifications, make sure this site is not blocked and “Block new requests” is unchecked.
+  safari:
+    emoji: 🧭
+    name: Safari (macOS)
+    banner: Add this site to the Dock and allow notifications (macOS 13+).
+    install: 'macOS 14 Sonoma or later: File → Add to Dock.'
+    push: Safari → Settings → Websites → Notifications → set this site to Allow. Also allow Safari (or the web app in the Dock) under System Settings → Notifications.
+  ios:
+    emoji: 📱
+    name: iPhone / iPad
+    banner: Push only works after adding this site to the Home Screen (iOS / iPadOS 16.4+).
+    install: 'In Safari: Share → Add to Home Screen, then always open the app from that icon. Other iOS browsers can also add it from their Share menu.'
+    push: Open the app from the Home Screen icon, enable push notifications and tap Allow. Manage it later in Settings → Notifications.
+  opera:
+    emoji: 🅾️
+    name: Opera
+    banner: Allow notifications for this site; app install depends on your platform.
+    install: 'Android: menu ⋮ → Add to Home screen. Desktop Opera does not support installing web apps.'
+    push: Padlock icon → Site settings → Notifications → Allow, or opera://settings/content/notifications. Check the operating system notification settings for Opera.
+  samsung:
+    emoji: 📲
+    name: Samsung Internet
+    banner: Allow notifications and add this site to your Home screen.
+    install: Install icon in the address bar, or menu ☰ → Add page to → Home screen.
+    push: Menu ☰ → Settings → Sites and downloads → Notifications → allow this site. Also enable notifications for Samsung Internet in Android Settings → Apps.
+  other:
+    emoji: 🌍
+    name: Other browser
+    banner: We do not recognise this browser — check the guide to see whether it supports push notifications.
+    install: Look for “Install app” or “Add to Home screen” in the browser menu. Chromium-based browsers (Chrome, Edge, Brave, Vivaldi…) usually support it.
+    push: Web Push needs a recent browser with the Push API and a service worker over HTTPS. Allow notifications for this site from the address bar padlock or the browser site settings.

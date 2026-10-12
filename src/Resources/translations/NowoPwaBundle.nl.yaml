@@ -13,3 +13,136 @@ offline:
     heading: Je bent offline
     body: 'Deze pagina is niet beschikbaar zonder netwerkverbinding. Controleer je verbinding en probeer het opnieuw.'
     retry: 'Opnieuw proberen'
+
+push_diagnostics:
+  title: Pushcontrole voor dit apparaat
+  intro: Controleert elke stap die deze browser nodig heeft om pushmeldingen van deze site te ontvangen en laat zien wat in orde is en wat ontbreekt.
+  idle: Klik op „Opnieuw controleren” om dit apparaat te controleren.
+  running: Bezig met controleren…
+  summary_ok: 'Alles klaar: dit apparaat ontvangt pushmeldingen.'
+  summary_fail: Push is niet actief op dit apparaat. Los de stap met ✗ op en klik op „Opnieuw controleren”.
+  skipped: Niet gecontroleerd (een eerdere stap is mislukt).
+  unexpected: Onverwachte fout.
+  check: Opnieuw controleren
+  test: Testmelding versturen
+  test_title: Testmelding
+  test_body: Als je dit kunt lezen, werken pushmeldingen op dit apparaat.
+  test_sending: Testmelding wordt verstuurd…
+  test_ok: Test verstuurd. De melding zou binnen enkele seconden moeten verschijnen; zo niet, controleer de meldingsinstellingen van het besturingssysteem en Niet storen.
+  test_fail: 'De pushdienst heeft de test geweigerd: %reason%'
+  test_no_subscription: Dit account heeft nog geen opgeslagen pushabonnement. Klik eerst op „Opnieuw controleren”.
+  test_error: De testmelding kon niet worden verstuurd.
+  status:
+    ok: OK
+    warn: Waarschuwing
+    fail: Ontbreekt
+    skip: Niet gecontroleerd
+  step:
+    support: Browserondersteuning
+    server_config: Serverconfiguratie (VAPID)
+    preference: Accountvoorkeur
+    permission: Meldingstoestemming
+    service_worker: Service worker
+    browser_subscription: Pushabonnement in de browser
+    server_subscription: Abonnement opgeslagen op de server
+  code:
+    support:
+      ok: Deze browser ondersteunt Web Push.
+      unsupported: Deze browser ondersteunt geen Web Push (Service Worker, Push API of Notifications ontbreekt).
+      insecure_context: Web Push vereist HTTPS.
+    server_config:
+      ok: De server heeft VAPID-sleutels geconfigureerd.
+      vapid_missing: Op de server zijn geen Web Push-sleutels (VAPID) geconfigureerd.
+      network: De server was niet bereikbaar om de pushconfiguratie te laden.
+      http_error: De server gaf een fout bij het laden van de pushconfiguratie.
+      invalid_response: De server gaf een ongeldige pushconfiguratie terug.
+    preference:
+      ok: Browserpush staat aan in je account.
+      preference_disabled: Pushmeldingen staan uit in je accountinstellingen. Zet ze aan en sla op.
+    permission:
+      ok: Meldingen zijn toegestaan voor deze site.
+      denied: Meldingen zijn geblokkeerd voor deze site. Sta ze toe via het slotje in de adresbalk en herlaad de pagina.
+      not_granted: Nog geen toestemming gegeven. Klik op „Opnieuw controleren” en accepteer de vraag van de browser.
+    service_worker:
+      ok: De service worker van deze site is actief.
+      not_ready: De service worker werd niet actief. Herlaad de pagina; blijft het zo, wis dan de sitegegevens.
+      error: De service worker kon niet starten.
+    browser_subscription:
+      created: Pushabonnement aangemaakt in deze browser.
+      existing: Deze browser heeft al een actief pushabonnement.
+      renewed: Pushabonnement vernieuwd met de huidige serversleutel.
+      push_service_error: De pushdienst van de browser heeft het abonnement geweigerd. Zet in Brave brave://settings/privacy → „Google-services gebruiken voor pushberichten” aan en start Brave opnieuw. Controleer in andere browsers dat geen VPN, firewall of antivirus de pushdienst blokkeert.
+      not_allowed: De browser weigerde het pushabonnement (toestemming).
+      error: De browser kon het pushabonnement niet aanmaken.
+    server_subscription:
+      ok: 'Abonnement opgeslagen: dit apparaat ontvangt pushmeldingen.'
+      network: De server was niet bereikbaar om het abonnement op te slaan.
+      http_error: De server gaf een fout bij het opslaan van het abonnement.
+      invalid_csrf: Je sessietoken is verlopen. Herlaad de pagina en probeer het opnieuw.
+      preference_disabled: Pushmeldingen staan uit in je accountinstellingen. Zet ze aan en sla op.
+      push_not_configured: Op de server zijn geen VAPID-sleutels geconfigureerd.
+      invalid_endpoint: Het push-endpoint van de browser is niet toegestaan.
+      endpoint_owned: Deze browser is al geabonneerd met een ander account.
+      default: De server heeft het abonnement niet opgeslagen.
+browser_hint:
+  title: Browserinstellingen-gids
+  toc: Browsers
+  open: Open de instellingengids
+  detected: Je gebruikt %browser%.
+  current: Jouw browser
+  install_heading: Installeren als app
+  push_heading: Pushmeldingen
+  brave:
+    emoji: 🦁
+    name: Brave
+    banner: Brave blokkeert Web Push standaard — schakel één privacyinstelling in om meldingen te ontvangen.
+    install: 'Desktop: menu ☰ → Opslaan en delen → Pagina installeren als app, of het installatiepictogram in de adresbalk. Android: menu ⋮ → Toevoegen aan startscherm / App installeren.'
+    push: Open brave://settings/privacy en zet ‘Google-services gebruiken voor pushberichten’ aan, en herstart Brave. Controleer dat deze site meldingen mag sturen (slotje → Site-instellingen → Meldingen → Toestaan).
+  chrome:
+    emoji: 🌐
+    name: Google Chrome
+    banner: Controleer of meldingen voor deze site zijn toegestaan.
+    install: 'Desktop: installatiepictogram in de adresbalk, of menu ⋮ → Casten, opslaan en delen → Pagina installeren als app. Android: menu ⋮ → Toevoegen aan startscherm → Installeren.'
+    push: Slotje → Site-instellingen → Meldingen → Toestaan. Verschijnt het verzoek nooit, controleer dan chrome://settings/content/notifications en de meldingsinstellingen van het besturingssysteem voor Chrome.
+  edge:
+    emoji: 🌊
+    name: Microsoft Edge
+    banner: Sta meldingen voor deze site toe; Edge kan het verzoek verbergen met ‘stille’ verzoeken.
+    install: Menu ⋯ → Apps → Deze site installeren als app, of het installatiepictogram in de adresbalk.
+    push: Slotje → Machtigingen voor deze site → Meldingen → Toestaan. Schakel in edge://settings/content/notifications ‘Stille meldingsaanvragen’ uit als het verzoek niet verschijnt.
+  firefox:
+    emoji: 🦊
+    name: Firefox
+    banner: Push werkt, maar Firefox op desktop kan deze site niet als app installeren.
+    install: 'Firefox op desktop installeert geen webapps — zet het tabblad van deze site vast. Android: menu ⋮ → Toevoegen aan startscherm / Installeren.'
+    push: Slotje → Verbinding / machtigingen → Meldingen verzenden → Toestaan. Controleer in Instellingen → Privacy & Beveiliging → Toestemmingen → Meldingen dat deze site niet geblokkeerd is en ‘Nieuwe aanvragen blokkeren’ uit staat.
+  safari:
+    emoji: 🧭
+    name: Safari (macOS)
+    banner: Voeg deze site toe aan het Dock en sta meldingen toe (macOS 13+).
+    install: 'macOS 14 Sonoma of nieuwer: Archief → Voeg toe aan Dock.'
+    push: Safari → Instellingen → Websites → Meldingen → zet deze site op Sta toe. Sta ook Safari (of de webapp in het Dock) toe onder Systeeminstellingen → Berichtgeving.
+  ios:
+    emoji: 📱
+    name: iPhone / iPad
+    banner: Push werkt pas nadat deze site aan het beginscherm is toegevoegd (iOS / iPadOS 16.4+).
+    install: 'In Safari: Deel → Zet op beginscherm, en open de app altijd via dat pictogram. Andere iOS-browsers kunnen hem ook via hun Deel-menu toevoegen.'
+    push: Open de app via het pictogram op het beginscherm, zet pushmeldingen aan en tik op Sta toe. Beheer het later via Instellingen → Berichtgeving.
+  opera:
+    emoji: 🅾️
+    name: Opera
+    banner: Sta meldingen voor deze site toe; app-installatie hangt af van je platform.
+    install: 'Android: menu ⋮ → Toevoegen aan startscherm. Opera op desktop ondersteunt geen installatie van webapps.'
+    push: Slotje → Site-instellingen → Meldingen → Toestaan, of opera://settings/content/notifications. Controleer de meldingsinstellingen van het besturingssysteem voor Opera.
+  samsung:
+    emoji: 📲
+    name: Samsung Internet
+    banner: Sta meldingen toe en voeg deze site toe aan je startscherm.
+    install: Installatiepictogram in de adresbalk, of menu ☰ → Pagina toevoegen aan → Startscherm.
+    push: Menu ☰ → Instellingen → Sites en downloads → Meldingen → sta deze site toe. Schakel ook meldingen voor Samsung Internet in via Android-instellingen → Apps.
+  other:
+    emoji: 🌍
+    name: Andere browser
+    banner: We herkennen deze browser niet — bekijk de gids om te zien of hij pushmeldingen ondersteunt.
+    install: Zoek ‘App installeren’ of ‘Toevoegen aan startscherm’ in het browsermenu. Chromium-browsers (Chrome, Edge, Brave, Vivaldi…) ondersteunen dit meestal.
+    push: Web Push vereist een recente browser met Push API en een service worker via HTTPS. Sta meldingen voor deze site toe via het slotje in de adresbalk of de site-instellingen van de browser.

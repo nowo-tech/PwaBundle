@@ -12,6 +12,9 @@ services:
             - '../../PwaBundle.php'
             - '../../DataCollector/'
             - '../../EventSubscriber/PwaBootstrapStatelessCookieSubscriber.php'
+            # Optional Web Push services are registered by PwaExtension only when nowo_pwa.web_push.enabled.
+            - '../../WebPush/'
+            - '../../Controller/PushTestController.php'
 
     Nowo\PwaBundle\EventSubscriber\PwaBootstrapStatelessCookieSubscriber:
         arguments:
@@ -22,12 +25,14 @@ services:
 
     Nowo\PwaBundle\Controller\:
         resource: '../../Controller/'
+        exclude: '../../Controller/PushTestController.php'
         public: true
 
     Nowo\PwaBundle\Routing\PwaRouteLoader:
         arguments:
             $routes: '%nowo_pwa.routes%'
             $routePrefix: '%nowo_pwa.route_prefix%'
+            $pushTestEnabled: '%nowo_pwa.web_push.test_notification.enabled%'
         tags:
             - { name: routing.loader }
 
@@ -54,3 +59,9 @@ services:
             $routeTargetingConfig: '%nowo_pwa.route_targeting%'
             $templates: '%nowo_pwa.templates%'
             $routes: '%nowo_pwa.routes%'
+
+    Nowo\PwaBundle\Twig\PwaWebPushTwigExtension:
+        arguments:
+            $config: '%nowo_pwa.web_push.client%'
+            $sender: '@?Nowo\PwaBundle\WebPush\WebPushSenderInterface'
+            $csrfTokenManager: '@?security.csrf.token_manager'

@@ -4,14 +4,27 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\DependencyInjection;
 
+use Nowo\PwaBundle\Controller\PushTestController;
 use Nowo\PwaBundle\Service\ManifestOverlayProviderInterface;
+use Nowo\PwaBundle\WebPush\MinishlinkWebPushSender;
+use Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface;
+use Nowo\PwaBundle\WebPush\WebPushEndpointGuard;
+use Nowo\PwaBundle\WebPush\WebPushRequirements;
+use Nowo\PwaBundle\WebPush\WebPushSenderInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
+use function array_values;
 use function is_array;
 use function sprintf;
 
@@ -20,6 +33,11 @@ use function sprintf;
  */
 final class PwaExtension extends Extension implements PrependExtensionInterface
 {
+    public function __construct(
+        private readonly ?WebPushRequirements $webPushRequirements = null,
+    ) {
+    }
+
     /**
      * @param array<int, array<string, mixed>> $configs
      */
@@ -51,15 +69,85 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
             (string) $config['routes']['service_worker']['path'],
         ]);
 
+        /** @var array{enabled: bool, vapid: array{public_key: string, private_key: string, subject: string}, allowed_endpoint_hosts: list<string>, test_notification: array<string, mixed>} $webPush */
+        $webPush     = $config['web_push'];
+        $testEnabled = $webPush['enabled'] && (bool) $webPush['test_notification']['enabled'];
+        $container->setParameter('nowo_pwa.web_push.test_notification.enabled', $testEnabled);
+        $container->setParameter('nowo_pwa.web_push.client', [
+            'enabled'       => $webPush['enabled'],
+            'test_enabled'  => $testEnabled,
+            'test_route'    => (string) $config['routes']['push_test']['name'],
+            'csrf_token_id' => (string) $webPush['test_notification']['csrf_token_id'],
+        ]);
+
         $container->registerForAutoconfiguration(ManifestOverlayProviderInterface::class)
             ->addTag(ManifestOverlayProviderInterface::TAG);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
 
+        if ($webPush['enabled']) {
+            $this->registerWebPush($container, $webPush, $testEnabled, $config['service_worker']);
+        }
+
         if ($container->hasParameter('kernel.debug') && $container->getParameter('kernel.debug')) {
             $loader->load('data_collector.yaml');
         }
+    }
+
+    /**
+     * Registers the Web Push sender (and the test-notification controller) after fail-fast dependency checks.
+     *
+     * @param array{enabled: bool, vapid: array{public_key: string, private_key: string, subject: string}, allowed_endpoint_hosts: list<string>, test_notification: array<string, mixed>} $webPush
+     * @param array<string, mixed> $serviceWorker
+     */
+    private function registerWebPush(ContainerBuilder $container, array $webPush, bool $testEnabled, array $serviceWorker): void
+    {
+        $requirements = $this->webPushRequirements ?? new WebPushRequirements();
+        $requirements->assertSatisfied();
+
+        $container->register(WebPushEndpointGuard::class, WebPushEndpointGuard::class)
+            ->setArgument('$allowedHostSuffixes', $webPush['allowed_endpoint_hosts']);
+
+        $container->register(MinishlinkWebPushSender::class, MinishlinkWebPushSender::class)
+            ->setArguments([
+                '$publicKey'      => $webPush['vapid']['public_key'],
+                '$privateKey'     => $webPush['vapid']['private_key'],
+                '$subject'        => $webPush['vapid']['subject'],
+                '$endpointGuard'  => new Reference(WebPushEndpointGuard::class),
+                '$httpClient'     => new Reference(ClientInterface::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
+                '$requestFactory' => new Reference(RequestFactoryInterface::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
+                '$streamFactory'  => new Reference(StreamFactoryInterface::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
+                '$logger'         => new Reference('logger', ContainerInterface::NULL_ON_INVALID_REFERENCE),
+            ]);
+        $container->setAlias(WebPushSenderInterface::class, MinishlinkWebPushSender::class)->setPublic(true);
+
+        if (!$testEnabled) {
+            return;
+        }
+
+        $requirements->assertSecurityAvailable();
+
+        $defaults = is_array($serviceWorker['web_push_defaults'] ?? null) ? $serviceWorker['web_push_defaults'] : [];
+        $test     = $webPush['test_notification'];
+        unset($test['enabled']);
+        $test['roles'] = array_values((array) $test['roles']);
+        foreach (['url', 'icon', 'badge'] as $key) {
+            $test[$key] ??= isset($defaults[$key]) ? (string) $defaults[$key] : null;
+        }
+
+        $controller = new Definition(PushTestController::class, [
+            '$sender'               => new Reference(WebPushSenderInterface::class),
+            '$subscriptionProvider' => new Reference(PushSubscriptionProviderInterface::class),
+            '$tokenStorage'         => new Reference('security.token_storage'),
+            '$authorizationChecker' => new Reference('security.authorization_checker'),
+            '$csrfTokenManager'     => new Reference('security.csrf.token_manager'),
+            '$urlGenerator'         => new Reference('router'),
+            '$config'               => $test,
+            '$translator'           => new Reference('translator', ContainerInterface::NULL_ON_INVALID_REFERENCE),
+        ]);
+        $controller->setPublic(true)->addTag('controller.service_arguments');
+        $container->setDefinition(PushTestController::class, $controller);
     }
 
     /**

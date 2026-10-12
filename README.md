@@ -20,6 +20,9 @@ This bundle is **FrankenPHP worker mode friendly** — including when the kernel
 - **Install prompt modes** — `banner`, `flash` (inline), or `modal`; dismiss remind / never-ask-again options
 - **Override-friendly** Twig templates with install/offline blocks, bundled `pwa.css` tokens, and translations (**en**, **es**, **fr**, **it**, **pt**, **de**, **nl**; REQ-TWIG-001 / REQ-I18N-001)
 - **TypeScript client** for SW registration and install banner (Vite build → `pwa.js`)
+- **Web Push (optional)** — `WebPushSenderInterface` (minishlink/web-push 11, VAPID, anti-SSRF endpoint guard), dependency checks at compile time, and an opt-in CSRF-protected **test notification** endpoint (`nowo_pwa_push_test`)
+- **Push diagnostics** — `push-checks.ts` + Stimulus peer `push-diagnostics` + partial `pwa/push_diagnostics.html.twig` (per-step checklist: support, VAPID, permission, service worker, subscription/key match, server copy)
+- **Browser hints** — Stimulus peer `browser-hint` + partials `pwa/browser_hint.html.twig` / `pwa/browser_guide.html.twig` (per-browser install + push help)
 - Works with Symfony **7.4+** and **8.x**; no database required
 
 ## Installation

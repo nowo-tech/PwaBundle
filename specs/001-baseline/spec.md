@@ -101,4 +101,4 @@ See user stories US-01…US-06 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 
 ## Out of scope
 
-- Push notifications, background sync queues, native app wrappers (see SDD non-goals).
+- Push subscription storage, background sync queues, native app wrappers (see SDD non-goals). Optional Web Push sending, push diagnostics and browser hints are specified in [`../002-push-diagnostics/spec.md`](../002-push-diagnostics/spec.md).

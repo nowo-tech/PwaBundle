@@ -1,0 +1,36 @@
+{#
+    Per-browser install (PWA) + Web Push setup steps; anchors #browser-<id> match browser_hint.html.twig links.
+    The detected browser's "Your browser" badge is revealed by the Stimulus peer browser-hint.
+    REQ-TWIG-001: override via templates/bundles/NowoPwaBundle/pwa/browser_guide.html.twig.
+
+    Variables (all optional):
+      browsers            browser ids (default: every id known by browser-detect.ts)
+      stimulus_controller default browser-hint
+      css_class           default nowo-pwa-browser-guide
+      show_toc            default true
+#}
+{% set _ctrl = stimulus_controller|default('browser-hint') %}
+{% set _bem = css_class|default('nowo-pwa-browser-guide') %}
+{% set _browsers = browsers|default(['brave', 'chrome', 'edge', 'firefox', 'safari', 'ios', 'opera', 'samsung', 'other']) %}
+<div class="{{ _bem }}" data-controller="{{ _ctrl }}" data-testid="browser-guide">
+    {% if show_toc is not defined or show_toc %}
+        <nav class="{{ _bem }}__toc" aria-label="{{ 'browser_hint.toc'|trans({}, 'NowoPwaBundle') }}">
+            {% for id in _browsers %}
+                <a class="{{ _bem }}__toc-link" href="#browser-{{ id }}">{{ ('browser_hint.' ~ id ~ '.emoji')|trans({}, 'NowoPwaBundle') }} {{ ('browser_hint.' ~ id ~ '.name')|trans({}, 'NowoPwaBundle') }}</a>
+            {% endfor %}
+        </nav>
+    {% endif %}
+    {% for id in _browsers %}
+        <section id="browser-{{ id }}" class="{{ _bem }}__section" aria-labelledby="browser-{{ id }}-heading" data-testid="browser-guide-{{ id }}">
+            <h2 id="browser-{{ id }}-heading" class="{{ _bem }}__heading">
+                <span aria-hidden="true">{{ ('browser_hint.' ~ id ~ '.emoji')|trans({}, 'NowoPwaBundle') }}</span>
+                {{ ('browser_hint.' ~ id ~ '.name')|trans({}, 'NowoPwaBundle') }}
+                <span class="{{ _bem }}__current" data-{{ _ctrl }}-target="hint" data-browser-hint-id="{{ id }}" hidden>{{ 'browser_hint.current'|trans({}, 'NowoPwaBundle') }}</span>
+            </h2>
+            <h3 class="{{ _bem }}__subheading">{{ 'browser_hint.install_heading'|trans({}, 'NowoPwaBundle') }}</h3>
+            <p class="{{ _bem }}__text">{{ ('browser_hint.' ~ id ~ '.install')|trans({}, 'NowoPwaBundle') }}</p>
+            <h3 class="{{ _bem }}__subheading">{{ 'browser_hint.push_heading'|trans({}, 'NowoPwaBundle') }}</h3>
+            <p class="{{ _bem }}__text">{{ ('browser_hint.' ~ id ~ '.push')|trans({}, 'NowoPwaBundle') }}</p>
+        </section>
+    {% endfor %}
+</div>

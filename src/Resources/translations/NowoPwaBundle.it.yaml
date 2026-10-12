@@ -13,3 +13,136 @@ offline:
     heading: Sei offline
     body: 'Questa pagina non è disponibile senza connessione di rete. Controlla la connessione e riprova.'
     retry: 'Riprova'
+
+push_diagnostics:
+  title: Verifica push per questo dispositivo
+  intro: Verifica ogni passaggio di cui questo browser ha bisogno per ricevere le notifiche push di questo sito e indica cosa è a posto e cosa manca.
+  idle: Premi «Verifica di nuovo» per controllare questo dispositivo.
+  running: Verifica in corso…
+  summary_ok: 'Tutto pronto: questo dispositivo riceverà le notifiche push.'
+  summary_fail: Il push non è attivo su questo dispositivo. Correggi il passaggio segnato con ✗ e premi «Verifica di nuovo».
+  skipped: Non verificato (un passaggio precedente non è riuscito).
+  unexpected: Errore imprevisto.
+  check: Verifica di nuovo
+  test: Invia notifica di prova
+  test_title: Notifica di prova
+  test_body: Se riesci a leggerlo, le notifiche push funzionano su questo dispositivo.
+  test_sending: Invio della notifica di prova…
+  test_ok: Prova inviata. La notifica dovrebbe comparire entro pochi secondi; altrimenti controlla le impostazioni di notifica del sistema operativo e la modalità Non disturbare.
+  test_fail: 'Il servizio push ha rifiutato la prova: %reason%'
+  test_no_subscription: Questo account non ha ancora un’iscrizione push salvata. Premi prima «Verifica di nuovo».
+  test_error: Impossibile inviare la notifica di prova.
+  status:
+    ok: OK
+    warn: Avviso
+    fail: Mancante
+    skip: Non verificato
+  step:
+    support: Supporto del browser
+    server_config: Configurazione del server (VAPID)
+    preference: Preferenza dell’account
+    permission: Permesso notifiche
+    service_worker: Service worker
+    browser_subscription: Iscrizione push del browser
+    server_subscription: Iscrizione salvata sul server
+  code:
+    support:
+      ok: Questo browser supporta Web Push.
+      unsupported: Questo browser non supporta Web Push (mancano Service Worker, Push API o Notifications).
+      insecure_context: Web Push richiede HTTPS.
+    server_config:
+      ok: Il server ha le chiavi VAPID configurate.
+      vapid_missing: Il server non ha chiavi Web Push (VAPID) configurate.
+      network: Impossibile raggiungere il server per caricare la configurazione push.
+      http_error: Il server ha restituito un errore durante il caricamento della configurazione push.
+      invalid_response: Il server ha restituito una configurazione push non valida.
+    preference:
+      ok: Il push del browser è attivo nel tuo account.
+      preference_disabled: Le notifiche push sono disattivate nelle impostazioni del tuo account. Attivale e salva.
+    permission:
+      ok: Le notifiche sono consentite per questo sito.
+      denied: Le notifiche sono bloccate per questo sito. Consentile dal lucchetto nella barra degli indirizzi e ricarica la pagina.
+      not_granted: Permesso non ancora concesso. Premi «Verifica di nuovo» e accetta la richiesta del browser.
+    service_worker:
+      ok: Il service worker di questo sito è attivo.
+      not_ready: Il service worker non si è attivato. Ricarica la pagina; se persiste, cancella i dati del sito.
+      error: Il service worker non è riuscito ad avviarsi.
+    browser_subscription:
+      created: Iscrizione push creata in questo browser.
+      existing: Questo browser ha già un’iscrizione push attiva.
+      renewed: Iscrizione push rinnovata con la chiave attuale del server.
+      push_service_error: Il servizio push del browser ha rifiutato l’iscrizione. Su Brave attiva brave://settings/privacy → «Usa i servizi Google per la messaggistica push» e riavvia Brave. Sugli altri browser verifica che nessuna VPN, firewall o antivirus blocchi il servizio push.
+      not_allowed: Il browser ha rifiutato l’iscrizione push (permesso).
+      error: Il browser non è riuscito a creare l’iscrizione push.
+    server_subscription:
+      ok: 'Iscrizione salvata: questo dispositivo riceverà le notifiche push.'
+      network: Impossibile contattare il server per salvare l’iscrizione.
+      http_error: Il server ha restituito un errore durante il salvataggio dell’iscrizione.
+      invalid_csrf: Il token di sessione è scaduto. Ricarica la pagina e riprova.
+      preference_disabled: Le notifiche push sono disattivate nelle impostazioni del tuo account. Attivale e salva.
+      push_not_configured: Il server non ha chiavi VAPID configurate.
+      invalid_endpoint: L’endpoint push del browser non è consentito.
+      endpoint_owned: Questo browser è già iscritto con un altro account.
+      default: Il server non ha salvato l’iscrizione.
+browser_hint:
+  title: Guida alla configurazione del browser
+  toc: Browser
+  open: Apri la guida alla configurazione
+  detected: Stai usando %browser%.
+  current: Il tuo browser
+  install_heading: Installa come app
+  push_heading: Notifiche push
+  brave:
+    emoji: 🦁
+    name: Brave
+    banner: 'Brave blocca il Web Push per impostazione predefinita: attiva un’impostazione di privacy per ricevere le notifiche.'
+    install: 'Desktop: menu ☰ → Salva e condividi → Installa pagina come app, o l’icona di installazione nella barra degli indirizzi. Android: menu ⋮ → Aggiungi a schermata Home / Installa app.'
+    push: Apri brave://settings/privacy e attiva «Usa i servizi Google per la messaggistica push», poi riavvia Brave. Verifica che questo sito possa inviare notifiche (lucchetto → Impostazioni sito → Notifiche → Consenti).
+  chrome:
+    emoji: 🌐
+    name: Google Chrome
+    banner: Verifica che le notifiche siano consentite per questo sito.
+    install: 'Desktop: icona di installazione nella barra degli indirizzi, o menu ⋮ → Trasmetti, salva e condividi → Installa pagina come app. Android: menu ⋮ → Aggiungi a schermata Home → Installa.'
+    push: Lucchetto → Impostazioni sito → Notifiche → Consenti. Se la richiesta non compare mai, controlla chrome://settings/content/notifications e le impostazioni di notifica del sistema operativo per Chrome.
+  edge:
+    emoji: 🌊
+    name: Microsoft Edge
+    banner: Consenti le notifiche per questo sito; Edge può nascondere la richiesta con le richieste «silenziose».
+    install: Menu ⋯ → App → Installa questo sito come app, o l’icona di installazione nella barra degli indirizzi.
+    push: Lucchetto → Autorizzazioni per questo sito → Notifiche → Consenti. In edge://settings/content/notifications disattiva «Richieste di notifica silenziose» se la richiesta non compare.
+  firefox:
+    emoji: 🦊
+    name: Firefox
+    banner: Il push funziona, ma Firefox desktop non può installare questo sito come app.
+    install: 'Firefox desktop non installa app web: tieni questo sito come scheda fissata. Android: menu ⋮ → Aggiungi a schermata Home / Installa.'
+    push: Lucchetto → Connessione / permessi → Invia notifiche → Consenti. In Impostazioni → Privacy e sicurezza → Permessi → Notifiche, verifica che questo sito non sia bloccato e che «Blocca nuove richieste» sia deselezionato.
+  safari:
+    emoji: 🧭
+    name: Safari (macOS)
+    banner: Aggiungi questo sito al Dock e consenti le notifiche (macOS 13+).
+    install: 'macOS 14 Sonoma o successivo: File → Aggiungi al Dock.'
+    push: Safari → Impostazioni → Siti web → Notifiche → imposta questo sito su Consenti. Consenti anche Safari (o l’app web nel Dock) in Impostazioni di Sistema → Notifiche.
+  ios:
+    emoji: 📱
+    name: iPhone / iPad
+    banner: Il push funziona solo dopo aver aggiunto questo sito alla schermata Home (iOS / iPadOS 16.4+).
+    install: 'In Safari: Condividi → Aggiungi alla schermata Home, poi apri sempre l’app da quell’icona. Anche gli altri browser iOS possono aggiungerla dal menu Condividi.'
+    push: Apri l’app dall’icona nella schermata Home, attiva le notifiche push e tocca Consenti. Gestiscile poi in Impostazioni → Notifiche.
+  opera:
+    emoji: 🅾️
+    name: Opera
+    banner: Consenti le notifiche per questo sito; l’installazione come app dipende dalla piattaforma.
+    install: 'Android: menu ⋮ → Aggiungi a schermata Home. Opera desktop non supporta l’installazione di app web.'
+    push: Lucchetto → Impostazioni sito → Notifiche → Consenti, oppure opera://settings/content/notifications. Controlla le impostazioni di notifica del sistema operativo per Opera.
+  samsung:
+    emoji: 📲
+    name: Samsung Internet
+    banner: Consenti le notifiche e aggiungi questo sito alla schermata Home.
+    install: Icona di installazione nella barra degli indirizzi, o menu ☰ → Aggiungi pagina a → Schermata Home.
+    push: Menu ☰ → Impostazioni → Siti e download → Notifiche → consenti questo sito. Attiva anche le notifiche di Samsung Internet in Impostazioni Android → App.
+  other:
+    emoji: 🌍
+    name: Altro browser
+    banner: 'Non riconosciamo questo browser: consulta la guida per vedere se supporta le notifiche push.'
+    install: Cerca «Installa app» o «Aggiungi a schermata Home» nel menu del browser. I browser basati su Chromium (Chrome, Edge, Brave, Vivaldi…) di solito lo supportano.
+    push: Il Web Push richiede un browser recente con Push API e service worker su HTTPS. Consenti le notifiche di questo sito dal lucchetto della barra degli indirizzi o dalle impostazioni dei siti del browser.

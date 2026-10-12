@@ -8,6 +8,7 @@ use Nowo\PwaBundle\DependencyInjection\Configuration\ManifestNodeDefinition;
 use Nowo\PwaBundle\DependencyInjection\Configuration\MetaNodeDefinition;
 use Nowo\PwaBundle\DependencyInjection\Configuration\RouteTargetingNodeDefinition;
 use Nowo\PwaBundle\DependencyInjection\Configuration\ServiceWorkerNodeDefinition;
+use Nowo\PwaBundle\DependencyInjection\Configuration\WebPushNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -49,6 +50,7 @@ final class Configuration implements ConfigurationInterface
         ManifestNodeDefinition::configure($root->children()->arrayNode('manifest'));
         MetaNodeDefinition::configure($root->children()->arrayNode('meta'));
         ServiceWorkerNodeDefinition::configure($root->children()->arrayNode('service_worker'));
+        WebPushNodeDefinition::configure($root->children()->arrayNode('web_push'));
 
         $installPromptNode = $root->children()->arrayNode('install_prompt');
         $installPromptNode
@@ -140,6 +142,14 @@ final class Configuration implements ConfigurationInterface
                                 ->scalarNode('name')->defaultValue('nowo_pwa_offline')->cannotBeEmpty()->end()
                             ->end()
                         ->end()
+                        ->arrayNode('push_test')
+                            ->info('POST test-notification endpoint (registered only when web_push.test_notification.enabled).')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('path')->defaultValue('/pwa/push/test')->cannotBeEmpty()->end()
+                                ->scalarNode('name')->defaultValue('nowo_pwa_push_test')->cannotBeEmpty()->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
                 ->arrayNode('templates')
@@ -186,10 +196,8 @@ final class Configuration implements ConfigurationInterface
 
     private static function pathIsUnderScope(string $path, string $scope): bool
     {
+        // Callers skip the root scope "/", so $scope is a normalized non-root path here.
         $scope = rtrim($scope, '/');
-        if ($scope === '') {
-            return true;
-        }
 
         return $path === $scope || str_starts_with($path, $scope . '/');
     }

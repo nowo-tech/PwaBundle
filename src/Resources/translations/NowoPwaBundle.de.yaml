@@ -13,3 +13,136 @@ offline:
     heading: Sie sind offline
     body: 'Diese Seite ist ohne Netzwerkverbindung nicht verfügbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.'
     retry: 'Erneut versuchen'
+
+push_diagnostics:
+  title: Push-Prüfung für dieses Gerät
+  intro: Prüft jeden Schritt, den dieser Browser für Push-Benachrichtigungen dieser Website braucht, und zeigt, was in Ordnung ist und was fehlt.
+  idle: Klicke auf „Erneut prüfen“, um dieses Gerät zu prüfen.
+  running: Wird geprüft…
+  summary_ok: 'Alles bereit: Dieses Gerät erhält Push-Benachrichtigungen.'
+  summary_fail: Push ist auf diesem Gerät nicht aktiv. Behebe den mit ✗ markierten Schritt und klicke auf „Erneut prüfen“.
+  skipped: Nicht geprüft (ein früherer Schritt ist fehlgeschlagen).
+  unexpected: Unerwarteter Fehler.
+  check: Erneut prüfen
+  test: Testbenachrichtigung senden
+  test_title: Testbenachrichtigung
+  test_body: Wenn du das lesen kannst, funktionieren Push-Benachrichtigungen auf diesem Gerät.
+  test_sending: Testbenachrichtigung wird gesendet…
+  test_ok: Test gesendet. Die Benachrichtigung sollte in wenigen Sekunden erscheinen; falls nicht, prüfe die Benachrichtigungseinstellungen des Betriebssystems und „Nicht stören“.
+  test_fail: 'Der Push-Dienst hat den Test abgelehnt: %reason%'
+  test_no_subscription: Für dieses Konto ist noch kein Push-Abonnement gespeichert. Klicke zuerst auf „Erneut prüfen“.
+  test_error: Die Testbenachrichtigung konnte nicht gesendet werden.
+  status:
+    ok: OK
+    warn: Warnung
+    fail: Fehlt
+    skip: Nicht geprüft
+  step:
+    support: Browser-Unterstützung
+    server_config: Serverkonfiguration (VAPID)
+    preference: Kontoeinstellung
+    permission: Benachrichtigungsberechtigung
+    service_worker: Service Worker
+    browser_subscription: Push-Abonnement im Browser
+    server_subscription: Abonnement auf dem Server gespeichert
+  code:
+    support:
+      ok: Dieser Browser unterstützt Web Push.
+      unsupported: Dieser Browser unterstützt Web Push nicht (Service Worker, Push API oder Notifications fehlen).
+      insecure_context: Web Push erfordert HTTPS.
+    server_config:
+      ok: Der Server hat VAPID-Schlüssel konfiguriert.
+      vapid_missing: Auf dem Server sind keine Web-Push-Schlüssel (VAPID) konfiguriert.
+      network: Der Server war zum Laden der Push-Konfiguration nicht erreichbar.
+      http_error: Der Server hat beim Laden der Push-Konfiguration einen Fehler zurückgegeben.
+      invalid_response: Der Server hat eine ungültige Push-Konfiguration zurückgegeben.
+    preference:
+      ok: Browser-Push ist in deinem Konto aktiviert.
+      preference_disabled: Push-Benachrichtigungen sind in deinen Kontoeinstellungen ausgeschaltet. Schalte sie ein und speichere.
+    permission:
+      ok: Benachrichtigungen sind für diese Seite erlaubt.
+      denied: Benachrichtigungen sind für diese Seite blockiert. Erlaube sie über das Schloss in der Adressleiste und lade die Seite neu.
+      not_granted: Noch keine Berechtigung erteilt. Klicke auf „Erneut prüfen“ und bestätige die Browser-Abfrage.
+    service_worker:
+      ok: Der Service Worker dieser Website ist aktiv.
+      not_ready: Der Service Worker wurde nicht aktiv. Lade die Seite neu; falls es bleibt, lösche die Websitedaten.
+      error: Der Service Worker konnte nicht starten.
+    browser_subscription:
+      created: Push-Abonnement in diesem Browser erstellt.
+      existing: Dieser Browser hat bereits ein aktives Push-Abonnement.
+      renewed: Push-Abonnement für den aktuellen Serverschlüssel erneuert.
+      push_service_error: Der Push-Dienst des Browsers hat das Abonnement abgelehnt. In Brave aktiviere brave://settings/privacy → „Google-Dienste für Push-Nachrichten verwenden“ und starte Brave neu. In anderen Browsern prüfe, dass kein VPN, keine Firewall und kein Virenschutz den Push-Dienst blockiert.
+      not_allowed: Der Browser hat das Push-Abonnement verweigert (Berechtigung).
+      error: Der Browser konnte das Push-Abonnement nicht erstellen.
+    server_subscription:
+      ok: 'Abonnement gespeichert: Dieses Gerät erhält Push-Benachrichtigungen.'
+      network: Der Server war nicht erreichbar, um das Abonnement zu speichern.
+      http_error: Der Server hat beim Speichern des Abonnements einen Fehler gemeldet.
+      invalid_csrf: Dein Sitzungstoken ist abgelaufen. Lade die Seite neu und versuche es erneut.
+      preference_disabled: Push-Benachrichtigungen sind in deinen Kontoeinstellungen ausgeschaltet. Schalte sie ein und speichere.
+      push_not_configured: Auf dem Server sind keine VAPID-Schlüssel konfiguriert.
+      invalid_endpoint: Der Push-Endpunkt des Browsers ist nicht erlaubt.
+      endpoint_owned: Dieser Browser ist bereits mit einem anderen Konto abonniert.
+      default: Der Server hat das Abonnement nicht gespeichert.
+browser_hint:
+  title: Browser-Einrichtungsanleitung
+  toc: Browser
+  open: Einrichtungsanleitung öffnen
+  detected: Du verwendest %browser%.
+  current: Dein Browser
+  install_heading: Als App installieren
+  push_heading: Push-Benachrichtigungen
+  brave:
+    emoji: 🦁
+    name: Brave
+    banner: Brave blockiert Web Push standardmäßig – aktiviere eine Datenschutzeinstellung, um Benachrichtigungen zu erhalten.
+    install: 'Desktop: Menü ☰ → Speichern und teilen → Seite als App installieren, oder das Installationssymbol in der Adressleiste. Android: Menü ⋮ → Zum Startbildschirm hinzufügen / App installieren.'
+    push: Öffne brave://settings/privacy und aktiviere „Google-Dienste für Push-Nachrichten verwenden“, dann starte Brave neu. Prüfe, dass diese Website Benachrichtigungen senden darf (Schloss → Website-Einstellungen → Benachrichtigungen → Zulassen).
+  chrome:
+    emoji: 🌐
+    name: Google Chrome
+    banner: Prüfe, ob Benachrichtigungen für diese Website erlaubt sind.
+    install: 'Desktop: Installationssymbol in der Adressleiste, oder Menü ⋮ → Streamen, speichern und teilen → Seite als App installieren. Android: Menü ⋮ → Zum Startbildschirm hinzufügen → Installieren.'
+    push: Schloss → Website-Einstellungen → Benachrichtigungen → Zulassen. Erscheint die Anfrage nie, prüfe chrome://settings/content/notifications und die Benachrichtigungseinstellungen des Betriebssystems für Chrome.
+  edge:
+    emoji: 🌊
+    name: Microsoft Edge
+    banner: Erlaube Benachrichtigungen für diese Website; Edge kann die Anfrage als „stille“ Anfrage ausblenden.
+    install: Menü ⋯ → Apps → Diese Website als App installieren, oder das Installationssymbol in der Adressleiste.
+    push: Schloss → Berechtigungen für diese Website → Benachrichtigungen → Zulassen. Deaktiviere in edge://settings/content/notifications „Stille Benachrichtigungsanforderungen“, falls die Anfrage nicht erscheint.
+  firefox:
+    emoji: 🦊
+    name: Firefox
+    banner: Push funktioniert, aber Firefox auf dem Desktop kann diese Website nicht als App installieren.
+    install: 'Firefox auf dem Desktop installiert keine Web-Apps – hefte den Tab dieser Website an. Android: Menü ⋮ → Zum Startbildschirm hinzufügen / Installieren.'
+    push: Schloss → Verbindung / Berechtigungen → Benachrichtigungen senden → Erlauben. Prüfe unter Einstellungen → Datenschutz & Sicherheit → Berechtigungen → Benachrichtigungen, dass diese Website nicht blockiert und „Neue Anfragen blockieren“ deaktiviert ist.
+  safari:
+    emoji: 🧭
+    name: Safari (macOS)
+    banner: Füge diese Website zum Dock hinzu und erlaube Benachrichtigungen (macOS 13+).
+    install: 'Ab macOS 14 Sonoma: Ablage → Zum Dock hinzufügen.'
+    push: Safari → Einstellungen → Websites → Mitteilungen → diese Website auf Erlauben setzen. Erlaube außerdem Safari (oder die Web-App im Dock) unter Systemeinstellungen → Mitteilungen.
+  ios:
+    emoji: 📱
+    name: iPhone / iPad
+    banner: Push funktioniert erst, nachdem diese Website zum Home-Bildschirm hinzugefügt wurde (iOS / iPadOS 16.4+).
+    install: 'In Safari: Teilen → Zum Home-Bildschirm, und öffne die App immer über dieses Symbol. Andere iOS-Browser können sie ebenfalls über ihr Teilen-Menü hinzufügen.'
+    push: Öffne die App über das Symbol auf dem Home-Bildschirm, aktiviere Push-Benachrichtigungen und tippe auf Erlauben. Verwalte es später unter Einstellungen → Mitteilungen.
+  opera:
+    emoji: 🅾️
+    name: Opera
+    banner: Erlaube Benachrichtigungen für diese Website; die App-Installation hängt von deiner Plattform ab.
+    install: 'Android: Menü ⋮ → Zum Startbildschirm hinzufügen. Opera auf dem Desktop unterstützt keine Installation von Web-Apps.'
+    push: Schloss → Website-Einstellungen → Benachrichtigungen → Zulassen, oder opera://settings/content/notifications. Prüfe die Benachrichtigungseinstellungen des Betriebssystems für Opera.
+  samsung:
+    emoji: 📲
+    name: Samsung Internet
+    banner: Erlaube Benachrichtigungen und füge diese Website zum Startbildschirm hinzu.
+    install: Installationssymbol in der Adressleiste, oder Menü ☰ → Seite hinzufügen zu → Startbildschirm.
+    push: Menü ☰ → Einstellungen → Websites und Downloads → Benachrichtigungen → diese Website erlauben. Aktiviere außerdem Benachrichtigungen für Samsung Internet unter Android-Einstellungen → Apps.
+  other:
+    emoji: 🌍
+    name: Anderer Browser
+    banner: Wir erkennen diesen Browser nicht – prüfe in der Anleitung, ob er Push-Benachrichtigungen unterstützt.
+    install: Suche im Browsermenü nach „App installieren“ oder „Zum Startbildschirm hinzufügen“. Chromium-basierte Browser (Chrome, Edge, Brave, Vivaldi…) unterstützen das meist.
+    push: Web Push braucht einen aktuellen Browser mit Push API und Service Worker über HTTPS. Erlaube Benachrichtigungen für diese Website über das Schloss in der Adressleiste oder die Website-Einstellungen des Browsers.

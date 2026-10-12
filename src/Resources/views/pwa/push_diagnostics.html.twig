@@ -1,0 +1,98 @@
+{#
+    Web Push checklist for this device + "send test notification" (Stimulus peer push-diagnostics).
+    REQ-TWIG-001: override via templates/bundles/NowoPwaBundle/pwa/push_diagnostics.html.twig, or {% embed %} and replace blocks.
+
+    Variables (all optional):
+      config_url          JSON endpoint returning {push: {vapidPublicKey, configured?, preferenceEnabled?}} (host config; used when no VAPID key is known server-side)
+      vapid_public_key    defaults to nowo_pwa_web_push().vapid_public_key (nowo_pwa.web_push.vapid.public_key)
+      preference          true/false: host account preference step (omit to skip the step)
+      subscribe_url       host endpoint that stores PushSubscription.toJSON() (omit to skip the server step)
+      test_url            defaults to the bundle route nowo_pwa_push_test when web_push.test_notification.enabled
+      csrf_token          defaults to a token for web_push.test_notification.csrf_token_id
+      csrf_header         default X-CSRF-TOKEN
+      auto                run the check on page load without prompting (default true)
+      stimulus_controller default push-diagnostics
+      css_class           default nowo-pwa-push-diagnostics
+      check_class_prefix  default nowo-pwa-push-check (classes of the rendered <li> rows)
+      button_class        extra class for both buttons
+#}
+{% set _web_push = nowo_pwa_web_push() %}
+{% set _ctrl = stimulus_controller|default('push-diagnostics') %}
+{% set _bem = css_class|default('nowo-pwa-push-diagnostics') %}
+{% set _test_url = test_url is defined ? test_url : _web_push.test_url %}
+{% set _vapid = vapid_public_key is defined ? vapid_public_key : _web_push.vapid_public_key %}
+{% set _csrf = csrf_token is defined ? csrf_token : _web_push.csrf_token %}
+{% set _auto = auto is defined ? auto : true %}
+{% set _codes = {
+    support: ['ok', 'unsupported', 'insecure_context'],
+    server_config: ['ok', 'vapid_missing', 'network', 'http_error', 'invalid_response'],
+    preference: ['ok', 'preference_disabled'],
+    permission: ['ok', 'denied', 'not_granted'],
+    service_worker: ['ok', 'not_ready', 'error'],
+    browser_subscription: ['created', 'existing', 'renewed', 'push_service_error', 'not_allowed', 'error'],
+    server_subscription: ['ok', 'network', 'http_error', 'invalid_csrf', 'preference_disabled', 'push_not_configured', 'invalid_endpoint', 'endpoint_owned', 'default'],
+} %}
+{% set _steps = {} %}
+{% set _messages = {} %}
+{% for _step, _step_codes in _codes %}
+    {% set _steps = _steps|merge({(_step): ('push_diagnostics.step.' ~ _step)|trans({}, 'NowoPwaBundle')}) %}
+    {% for _code in _step_codes %}
+        {% set _messages = _messages|merge({(_step ~ '.' ~ _code): ('push_diagnostics.code.' ~ _step ~ '.' ~ _code)|trans({}, 'NowoPwaBundle')}) %}
+    {% endfor %}
+{% endfor %}
+{% set _labels = {
+    steps: _steps,
+    codes: _messages,
+    status: {
+        ok: 'push_diagnostics.status.ok'|trans({}, 'NowoPwaBundle'),
+        warn: 'push_diagnostics.status.warn'|trans({}, 'NowoPwaBundle'),
+        fail: 'push_diagnostics.status.fail'|trans({}, 'NowoPwaBundle'),
+        skip: 'push_diagnostics.status.skip'|trans({}, 'NowoPwaBundle'),
+    },
+    running: 'push_diagnostics.running'|trans({}, 'NowoPwaBundle'),
+    summaryOk: 'push_diagnostics.summary_ok'|trans({}, 'NowoPwaBundle'),
+    summaryFail: 'push_diagnostics.summary_fail'|trans({}, 'NowoPwaBundle'),
+    skipped: 'push_diagnostics.skipped'|trans({}, 'NowoPwaBundle'),
+    unexpected: 'push_diagnostics.unexpected'|trans({}, 'NowoPwaBundle'),
+    testSending: 'push_diagnostics.test_sending'|trans({}, 'NowoPwaBundle'),
+    testOk: 'push_diagnostics.test_ok'|trans({}, 'NowoPwaBundle'),
+    testFail: 'push_diagnostics.test_fail'|trans({}, 'NowoPwaBundle'),
+    testNoSubscription: 'push_diagnostics.test_no_subscription'|trans({}, 'NowoPwaBundle'),
+    testError: 'push_diagnostics.test_error'|trans({}, 'NowoPwaBundle'),
+} %}
+<section class="{{ _bem }}"
+         aria-labelledby="{{ _bem }}-heading"
+         data-testid="push-diagnostics"
+         data-controller="{{ _ctrl }}"
+         data-{{ _ctrl }}-config-url-value="{{ config_url|default('') }}"
+         data-{{ _ctrl }}-vapid-public-key-value="{{ _vapid|default('') }}"
+         data-{{ _ctrl }}-preference-value="{{ preference is defined and preference is not null ? (preference ? 'true' : 'false') : '' }}"
+         data-{{ _ctrl }}-subscribe-url-value="{{ subscribe_url|default('') }}"
+         data-{{ _ctrl }}-test-url-value="{{ _test_url|default('') }}"
+         data-{{ _ctrl }}-csrf-token-value="{{ _csrf|default('') }}"
+         data-{{ _ctrl }}-csrf-header-value="{{ csrf_header|default('X-CSRF-TOKEN') }}"
+         data-{{ _ctrl }}-auto-value="{{ _auto ? 'true' : 'false' }}"
+         data-{{ _ctrl }}-class-prefix-value="{{ check_class_prefix|default('nowo-pwa-push-check') }}"
+         data-{{ _ctrl }}-labels-value="{{ _labels|json_encode|e('html_attr') }}">
+    {% block push_diagnostics_header %}
+        <div class="{{ _bem }}__header">
+            <h2 id="{{ _bem }}-heading" class="{{ _bem }}__title">{{ 'push_diagnostics.title'|trans({}, 'NowoPwaBundle') }}</h2>
+            <p class="{{ _bem }}__intro">{{ 'push_diagnostics.intro'|trans({}, 'NowoPwaBundle') }}</p>
+        </div>
+    {% endblock %}
+    <p class="{{ _bem }}__summary" role="status" aria-live="polite" data-{{ _ctrl }}-target="summary">
+        {{- (_auto ? 'push_diagnostics.running' : 'push_diagnostics.idle')|trans({}, 'NowoPwaBundle') -}}
+    </p>
+    <ul class="{{ _bem }}__list" data-{{ _ctrl }}-target="list" data-testid="push-diagnostics-list"></ul>
+    {% block push_diagnostics_actions %}
+        <div class="{{ _bem }}__actions">
+            <button type="button" class="{{ _bem }}__check {{ button_class|default('') }}" data-action="{{ _ctrl }}#check" data-{{ _ctrl }}-target="checkButton" data-testid="push-diagnostics-check">
+                {{- 'push_diagnostics.check'|trans({}, 'NowoPwaBundle') -}}
+            </button>
+            <button type="button" class="{{ _bem }}__test {{ button_class|default('') }}" data-action="{{ _ctrl }}#test" data-{{ _ctrl }}-target="testButton" data-testid="push-diagnostics-test" hidden>
+                {{- 'push_diagnostics.test'|trans({}, 'NowoPwaBundle') -}}
+            </button>
+        </div>
+    {% endblock %}
+    <p class="{{ _bem }}__test-result" role="status" aria-live="polite" data-{{ _ctrl }}-target="testResult" data-testid="push-diagnostics-test-result" hidden></p>
+</section>

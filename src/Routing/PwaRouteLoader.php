@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\Routing;
 
+use Nowo\PwaBundle\Controller\PushTestController;
 use Nowo\PwaBundle\Controller\PwaController;
 use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Routing\Route;
@@ -21,6 +22,7 @@ final class PwaRouteLoader extends Loader
     public function __construct(
         private readonly array $routes,
         private readonly string $routePrefix,
+        private readonly bool $pushTestEnabled = false,
     ) {
     }
 
@@ -47,6 +49,21 @@ final class PwaRouteLoader extends Loader
                     '',
                     [],
                     $methods,
+                ),
+            );
+        }
+
+        if ($this->pushTestEnabled && isset($this->routes['push_test'])) {
+            $collection->add(
+                $this->routes['push_test']['name'],
+                new Route(
+                    $this->routePrefix . $this->routes['push_test']['path'],
+                    ['_controller' => PushTestController::class],
+                    [],
+                    [],
+                    '',
+                    [],
+                    ['POST'],
                 ),
             );
         }

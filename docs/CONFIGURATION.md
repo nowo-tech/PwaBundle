@@ -8,6 +8,7 @@ All options live under the `nowo_pwa` root key in `config/packages/nowo_pwa.yaml
 - [Manifest (W3C Web App Manifest)](#manifest-w3c-web-app-manifest)
 - [Meta tags (HTML head)](#meta-tags-html-head)
 - [Service worker](#service-worker)
+- [Web Push sender and test notification](#web-push-sender-and-test-notification)
 - [Install prompt](#install-prompt)
 - [Install links](#install-links)
 - [Client script](#client-script)
@@ -144,6 +145,57 @@ When `service_worker.web_push: true`, the kit appends `src/Resources/js/web_push
 | `tag` | Notification tag / renotify key |
 
 Hosts should **compose** `title` / `body` / `url` in PHP (or another producer) before sending the push. Do not put product domain mapping in a forked SW. Extra host JS still goes in `append_script` (concatenated after the kit script).
+
+## Web Push sender and test notification
+
+Server-side sending is **optional** and **off by default** (`nowo_pwa.web_push`). It is independent from `service_worker.web_push`, which only appends the SW `push` / `notificationclick` handlers.
+
+```yaml
+nowo_pwa:
+    web_push:
+        enabled: false                 # registers WebPushSenderInterface (MinishlinkWebPushSender)
+        vapid:
+            public_key: '%env(VAPID_PUBLIC_KEY)%'    # URL-safe base64
+            private_key: '%env(VAPID_PRIVATE_KEY)%'
+            subject: 'mailto:ops@example.com'          # empty: mailto:webmaster@localhost
+        # Anti-SSRF allow-list of push service host suffixes (defaults below).
+        allowed_endpoint_hosts: [fcm.googleapis.com, android.googleapis.com, push.services.mozilla.com, push.apple.com, notify.windows.com]
+        test_notification:
+            enabled: false             # POST endpoint for the push diagnostics "Send test notification" button
+            roles: [ROLE_USER]         # any of these attributes; [] = any authenticated user
+            csrf_token_id: nowo_pwa_push   # token expected in the X-CSRF-TOKEN header (or _token body field)
+            max_subscriptions: 10      # devices notified per request
+            title: null                # translation key / text (default domain); null = bundle catalogue
+            body: null
+            url: null                  # click URL; null = service_worker.web_push_defaults.url
+            route: null                # route name for the click URL (wins over url)
+            tag: nowo-pwa-push-test
+            icon: null                 # null = service_worker.web_push_defaults.icon
+            badge: null                # null = service_worker.web_push_defaults.badge
+            ttl: 300
+            urgency: high              # very-low | low | normal | high
+    routes:
+        push_test:
+            path: /pwa/push/test       # prefixed by route_prefix
+            name: nowo_pwa_push_test
+```
+
+### Dependencies (checked at container compile time)
+
+`web_push.enabled: true` requires packages the bundle only **suggests** (most PWAs never send push):
+
+```bash
+composer require minishlink/web-push:^11.0 nyholm/psr7
+# + a PSR-18 client if the app has none (symfony/http-client provides one)
+```
+
+`minishlink/web-push` 11 builds requests through PSR-17 factories and sends them with a PSR-18 client (auto-discovered, or the container services `Psr\Http\Client\ClientInterface`, `Psr\Http\Message\RequestFactoryInterface`, `Psr\Http\Message\StreamFactoryInterface` when they exist). Without a PSR-17 implementation every delivery fails at runtime, so `PwaExtension` runs `WebPushRequirements::assertSatisfied()` and **`cache:clear` fails** with an actionable `WebPushDependencyException` ("Run: composer require nyholm/psr7"). A missing PSR-18 client is reported on the first send (the test endpoint answers `500 {"error":"client_error","reason":"…"}`).
+
+`test_notification.enabled: true` additionally requires `symfony/security-bundle` and `symfony/security-csrf` (also checked at compile time) and a host service implementing `Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface`.
+
+### Why the test endpoint is off by default
+
+It sends real pushes to third-party push services and needs the host's subscription storage, an authenticated firewall and CSRF protection — none of which the bundle can assume. Enabling it is a one-line opt-in once those exist.
 
 ## Install prompt
 

@@ -108,4 +108,19 @@ final class ConfigurationTest extends TestCase
         self::assertSame('/tenant-a/home', $config['manifest']['start_url']);
         self::assertSame('/tenant-a/', $config['service_worker']['scope']);
     }
+
+    public function testRelativeStartUrlAndScopeAreNormalized(): void
+    {
+        $config = (new Processor())->processConfiguration(new Configuration(), [[
+            'manifest' => [
+                'start_url' => 'tenant-a',
+                'scope'     => '/tenant-a/',
+            ],
+            'service_worker' => [
+                'scope' => 'tenant-a/',
+            ],
+        ]]);
+
+        self::assertSame('tenant-a', $config['manifest']['start_url']);
+    }
 }
