@@ -7,9 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-10-12
+
+### Added
+
+- **Web Push sender (optional, off by default)** — `nowo_pwa.web_push` (`enabled`, `vapid.public_key|private_key|subject`, `allowed_endpoint_hosts`): `Nowo\PwaBundle\WebPush\WebPushSenderInterface` aliased to `MinishlinkWebPushSender` (minishlink/web-push ^11, PSR-18/PSR-17/logger services injected when present), `WebPushEndpointGuard` (HTTPS push-service allow-list, anti-SSRF), `PushSubscriptionData`, `WebPushDeliveryReport`.
+- **Fail-fast dependency checks** — `WebPushRequirements` runs at container compile time when `web_push.enabled`: missing minishlink/web-push (< 11) or PSR-17 factories break `cache:clear` with `WebPushDependencyException` ("composer require minishlink/web-push:^11.0 nyholm/psr7"); a missing PSR-18 client is reported on the first send.
+- **Test notification endpoint (opt-in)** — `web_push.test_notification.*` + `routes.push_test` (`POST /pwa/push/test`, `nowo_pwa_push_test`): `PushTestController` (authenticated, `roles` default `[ROLE_USER]`, CSRF `X-CSRF-TOKEN` id `nowo_pwa_push`, `max_subscriptions` 10) sends a test push to the user's subscriptions via a host `PushSubscriptionProviderInterface` and returns per-device JSON results; expired/invalid endpoints are removed through the provider; `PushTestDeniedException` lets hosts refuse with their own error code.
+- **Push diagnostics** — `src/Resources/assets/src/push-checks.ts` (`runPushChecks()`: support/secure context, VAPID config, optional preference, permission, service worker, browser subscription incl. VAPID key match + renewal, optional server copy), Stimulus peer `stimulus-peers/push_diagnostics_controller.ts` (`push-diagnostics`) and partial `@NowoPwaBundle/pwa/push_diagnostics.html.twig`; Twig function `nowo_pwa_web_push()`.
+- **Browser hints** — `src/Resources/assets/src/browser-detect.ts`, Stimulus peer `stimulus-peers/browser_hint_controller.ts` (`browser-hint`), partials `@NowoPwaBundle/pwa/browser_hint.html.twig` and `browser_guide.html.twig`.
+- Translations `push_diagnostics.*` and `browser_hint.*` in all 7 locales; default styles in `pwa.css`.
+- Spec Kit: `specs/002-push-diagnostics/`.
+
 ### Changed
 
+- `composer.json` **suggests** `minishlink/web-push`, `nyholm/psr7`, `symfony/http-client`, `symfony/security-bundle`, `symfony/security-csrf` (dev: added as require-dev); `php-http/discovery` plugin disabled in `allow-plugins`.
+- Dev: `@hotwired/stimulus` dev dependency, `tsconfig.json` + `pnpm run typecheck`, Vitest coverage gate extended to the new TS files.
 - Development: `composer.json` pins `config.platform.php` to 8.2.0 so the committed lock stays installable on the minimum PHP; CI overrides the platform per matrix cell.
+
+[1.7.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.7.0
 
 ## [1.6.1] - 2026-10-09
 

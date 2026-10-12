@@ -3,6 +3,22 @@
 
 ## Unreleased
 
+## To 1.7.0
+
+From **1.6.1** — optional Web Push sender, push diagnostics, test notification endpoint and browser hints. **No breaking changes**: everything is off by default, no config change needed.
+
+```bash
+composer update nowo-tech/pwa-bundle
+php bin/console cache:clear
+```
+
+To adopt (optional):
+
+1. Sender: `composer require minishlink/web-push:^11.0 nyholm/psr7` (plus `symfony/http-client` if no PSR-18 client), then `nowo_pwa.web_push.enabled: true` with `vapid.public_key` / `private_key` / `subject`. Missing PSR-17 factories now fail `cache:clear` instead of failing every delivery at runtime.
+2. Test endpoint: implement `Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface`, set `web_push.test_notification.enabled: true` (adjust `roles`, `csrf_token_id`, `routes.push_test`). Requires `symfony/security-bundle` + `symfony/security-csrf`.
+3. Frontend: register the Stimulus peers `push-diagnostics` / `browser-hint` from `vendor/nowo-tech/pwa-bundle/src/Resources/assets/stimulus-peers/` (host needs `@hotwired/stimulus`) and include `@NowoPwaBundle/pwa/push_diagnostics.html.twig` / `browser_hint.html.twig` / `browser_guide.html.twig`. See [USAGE](USAGE.md#push-diagnostics-test-notification-and-browser-hints).
+4. Templates that override `@NowoPwaBundle/pwa/*` are unaffected; the `routes` parameter now also contains `push_test`.
+
 ## To 1.6.1
 
 From **1.6.0** — dependency refresh only.
