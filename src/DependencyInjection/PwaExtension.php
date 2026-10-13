@@ -145,6 +145,7 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
             '$urlGenerator'         => new Reference('router'),
             '$config'               => $test,
             '$translator'           => new Reference('translator', ContainerInterface::NULL_ON_INVALID_REFERENCE),
+            '$logger'               => new Reference('logger', ContainerInterface::NULL_ON_INVALID_REFERENCE),
         ]);
         $controller->setPublic(true)->addTag('controller.service_arguments');
         $container->setDefinition(PushTestController::class, $controller);

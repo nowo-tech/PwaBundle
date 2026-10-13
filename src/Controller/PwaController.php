@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use function sprintf;
 
@@ -34,6 +35,7 @@ final class PwaController extends AbstractController
         private readonly array $templates,
         private readonly array $routes,
         private readonly iterable $manifestOverlayProviders = [],
+        private readonly ?UrlGeneratorInterface $urlGenerator = null,
     ) {
     }
 
@@ -72,9 +74,7 @@ final class PwaController extends AbstractController
             throw $this->createNotFoundException('Service worker is disabled.');
         }
 
-        $offlinePath = (string) ($this->routes['offline']['path'] ?? '/offline');
-        $offlineUrl  = $request->getSchemeAndHttpHost() . $offlinePath;
-        $script      = $this->serviceWorkerScriptBuilder->build($this->serviceWorkerConfig, $offlineUrl);
+        $script = $this->serviceWorkerScriptBuilder->build($this->serviceWorkerConfig, $this->resolveOfflineUrl($request));
 
         $response = new Response($script, Response::HTTP_OK, [
             'Content-Type'           => 'application/javascript; charset=UTF-8',
@@ -103,6 +103,25 @@ final class PwaController extends AbstractController
             'manifest'      => $this->manifestConfig,
             'retry_url'     => $startUrl !== '' ? $startUrl : '/',
         ]);
+    }
+
+    /**
+     * Offline fallback URL: explicit {@code service_worker.offline_url}, else the bundle offline route
+     * generated through the router (so {@code route_prefix} is honoured).
+     */
+    private function resolveOfflineUrl(Request $request): string
+    {
+        $configured = trim((string) ($this->serviceWorkerConfig['offline_url'] ?? ''));
+        if ($configured !== '') {
+            return $configured;
+        }
+
+        $routeName = (string) ($this->routes['offline']['name'] ?? '');
+        if ($this->urlGenerator instanceof UrlGeneratorInterface && $routeName !== '') {
+            return $this->urlGenerator->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL);
+        }
+
+        return $request->getSchemeAndHttpHost() . (string) ($this->routes['offline']['path'] ?? '/offline');
     }
 
     private function applyCacheHeaders(Response $response, int $maxAge, bool $public): void

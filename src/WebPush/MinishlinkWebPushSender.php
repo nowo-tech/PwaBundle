@@ -13,6 +13,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use SensitiveParameter;
 
 /**
  * Default {@see WebPushSenderInterface} backed by minishlink/web-push (^11, PSR-18/PSR-17 based).
@@ -26,6 +27,7 @@ final readonly class MinishlinkWebPushSender implements WebPushSenderInterface
 
     public function __construct(
         private string $publicKey,
+        #[SensitiveParameter]
         private string $privateKey,
         private string $subject = '',
         private WebPushEndpointGuard $endpointGuard = new WebPushEndpointGuard(),

@@ -113,11 +113,11 @@ nowo_pwa:
         runtime_cache_patterns: ['/build/', '/assets/']
         # Defaults deny auth/admin/API/profiler/setup. Explicit [] disables defaults.
         # deny_cache_patterns: ['/login', '/admin', '/api/', '/_profiler', '/_wdt']
-        offline_url: /offline
+        offline_url: /offline          # null = generated from the offline route (honours route_prefix); always precached
         skip_waiting: true
         clients_claim: true
-        navigation_preload: false
-        runtime_cache_max_entries: 0   # 0 = unlimited
+        navigation_preload: false      # when true, navigations use event.preloadResponse
+        runtime_cache_max_entries: 0   # 0 = unlimited; trims only the runtime cache (<prefix>-runtime-<version>), never precached URLs
         # Optional kit Web Push handlers (JSON: title, body, url, icon, badge, tag).
         # web_push: true
         # web_push_defaults:

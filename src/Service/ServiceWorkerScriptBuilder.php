@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\Service;
 
+use function in_array;
 use function is_array;
 use function is_string;
 use function json_encode;
@@ -28,10 +29,12 @@ final class ServiceWorkerScriptBuilder
         $prefix = preg_replace('/[^a-zA-Z0-9_-]/', '', $prefix) ?: 'nowo-pwa';
 
         $denyPatterns = $this->stringList($serviceWorkerConfig['deny_cache_patterns'] ?? []);
-        $precacheUrls = $this->filterDeniedUrls(
-            $this->stringList($serviceWorkerConfig['precache_urls'] ?? []),
-            $denyPatterns,
-        );
+        $precacheUrls = $this->stringList($serviceWorkerConfig['precache_urls'] ?? []);
+        // The offline page must be precached or the navigation fallback can never be served.
+        if ($offlineUrl !== '' && !in_array($offlineUrl, $precacheUrls, true)) {
+            $precacheUrls[] = $offlineUrl;
+        }
+        $precacheUrls = $this->filterDeniedUrls($precacheUrls, $denyPatterns);
 
         $config = [
             'cachePrefix'            => $prefix,
@@ -120,6 +123,8 @@ final class ServiceWorkerScriptBuilder
 'use strict';
 const CONFIG = __CONFIG__;
 const CACHE_NAME = `${CONFIG.cachePrefix}-${CONFIG.cacheVersion}`;
+// Runtime entries live in their own cache so trimming never evicts the precached shell / offline page.
+const RUNTIME_CACHE_NAME = `${CONFIG.cachePrefix}-runtime-${CONFIG.cacheVersion}`;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -138,7 +143,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => Promise.all(
-      keys.filter((key) => key.startsWith(`${CONFIG.cachePrefix}-`) && key !== CACHE_NAME).map((key) => caches.delete(key)),
+      keys.filter((key) => key.startsWith(`${CONFIG.cachePrefix}-`) && key !== CACHE_NAME && key !== RUNTIME_CACHE_NAME).map((key) => caches.delete(key)),
     )).then(async () => {
       if (CONFIG.navigationPreload && self.registration.navigationPreload) {
         await self.registration.navigationPreload.enable();
@@ -182,13 +187,26 @@ function requestPathname(url) {
   }
 }
 
+function entryPathname(entry) {
+  if (!isHttpOrHttps(entry)) {
+    return entry;
+  }
+
+  return requestPathname(entry);
+}
+
 function matchesPrecacheEntry(url, entry) {
   const pathname = requestPathname(url);
-  if (entry === '/' || entry === '') {
+  const entryPath = entryPathname(entry);
+  if (entryPath === '/' || entryPath === '') {
     return pathname === '/' || pathname === '';
   }
 
-  return pathname === entry || pathname.endsWith(entry);
+  return pathname === entryPath || pathname.endsWith(entryPath);
+}
+
+function isPrecacheRequest(url) {
+  return CONFIG.precacheUrls.some((entry) => matchesPrecacheEntry(url, entry));
 }
 
 function matchesRuntimePattern(url) {
@@ -204,7 +222,7 @@ function shouldHandleRequest(request) {
     return true;
   }
 
-  if (CONFIG.precacheUrls.some((entry) => matchesPrecacheEntry(request.url, entry))) {
+  if (isPrecacheRequest(request.url)) {
     return true;
   }
 
@@ -223,12 +241,19 @@ async function trimRuntimeCache(cache) {
   await Promise.all(keys.slice(0, excess).map((request) => cache.delete(request)));
 }
 
-async function putInCache(cache, request, response) {
+async function putInCache(request, response) {
   if (!response || !isHttpOrHttps(request.url) || isDenied(request.url) || !isCacheableResponse(response)) {
     return;
   }
 
   try {
+    // Precached URLs are refreshed in place in the shell cache (never trimmed); everything else is runtime.
+    if (isPrecacheRequest(request.url)) {
+      const shell = await caches.open(CACHE_NAME);
+      await shell.put(request, response.clone());
+      return;
+    }
+    const cache = await caches.open(RUNTIME_CACHE_NAME);
     await cache.put(request, response.clone());
     await trimRuntimeCache(cache);
   } catch (error) {
@@ -236,47 +261,80 @@ async function putInCache(cache, request, response) {
   }
 }
 
-async function networkFirst(request) {
-  try {
-    const response = await fetch(request);
-    if (response) {
-      const cache = await caches.open(CACHE_NAME);
-      await putInCache(cache, request, response);
+async function fetchWithPreload(request, preloadResponse) {
+  if (preloadResponse) {
+    try {
+      const preloaded = await preloadResponse;
+      if (preloaded) {
+        return preloaded;
+      }
+    } catch (error) {
+      // Navigation preload failed: fall back to a regular fetch.
     }
+  }
+
+  return fetch(request);
+}
+
+async function offlineFallback(request) {
+  if (request.mode === 'navigate' && CONFIG.offlineUrl) {
+    return caches.match(CONFIG.offlineUrl);
+  }
+  return undefined;
+}
+
+async function networkFirst(request, preloadResponse) {
+  try {
+    const response = await fetchWithPreload(request, preloadResponse);
+    await putInCache(request, response);
     return response;
   } catch (error) {
     const cached = await caches.match(request);
     if (cached) {
       return cached;
     }
-    if (request.mode === 'navigate' && CONFIG.offlineUrl) {
-      return caches.match(CONFIG.offlineUrl);
+    const fallback = await offlineFallback(request);
+    if (fallback) {
+      return fallback;
     }
     throw error;
   }
 }
 
-async function cacheFirst(request) {
+async function cacheFirst(request, preloadResponse) {
   const cached = await caches.match(request);
   if (cached) {
     return cached;
   }
-  const response = await fetch(request);
-  if (response) {
-    const cache = await caches.open(CACHE_NAME);
-    await putInCache(cache, request, response);
+  try {
+    const response = await fetchWithPreload(request, preloadResponse);
+    await putInCache(request, response);
+    return response;
+  } catch (error) {
+    const fallback = await offlineFallback(request);
+    if (fallback) {
+      return fallback;
+    }
+    throw error;
   }
-  return response;
 }
 
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cached = await cache.match(request);
-  const networkPromise = fetch(request).then(async (response) => {
-    await putInCache(cache, request, response);
+async function staleWhileRevalidate(request, preloadResponse, waitUntil) {
+  const cached = await caches.match(request);
+  const networkPromise = fetchWithPreload(request, preloadResponse).then(async (response) => {
+    await putInCache(request, response);
     return response;
-  });
-  return cached || networkPromise;
+  }).catch(() => undefined);
+  if (cached) {
+    waitUntil(networkPromise);
+    return cached;
+  }
+  const response = await networkPromise;
+  if (response) {
+    return response;
+  }
+  const fallback = await offlineFallback(request);
+  return fallback || Response.error();
 }
 
 self.addEventListener('fetch', (event) => {
@@ -284,14 +342,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Consume the navigation preload response (when enabled) instead of issuing a second request.
+  const preloadResponse = CONFIG.navigationPreload && event.request.mode === 'navigate' ? event.preloadResponse : undefined;
+  const waitUntil = (promise) => event.waitUntil(promise);
+
   event.respondWith((async () => {
     switch (CONFIG.strategy) {
       case 'cache-first':
-        return cacheFirst(event.request);
+        return cacheFirst(event.request, preloadResponse);
       case 'stale-while-revalidate':
-        return staleWhileRevalidate(event.request);
+        return staleWhileRevalidate(event.request, preloadResponse, waitUntil);
       default:
-        return networkFirst(event.request);
+        return networkFirst(event.request, preloadResponse);
     }
   })());
 });

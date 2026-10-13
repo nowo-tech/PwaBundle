@@ -11,6 +11,7 @@ use Nowo\PwaBundle\WebPush\Exception\WebPushDependencyException;
 use Nowo\PwaBundle\WebPush\PushSubscriptionData;
 use Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface;
 use Nowo\PwaBundle\WebPush\WebPushSenderInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,6 +70,7 @@ final readonly class PushTestController
         private UrlGeneratorInterface $urlGenerator,
         private array $config,
         private ?TranslatorInterface $translator = null,
+        private ?LoggerInterface $logger = null,
     ) {
     }
 
@@ -122,7 +124,9 @@ final readonly class PushTestController
             } catch (WebPushDependencyException $e) {
                 return new JsonResponse(['ok' => false, 'error' => 'client_error', 'reason' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
             } catch (Throwable $e) {
-                $results[] = ['host' => $host, 'ok' => false, 'status' => null, 'reason' => $e->getMessage(), 'expired' => false];
+                // Never echo raw transport/library messages to the browser (may leak internals); log them instead.
+                $this->logger?->error('nowo_pwa push test: sending to {host} failed: {message}', ['host' => $host, 'message' => $e->getMessage(), 'exception' => $e]);
+                $results[] = ['host' => $host, 'ok' => false, 'status' => null, 'reason' => 'send_failed', 'expired' => false];
             }
         }
 

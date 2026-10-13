@@ -13,6 +13,7 @@ use Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface;
 use Nowo\PwaBundle\WebPush\WebPushDeliveryReport;
 use Nowo\PwaBundle\WebPush\WebPushSenderInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -168,7 +169,7 @@ final class PushTestControllerTest extends TestCase
             ['host' => 'fcm.googleapis.com', 'ok' => false, 'status' => 403, 'reason' => 'Forbidden', 'expired' => false],
             ['host' => 'updates.push.services.mozilla.com', 'ok' => false, 'status' => 410, 'reason' => 'Gone', 'expired' => true],
             ['host' => 'evil.example.com', 'ok' => false, 'status' => null, 'reason' => 'not allowed', 'expired' => true],
-            ['host' => 'fcm.googleapis.com', 'ok' => false, 'status' => null, 'reason' => 'transport down', 'expired' => false],
+            ['host' => 'fcm.googleapis.com', 'ok' => false, 'status' => null, 'reason' => 'send_failed', 'expired' => false],
         ], $data['results']);
         self::assertSame([self::MOZ, self::EVIL], $this->removed);
     }
@@ -194,6 +195,19 @@ final class PushTestControllerTest extends TestCase
         self::assertSame(['ok' => false, 'error' => 'client_error', 'reason' => 'composer require nyholm/psr7'], $this->decode($response));
     }
 
+    public function testTransportErrorsAreLoggedButNotEchoedToTheClient(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(self::once())
+            ->method('error')
+            ->with(self::stringContains('failed'), self::callback(static fn (array $context): bool => $context['host'] === 'fcm.googleapis.com' && $context['message'] === 'transport down'));
+
+        $response = $this->controller(subscriptions: [new PushSubscriptionData('https://fcm.googleapis.com/fcm/send/boom', 'p', 'a')], logger: $logger)($this->request());
+
+        self::assertStringNotContainsString('transport down', (string) $response->getContent());
+        self::assertSame('send_failed', $this->decode($response)['results'][0]['reason']);
+    }
+
     /**
      * @param list<string> $granted
      * @param iterable<PushSubscriptionData>|PushTestDeniedException|null $subscriptions
@@ -208,6 +222,7 @@ final class PushTestControllerTest extends TestCase
         array $reports = [],
         array $config = [],
         ?TranslatorInterface $translator = null,
+        ?LoggerInterface $logger = null,
     ): PushTestController {
         $tokenStorage = new TokenStorage();
         if ($user instanceof UserInterface) {
@@ -306,6 +321,7 @@ final class PushTestControllerTest extends TestCase
                 'urgency'           => 'high',
             ],
             $translator,
+            $logger,
         );
     }
 

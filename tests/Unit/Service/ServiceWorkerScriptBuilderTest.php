@@ -8,6 +8,8 @@ use Nowo\PwaBundle\Service\ServiceWorkerCacheDefaults;
 use Nowo\PwaBundle\Service\ServiceWorkerScriptBuilder;
 use PHPUnit\Framework\TestCase;
 
+use function substr_count;
+
 final class ServiceWorkerScriptBuilderTest extends TestCase
 {
     public function testGeneratesScriptWithConfig(): void
@@ -36,7 +38,7 @@ final class ServiceWorkerScriptBuilderTest extends TestCase
             'runtime_cache_patterns' => ['', '/assets/'],
         ], '/offline');
 
-        self::assertStringContainsString('"precacheUrls":[]', $script);
+        self::assertStringContainsString('"precacheUrls":["/offline"]', $script);
         self::assertStringContainsString('"/assets/"', $script);
     }
 
@@ -74,7 +76,7 @@ final class ServiceWorkerScriptBuilderTest extends TestCase
         self::assertStringContainsString('function isHttpOrHttps(url)', $script);
         self::assertStringContainsString('function shouldHandleRequest(request)', $script);
         self::assertStringContainsString('function matchesPrecacheEntry(url, entry)', $script);
-        self::assertStringContainsString('async function putInCache(cache, request, response)', $script);
+        self::assertStringContainsString('async function putInCache(request, response)', $script);
         self::assertStringContainsString('function isCacheableResponse(response)', $script);
         self::assertStringContainsString("cacheControl.includes('no-store')", $script);
         self::assertStringContainsString("cacheControl.includes('private')", $script);
@@ -109,5 +111,65 @@ final class ServiceWorkerScriptBuilderTest extends TestCase
 
         self::assertStringContainsString('/* push */', $script);
         self::assertStringContainsString("self.addEventListener('push'", $script);
+    }
+
+    public function testOfflineUrlIsAlwaysPrecached(): void
+    {
+        $script = (new ServiceWorkerScriptBuilder())->build([
+            'precache_urls' => ['/'],
+        ], 'https://example.test/pwa/offline');
+
+        self::assertStringContainsString('"precacheUrls":["/","https://example.test/pwa/offline"]', $script);
+        self::assertStringContainsString('"offlineUrl":"https://example.test/pwa/offline"', $script);
+        // Absolute precache entries are compared by pathname.
+        self::assertStringContainsString('function entryPathname(entry)', $script);
+    }
+
+    public function testOfflineUrlIsNotDuplicatedInPrecache(): void
+    {
+        $script = (new ServiceWorkerScriptBuilder())->build([
+            'precache_urls' => ['/', '/offline'],
+        ], '/offline');
+
+        self::assertStringContainsString('"precacheUrls":["/","/offline"]', $script);
+    }
+
+    public function testEmptyOfflineUrlIsNotPrecached(): void
+    {
+        $script = (new ServiceWorkerScriptBuilder())->build(['precache_urls' => ['/']], '');
+
+        self::assertStringContainsString('"precacheUrls":["/"]', $script);
+    }
+
+    public function testRuntimeEntriesUseSeparateTrimmedCache(): void
+    {
+        $script = (new ServiceWorkerScriptBuilder())->build(['runtime_cache_max_entries' => 10], '/offline');
+
+        self::assertStringContainsString('const RUNTIME_CACHE_NAME = `${CONFIG.cachePrefix}-runtime-${CONFIG.cacheVersion}`;', $script);
+        self::assertStringContainsString('key !== CACHE_NAME && key !== RUNTIME_CACHE_NAME', $script);
+        self::assertStringContainsString("const cache = await caches.open(RUNTIME_CACHE_NAME);\n    await cache.put(request, response.clone());\n    await trimRuntimeCache(cache);", $script);
+        // The shell cache is never passed to trimRuntimeCache.
+        self::assertStringNotContainsString('trimRuntimeCache(shell)', $script);
+        self::assertSame(1, substr_count($script, 'await trimRuntimeCache('));
+    }
+
+    public function testNavigationPreloadResponseIsConsumed(): void
+    {
+        $script = (new ServiceWorkerScriptBuilder())->build(['navigation_preload' => true], '/offline');
+
+        self::assertStringContainsString("CONFIG.navigationPreload && event.request.mode === 'navigate' ? event.preloadResponse : undefined", $script);
+        self::assertStringContainsString('const preloaded = await preloadResponse;', $script);
+        self::assertStringContainsString('const response = await fetchWithPreload(request, preloadResponse);', $script);
+        self::assertStringContainsString('return networkFirst(event.request, preloadResponse);', $script);
+    }
+
+    public function testStaleWhileRevalidateHandlesNetworkFailure(): void
+    {
+        $script = (new ServiceWorkerScriptBuilder())->build(['strategy' => 'stale-while-revalidate'], '/offline');
+
+        self::assertStringContainsString('}).catch(() => undefined);', $script);
+        self::assertStringContainsString('waitUntil(networkPromise);', $script);
+        self::assertStringContainsString('const fallback = await offlineFallback(request);' . "\n" . '  return fallback || Response.error();', $script);
+        self::assertStringContainsString("if (request.mode === 'navigate' && CONFIG.offlineUrl) {", $script);
     }
 }
