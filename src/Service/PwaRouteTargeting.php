@@ -7,6 +7,7 @@ namespace Nowo\PwaBundle\Service;
 use function is_string;
 use function preg_match;
 use function rtrim;
+use function str_contains;
 use function str_ends_with;
 use function str_starts_with;
 use function strlen;
@@ -30,7 +31,7 @@ final class PwaRouteTargeting
     public const REGEX_PREFIX = 'regex:';
 
     /** Characters that make a legacy `/…/` pattern a regex rather than a plain path. */
-    private const LEGACY_REGEX_SYNTAX = '^$\\()[]{}|+?';
+    private const LEGACY_REGEX_SYNTAX = '^$\\()[]{}|+?*';
 
     /**
      * @param list<mixed> $patterns
@@ -156,7 +157,9 @@ final class PwaRouteTargeting
     /**
      * BC: before 1.9 every `/…/` pattern was a regex, so a plain path such as `/blog/` matched anywhere
      * (`/x/blog/y`). Now a `/…/` pattern is only treated as a regex when it contains regex syntax that
-     * cannot appear in a plain path (`^ $ \ ( ) [ ] { } | + ?`); that legacy form is deprecated.
+     * is not used in plain paths (`^ $ \ ( ) [ ] { } | + ? *`, or `.` when the body has no `/`, e.g. `/admin.+/` or `/blog.v2/`);
+     * that legacy form is deprecated. A body with an unescaped `/` (e.g. `/a.b/c/`) is never a valid `/…/` regex,
+     * so a `.` there is a literal path character.
      */
     private function legacySlashRegex(string $pattern): ?string
     {
@@ -164,7 +167,8 @@ final class PwaRouteTargeting
             return null;
         }
 
-        if (strpbrk(substr($pattern, 1, -1), self::LEGACY_REGEX_SYNTAX) === false) {
+        $body = substr($pattern, 1, -1);
+        if (strpbrk($body, self::LEGACY_REGEX_SYNTAX) === false && !(str_contains($body, '.') && !str_contains($body, '/'))) {
             return null;
         }
 

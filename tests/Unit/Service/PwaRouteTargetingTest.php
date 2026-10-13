@@ -126,4 +126,35 @@ final class PwaRouteTargetingTest extends TestCase
         self::assertCount(1, $deprecations);
         self::assertStringContainsString('regex:', $deprecations[0]);
     }
+
+    public function testLegacySlashRegexWithDotOrStarKeepsRegexBehaviour(): void
+    {
+        $targeting = new PwaRouteTargeting();
+        $path      = PwaRouteTargeting::MATCH_BY_PATH;
+
+        $deprecations = [];
+        set_error_handler(static function (int $errno, string $errstr) use (&$deprecations): bool {
+            if ($errno === E_USER_DEPRECATED) {
+                $deprecations[] = $errstr;
+            }
+
+            return true;
+        });
+
+        try {
+            self::assertTrue($targeting->shouldApply('', '/admin/users', PwaRouteTargeting::MODE_ONLY, ['/admin.*/'], $path));
+            self::assertTrue($targeting->shouldApply('', '/blog/2026', PwaRouteTargeting::MODE_ONLY, ['/blog.+/'], $path));
+            self::assertTrue($targeting->shouldApply('', '/x/news/y', PwaRouteTargeting::MODE_ONLY, ['/new?s/'], $path));
+            self::assertFalse($targeting->shouldApply('', '/admin/users', PwaRouteTargeting::MODE_EXCEPT, ['/admin.*/'], $path));
+            self::assertTrue($targeting->shouldApply('', '/x/blog-v2', PwaRouteTargeting::MODE_ONLY, ['/blog.v2/'], $path));
+            self::assertTrue($targeting->shouldApply('', '/x/admin/y', PwaRouteTargeting::MODE_ONLY, ['/adm*in/'], $path));
+            // A body with an inner "/" cannot be a "/"-delimited regex: the dot stays a literal path character.
+            self::assertTrue($targeting->shouldApply('', '/a.b/c', PwaRouteTargeting::MODE_ONLY, ['/a.b/c/'], $path));
+            self::assertFalse($targeting->shouldApply('', '/axb/c', PwaRouteTargeting::MODE_ONLY, ['/a.b/c/'], $path));
+        } finally {
+            restore_error_handler();
+        }
+
+        self::assertCount(6, $deprecations);
+    }
 }

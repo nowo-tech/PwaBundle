@@ -344,7 +344,7 @@ Path patterns when `match_by: path`:
 | `/vault*` | Prefix (`/vault` and `/vault/…`) |
 | `regex:/^\/admin/` | Regex: `regex:` followed by a delimited PCRE (any delimiter, flags allowed) |
 | `#^/admin(/\|$)#i` | Regex: a `#…#` delimited PCRE (flags allowed after the closing `#`) |
-| `/^\/admin/` | **Deprecated** legacy regex: a `/…/` pattern is a regex only when it contains `^ $ \ ( ) [ ] { } \| + ?`; it triggers a deprecation — switch to `regex:` |
+| `/^\/admin/` | **Deprecated** legacy regex: a `/…/` pattern is a regex only when it contains `^ $ \ ( ) [ ] { } \| + ? *` (or `.` when there is no inner `/`, e.g. `/admin.*/`); it triggers a deprecation — switch to `regex:` |
 
 Regexes are matched against the normalized request path (leading `/`, no trailing slash). An invalid regex never matches and raises no PHP warning.
 

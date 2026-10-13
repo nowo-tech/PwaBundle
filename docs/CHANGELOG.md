@@ -34,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Path route targeting:** legacy implicit `/…/` regex patterns containing `.` or `*` (e.g. `/admin.*/`) are again treated as regex (with the 1.9 deprecation) instead of silently becoming a plain path that never matched. The regex syntax list is now `^ $ \ ( ) [ ] { } | + ? *`, plus `.` when the pattern body has no inner `/` (so a plain path such as `/a.b/c/` stays a path).
+
 ## [1.9.0] - 2026-10-13
 
 ### Fixed
