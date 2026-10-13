@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## To 1.9.0
+
+From **1.8.0** — explicit regex markers for route targeting patterns; vitest 4.
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
+
 - **Path route targeting:** write regex path patterns with an explicit marker: `'regex:/^\/admin/'` or `'#^/admin(/|$)#'` (single-quoted in YAML). Legacy `/…/` regexes keep working when they contain regex syntax (`^ $ \ ( ) [ ] { } | + ?`) but trigger a deprecation. A `/…/` pattern without such syntax (e.g. `/blog/`) is now the plain path `/blog` instead of a regex matching `blog` anywhere in the URL; if you relied on that substring match, use `'regex:#/blog(/|$)#'`.
 - Invalid regex patterns no longer warn; they never match. Check your targeting if a page unexpectedly loses (or keeps) the PWA assets.
 
