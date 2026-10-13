@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-10-13
+
 ### Security
 
 - Push test endpoint no longer returns raw exception messages from the push transport; failures report `send_failed` and the details are logged.
@@ -19,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `runtime_cache_max_entries` trims a dedicated runtime cache (`<prefix>-runtime-<version>`) instead of the shell cache, so precached pages (offline page, `/`) are no longer evicted.
 - `navigation_preload: true` now consumes `event.preloadResponse` instead of issuing a second network request.
 - `stale-while-revalidate` no longer produces unhandled rejections when offline and falls back to the offline page for navigations; `cache-first` also falls back for navigations.
+
+[1.8.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.8.0
 
 ## [1.7.1] - 2026-10-13
 

@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## To 1.8.0
+
+From **1.7.1** — service worker - offline page precached, route_prefix honoured, separate runtime cache, navigation preload used.
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
+
+- Runtime responses now live in a separate `<prefix>-runtime-<version>` cache; precached pages are never trimmed. Old caches are cleaned on activate.
+- The offline page is always precached; its URL honours `route_prefix`, or `service_worker.offline_url` when set (that option now works).
+- The push test endpoint returns `reason: "send_failed"` instead of raw exception text.
+
 ## To 1.7.1
 
 From **1.7.0** — dependency refresh and repository maintenance.
