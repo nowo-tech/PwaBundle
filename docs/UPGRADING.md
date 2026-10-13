@@ -1,7 +1,16 @@
 # Upgrading
 
-
 ## Unreleased
+
+## To 1.7.1
+
+From **1.7.0** — dependency refresh and repository maintenance.
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
+
+- No breaking changes. No application upgrade steps.
 
 ## To 1.7.0
 

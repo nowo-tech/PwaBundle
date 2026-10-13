@@ -2,7 +2,7 @@
 
 **Baseline spec**: [`spec.md`](spec.md)  
 **Package**: `nowo-tech/pwa-bundle`  
-**Last audited**: 2026-10-12 (v1.7.0 push diagnostics — see [`../002-push-diagnostics/spec.md`](../002-push-diagnostics/spec.md))
+**Last audited**: 2026-10-13 (v1.7.0 push diagnostics — see [`../002-push-diagnostics/spec.md`](../002-push-diagnostics/spec.md))
 
 This file proves that **every production source artifact** under `src/` is referenced by the baseline specification. PHPUnit under `tests/` is out of scope unless promoted in the spec.
 

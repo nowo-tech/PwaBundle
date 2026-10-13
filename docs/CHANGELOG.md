@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-10-13
+
+### Changed
+
+- Repository: `.twig-cs-fixer.cache` is now git-ignored.
+
+### Dependencies
+
+- `vite` 8.3.2 → 8.3.4 (frontend tooling; #51).
+- `jsdom` 30.1.1 → 30.1.2 (frontend tooling; #52).
+
+[1.7.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.7.1
+
 ## [1.7.0] - 2026-10-12
 
 ### Added
@@ -53,7 +66,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **REQ-CS-008:** `igor-php/igor-php` (require-dev only), root `igor.json`, Composer/`Makefile` `igor` target, and `release-check` wiring for FrankenPHP worker-state audit.
-
 
 ---
 
