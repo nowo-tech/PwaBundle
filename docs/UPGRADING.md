@@ -1,5 +1,48 @@
 # Upgrading
 
+## Table of contents
+
+- [Unreleased](#unreleased)
+- [To 1.9.0](#to-190)
+- [To 1.8.0](#to-180)
+- [To 1.7.1](#to-171)
+- [To 1.7.0](#to-170)
+- [To 1.6.1](#to-161)
+- [To 1.6.0](#to-160)
+- [To 1.5.3](#to-153)
+- [To 1.5.2](#to-152)
+- [From 1.5.0 to 1.5.1](#from-150-to-151)
+  - [Notes](#notes)
+- [From 1.4.0 to 1.5.0](#from-140-to-150)
+  - [Notes](#notes-1)
+- [From 1.3.3 to 1.4.0](#from-133-to-140)
+  - [Notes](#notes-2)
+- [From 1.3.2 to 1.3.3](#from-132-to-133)
+- [1.2.1 (2026-08-03)](#121-2026-08-03)
+  - [Upgrade steps](#upgrade-steps)
+  - [Default deny patterns](#default-deny-patterns)
+- [1.2.0 (2026-07-30)](#120-2026-07-30)
+  - [Upgrade steps](#upgrade-steps-1)
+  - [New install prompt options (optional)](#new-install-prompt-options-optional)
+  - [New Twig blocks](#new-twig-blocks)
+- [1.1.3 (2026-07-29)](#113-2026-07-29)
+- [1.1.2 (2026-07-16)](#112-2026-07-16)
+- [1.1.1 (2026-07-16)](#111-2026-07-16)
+- [1.1.0 (2026-07-09)](#110-2026-07-09)
+  - [Upgrade steps](#upgrade-steps-2)
+  - [New options (optional)](#new-options-optional)
+  - [Custom install prompt template](#custom-install-prompt-template)
+- [1.0.1 (2026-07-05)](#101-2026-07-05)
+  - [Recommended hardening (optional)](#recommended-hardening-optional)
+- [1.0.0 (2026-07-05)](#100-2026-07-05)
+  - [Fresh install](#fresh-install)
+  - [Service worker cache busting](#service-worker-cache-busting)
+- [To 1.3.2](#to-132)
+- [To 1.3.1](#to-131)
+- [To 1.3.0](#to-130)
+  - [Twig Extra Bundle (REQ-TWIG-004)](#twig-extra-bundle-req-twig-004)
+  - [Twig-CS-Fixer (maintainers)](#twig-cs-fixer-maintainers)
+
 ## Unreleased
 
 ## To 1.9.0
@@ -93,13 +136,6 @@ php bin/console cache:clear
 ```
 
 - No application upgrade steps for require-dev Igor tooling (REQ-CS-008). Consumers do not pull `igor-php/igor-php` transitively.
-
-## Table of contents
-
-- [From 1.5.0 to 1.5.1](#from-150-to-151)
-- [From 1.4.0 to 1.5.0](#from-140-to-150)
-- [From 1.3.3 to 1.4.0](#from-133-to-140)
-- [From 1.3.2 to 1.3.3](#from-132-to-133)
 
 ## From 1.5.0 to 1.5.1
 
