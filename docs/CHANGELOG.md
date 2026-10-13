@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Path route targeting (`match_by: path`):** a plain path written with slashes on both ends (e.g. `/blog/`) is no longer used as an unanchored regex (it matched `/x/blog/y`); it now means the path `/blog`. An invalid regex no longer raises a PHP warning on every request: it simply never matches (`preg_match()` failure is checked).
+
+### Added
+
+- **Explicit regex markers** for path patterns: `regex:<delimited PCRE>` (e.g. `regex:/^\/admin/`) or a `#…#` delimited pattern (e.g. `#^/admin(/|$)#i`).
+
+### Deprecated
+
+- Legacy implicit `/…/` regex path patterns: still treated as regex when they contain regex syntax (`^ $ \ ( ) [ ] { } | + ?`), with a deprecation (`symfony/deprecation-contracts`, now a direct requirement). Use `regex:` instead.
+
+### Changed
+
+- **Dev:** Vitest 4 (`vitest` / `@vitest/coverage-v8` `^4.1.11`). Tests install a placeholder `window.matchMedia` before spying (Vitest 4 only spies on existing functions) and cover the branches the new coverage engine counts; `push-checks.ts` skip-marking loop expressed with `filter()` (same behaviour; not part of the built `pwa.js`).
+
 ## [1.8.0] - 2026-10-13
 
 ### Security

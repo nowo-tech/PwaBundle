@@ -29,11 +29,26 @@ function installLinksHtml(): string {
     `;
 }
 
+/** Vitest 4 only spies on existing functions: install a placeholder matchMedia, then spy on it. */
+function spyOnMatchMedia() {
+    Object.defineProperty(window, 'matchMedia', {
+        configurable: true,
+        writable: true,
+        value: (): MediaQueryList => {
+            throw new Error('matchMedia not mocked');
+        },
+    });
+
+    return vi.spyOn(window, 'matchMedia');
+}
+
 describe('pwa-client', () => {
     beforeEach(() => {
         localStorage.clear();
         document.body.innerHTML = '';
         vi.restoreAllMocks();
+        // jsdom has no window.matchMedia: start every test without it (see spyOnMatchMedia()).
+        Object.defineProperty(window, 'matchMedia', { configurable: true, writable: true, value: undefined });
     });
 
     afterEach(() => {
@@ -285,6 +300,47 @@ describe('pwa-client', () => {
         expect(update).toHaveBeenCalled();
     });
 
+    it('registerServiceWorker ignores hidden pages and swallows update failures', async () => {
+        const update = vi.fn(async () => {
+            throw new Error('offline');
+        });
+        const register = vi.fn(async () => ({ update }));
+        let visibilityHandler: (() => void) | undefined;
+        const fakeDocument = {
+            ...document,
+            addEventListener: (event: string, handler: () => void) => {
+                if (event === 'visibilitychange') {
+                    visibilityHandler = handler;
+                }
+            },
+            visibilityState: 'hidden',
+        };
+        vi.stubGlobal('document', fakeDocument);
+        vi.stubGlobal('navigator', { serviceWorker: { register, addEventListener: vi.fn() } });
+
+        await registerServiceWorker({ serviceWorkerUrl: '/sw.js', scope: '/' });
+
+        visibilityHandler?.();
+        expect(update).not.toHaveBeenCalled();
+
+        fakeDocument.visibilityState = 'visible';
+        visibilityHandler?.();
+        expect(update).toHaveBeenCalledTimes(1);
+        await Promise.resolve();
+        await Promise.resolve();
+    });
+
+    it('registerServiceWorker skips the visibility listener when disabled', async () => {
+        const register = vi.fn(async () => ({ update: vi.fn() }));
+        const addEventListener = vi.fn();
+        vi.stubGlobal('document', { ...document, addEventListener });
+        vi.stubGlobal('navigator', { serviceWorker: { register, addEventListener: vi.fn() } });
+
+        await registerServiceWorker({ serviceWorkerUrl: '/sw.js', scope: '/', checkUpdatesOnVisibility: false });
+
+        expect(addEventListener).not.toHaveBeenCalledWith('visibilitychange', expect.any(Function));
+    });
+
     it('registerServiceWorker reloads when controller changes', async () => {
         const reload = vi.fn();
         Object.defineProperty(window, 'location', {
@@ -315,7 +371,7 @@ describe('pwa-client', () => {
     });
 
     it('isPwaInstalled detects iOS standalone mode', () => {
-        vi.spyOn(window, 'matchMedia').mockReturnValue({
+        spyOnMatchMedia().mockReturnValue({
             matches: false,
             media: '',
             addEventListener: vi.fn(),
@@ -327,7 +383,7 @@ describe('pwa-client', () => {
     });
 
     it('isPwaInstalled detects standalone display mode', () => {
-        vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => ({
+        spyOnMatchMedia().mockImplementation((query: string) => ({
             matches: query === '(display-mode: standalone)',
             media: query,
             addEventListener: vi.fn(),
@@ -338,7 +394,7 @@ describe('pwa-client', () => {
     });
 
     it('isPwaInstalledAsync uses getInstalledRelatedApps', async () => {
-        vi.spyOn(window, 'matchMedia').mockReturnValue({
+        spyOnMatchMedia().mockReturnValue({
             matches: false,
             media: '',
             addEventListener: vi.fn(),
@@ -413,7 +469,7 @@ describe('pwa-client', () => {
     });
 
     it('isPwaInstalledAsync returns true when display mode is standalone', async () => {
-        vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => ({
+        spyOnMatchMedia().mockImplementation((query: string) => ({
             matches: query === '(display-mode: standalone)',
             media: query,
             addEventListener: vi.fn(),
@@ -424,7 +480,7 @@ describe('pwa-client', () => {
     });
 
     it('isPwaInstalledAsync returns false without related apps API', async () => {
-        vi.spyOn(window, 'matchMedia').mockReturnValue({
+        spyOnMatchMedia().mockReturnValue({
             matches: false,
             media: '',
             addEventListener: vi.fn(),
@@ -446,7 +502,7 @@ describe('pwa-client', () => {
     });
 
     it('setupInstallLinks shows uninstall link when app is already installed', async () => {
-        vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => ({
+        spyOnMatchMedia().mockImplementation((query: string) => ({
             matches: query === '(display-mode: standalone)',
             media: query,
             addEventListener: vi.fn(),
@@ -480,7 +536,7 @@ describe('pwa-client', () => {
     });
 
     it('setupInstallLinks keeps both links hidden until installable', async () => {
-        vi.spyOn(window, 'matchMedia').mockReturnValue({
+        spyOnMatchMedia().mockReturnValue({
             matches: false,
             media: '',
             addEventListener: vi.fn(),
@@ -516,7 +572,7 @@ describe('pwa-client', () => {
                 visibilityHandler = handler as () => void;
             }
         });
-        vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => ({
+        spyOnMatchMedia().mockImplementation((query: string) => ({
             matches: false,
             media: query,
             addEventListener: (_event: string, handler: () => void) => {
@@ -536,6 +592,28 @@ describe('pwa-client', () => {
         displayModeListeners['(display-mode: standalone)']?.();
         await Promise.resolve();
 
+        addEventListenerSpy.mockRestore();
+    });
+
+    it('setupInstallLinks ignores visibility changes while the page is hidden', async () => {
+        let visibilityHandler: (() => void) | undefined;
+        const addEventListenerSpy = vi.spyOn(document, 'addEventListener').mockImplementation((event, handler) => {
+            if (event === 'visibilitychange' && typeof handler === 'function') {
+                visibilityHandler = handler as () => void;
+            }
+        });
+        const getInstalledRelatedApps = vi.fn(async () => []);
+        vi.stubGlobal('navigator', { getInstalledRelatedApps });
+
+        document.body.innerHTML = installLinksHtml();
+        setupInstallLinks(document);
+        const callsAfterSetup = getInstalledRelatedApps.mock.calls.length;
+
+        Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+        visibilityHandler?.();
+        await Promise.resolve();
+
+        expect(getInstalledRelatedApps.mock.calls.length).toBe(callsAfterSetup);
         addEventListenerSpy.mockRestore();
     });
 

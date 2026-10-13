@@ -182,10 +182,9 @@ export async function runPushChecks(options: PushCheckOptions): Promise<PushChec
           } satisfies PushCheck);
     checks.push(check);
     const done = new Set(checks.map((item) => item.id));
-    for (const id of steps.slice(steps.indexOf(check.id) + 1)) {
-      if (!done.has(id)) {
-        checks.push({ id, status: "skip", code: "skipped" });
-      }
+    const remaining = steps.slice(steps.indexOf(check.id) + 1).filter((id) => !done.has(id));
+    for (const id of remaining) {
+      checks.push({ id, status: "skip", code: "skipped" });
     }
 
     return { ok: false, checks, failed: check };

@@ -239,7 +239,7 @@ nowo_pwa:
 | `show_never_option` | true | Show permanent dismiss button |
 | `route_targeting` | all routes | Limit where the prompt HTML is rendered (independent from global targeting) |
 
-Path patterns (when `match_by: path`): exact (`/vault`), prefix (`/vault*`), regex (`/^\\/admin/`).
+Path patterns (when `match_by: path`): exact (`/vault`), prefix (`/vault*`), regex (`regex:/^\/admin/` or `#^/admin#`). See [route targeting](#route-targeting) for the full table.
 
 ### Install prompt blocks and CSS tokens
 
@@ -340,9 +340,26 @@ Path patterns when `match_by: path`:
 
 | Pattern | Matches |
 |---------|---------|
-| `/vault` | Exact path |
-| `/vault*` | Prefix |
-| `/^\\/admin/` | Regex (PCRE) |
+| `/vault` | Exact path (a trailing slash is ignored: `/blog/` matches `/blog` and `/blog/` only) |
+| `/vault*` | Prefix (`/vault` and `/vault/…`) |
+| `regex:/^\/admin/` | Regex: `regex:` followed by a delimited PCRE (any delimiter, flags allowed) |
+| `#^/admin(/\|$)#i` | Regex: a `#…#` delimited PCRE (flags allowed after the closing `#`) |
+| `/^\/admin/` | **Deprecated** legacy regex: a `/…/` pattern is a regex only when it contains `^ $ \ ( ) [ ] { } \| + ?`; it triggers a deprecation — switch to `regex:` |
+
+Regexes are matched against the normalized request path (leading `/`, no trailing slash). An invalid regex never matches and raises no PHP warning.
+
+Quote regex patterns in YAML with single quotes (an unquoted `#` starts a YAML comment, and single quotes keep backslashes as-is):
+
+```yaml
+nowo_pwa:
+    route_targeting:
+        match_by: path
+        mode: except
+        routes:
+            - '/api*'
+            - 'regex:/^\/admin(\/|$)/'
+            - '#^/backoffice(/|$)#i'
+```
 
 Per-component targeting: `install_prompt.route_targeting` and `install_links.route_targeting` use the same shape and override visibility for those helpers only.
 

@@ -51,7 +51,7 @@ nowo_pwa:
             - api_docs
 ```
 
-Path examples (`match_by: path`): exact `/vault`, prefix `/vault*`, regex `/^\\/admin/`.
+Path examples (`match_by: path`): exact `/vault`, prefix `/vault*`, regex `regex:/^\/admin/` or `#^/admin(/|$)#`. Regexes need an explicit marker: a plain `/blog/` is the path `/blog` (see [Configuration](CONFIGURATION.md)).
 
 Modes: `all` (default), `only`, `except`.
 
