@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.9.1](#to-191)
 - [To 1.9.0](#to-190)
 - [To 1.8.0](#to-180)
 - [To 1.7.1](#to-171)
@@ -44,6 +45,16 @@
   - [Twig-CS-Fixer (maintainers)](#twig-cs-fixer-maintainers)
 
 ## Unreleased
+
+## To 1.9.1
+
+From **1.9.0** — legacy /…/ targeting regexes with . or * keep regex behaviour
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
+
+- No breaking changes. No application upgrade steps.
 
 ## To 1.9.0
 

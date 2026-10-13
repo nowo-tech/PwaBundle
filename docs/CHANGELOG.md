@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.9.1] - 2026-10-13](#191---2026-10-13)
 - [[1.9.0] - 2026-10-13](#190---2026-10-13)
 - [[1.8.0] - 2026-10-13](#180---2026-10-13)
 - [[1.7.1] - 2026-10-13](#171---2026-10-13)
@@ -34,9 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.1] - 2026-10-13
+
 ### Fixed
 
 - **Path route targeting:** legacy implicit `/…/` regex patterns containing `.` or `*` (e.g. `/admin.*/`) are again treated as regex (with the 1.9 deprecation) instead of silently becoming a plain path that never matched. The regex syntax list is now `^ $ \ ( ) [ ] { } | + ? *`, plus `.` when the pattern body has no inner `/` (so a plain path such as `/a.b/c/` stays a path).
+
+[1.9.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.9.1
 
 ## [1.9.0] - 2026-10-13
 
