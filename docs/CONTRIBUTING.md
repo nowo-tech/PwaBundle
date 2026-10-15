@@ -43,7 +43,7 @@ make release-check   # full pre-release pipeline
 
 ## Git hooks (REQ-GIT-001)
 
-Do **not** add `Co-authored-by: Cursor` or `cursoragent@cursor.com` trailers to commit messages.
+Do **not** add `Co-authored-by: Cursor` or `cursoragent@cursor.com` trailers, nor `Co-Authored-By: Claude …` / `noreply@anthropic.com` ones, to commit messages.
 
 ```bash
 make setup-hooks
