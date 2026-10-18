@@ -59,7 +59,9 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
         $container->setParameter('nowo_pwa.http', $config['http']);
         $container->setParameter('nowo_pwa.route_targeting', $config['route_targeting']);
         $container->setParameter('nowo_pwa.routes', $config['routes']);
-        $container->setParameter('nowo_pwa.templates', $config['templates']);
+        // REQ-UI-003: web_ui.templates (1.x templates.* copied there by the configuration); the parameter keeps its name.
+        $container->setParameter('nowo_pwa.templates', $config['web_ui']['templates']);
+        $container->setParameter('nowo_pwa.web_ui.layout_template', $config['web_ui']['layout_template']);
         $container->setParameter(
             'nowo_pwa.http.strip_set_cookie_on_bootstrap',
             (bool) ($config['http']['strip_set_cookie_on_bootstrap'] ?? true),

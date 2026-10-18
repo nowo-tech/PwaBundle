@@ -47,6 +47,42 @@ final class ConfigurationTest extends TestCase
         self::assertSame('nowo-pwa', $config['service_worker']['web_push_defaults']['tag']);
     }
 
+    public function testWebUiDefaults(): void
+    {
+        $config = (new Processor())->processConfiguration(new Configuration(), [[]]);
+
+        self::assertNull($config['web_ui']['layout_template']);
+        self::assertSame(Configuration::TEMPLATE_DEFAULTS, $config['web_ui']['templates']);
+        self::assertArrayNotHasKey('templates', $config);
+    }
+
+    public function testDeprecatedTemplatesAreCopiedToWebUiTemplates(): void
+    {
+        $config = (new Processor())->processConfiguration(new Configuration(), [[
+            'templates' => ['install_prompt' => 'pwa/prompt.html.twig', 'offline' => 'old.html.twig'],
+            'web_ui'    => ['templates' => ['offline' => 'pwa/offline.html.twig']],
+        ]]);
+
+        self::assertSame('pwa/prompt.html.twig', $config['web_ui']['templates']['install_prompt']);
+        // The canonical key wins.
+        self::assertSame('pwa/offline.html.twig', $config['web_ui']['templates']['offline']);
+        self::assertSame(Configuration::TEMPLATE_DEFAULTS['head'], $config['web_ui']['templates']['head']);
+    }
+
+    public function testDeprecatedKeysAreMarkedDeprecated(): void
+    {
+        $tree     = (new Configuration())->getConfigTreeBuilder()->buildTree();
+        $children = $tree->getChildren();
+
+        foreach (['head', 'install_prompt', 'install_links', 'offline'] as $name) {
+            self::assertTrue($children['templates']->getChildren()[$name]->isDeprecated(), $name);
+        }
+        foreach (['button_class', 'dismiss_button_class', 'never_button_class'] as $name) {
+            self::assertTrue($children['install_prompt']->getChildren()[$name]->isDeprecated(), $name);
+        }
+        self::assertFalse($children['install_prompt']->getChildren()['css_class']->isDeprecated());
+    }
+
     public function testExplicitEmptyDenyCachePatternsDisablesDefaults(): void
     {
         $config = (new Processor())->processConfiguration(new Configuration(), [[

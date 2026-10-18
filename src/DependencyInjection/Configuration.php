@@ -13,6 +13,8 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
+use function array_key_exists;
+use function is_array;
 use function is_string;
 use function ltrim;
 use function parse_url;
@@ -30,12 +32,47 @@ final class Configuration implements ConfigurationInterface
 {
     public const ALIAS = 'nowo_pwa';
 
+    /** Package and version of the deprecations introduced with the UiKit page contract (REQ-UI-003). */
+    public const DEPRECATION_PACKAGE = 'nowo-tech/pwa-bundle';
+
+    public const DEPRECATION_VERSION = '1.10';
+
+    /** Templates of the bundle (web_ui.templates.<name>, 1.x templates.<name>). */
+    public const TEMPLATE_DEFAULTS = [
+        'head'           => '@NowoPwaBundle/pwa/head.html.twig',
+        'install_prompt' => '@NowoPwaBundle/pwa/install_prompt.html.twig',
+        'install_links'  => '@NowoPwaBundle/pwa/install_links.html.twig',
+        'offline'        => '@NowoPwaBundle/pwa/offline.html.twig',
+    ];
+
+    /** Default layout of the offline page (self-contained: inline CSS, no stylesheet or script request). */
+    public const OFFLINE_LAYOUT = '@NowoUiKit/layout/status.html.twig';
+
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder(self::ALIAS);
         $root        = $treeBuilder->getRootNode();
 
         $root
+            ->beforeNormalization()
+                ->always(static function (mixed $v): mixed {
+                    if (!is_array($v) || !is_array($v['templates'] ?? null)) {
+                        return $v;
+                    }
+                    // REQ-UI-003 canonical keys: templates.<name> → web_ui.templates.<name> (the canonical key wins).
+                    $webUi     = is_array($v['web_ui'] ?? null) ? $v['web_ui'] : [];
+                    $templates = is_array($webUi['templates'] ?? null) ? $webUi['templates'] : [];
+                    foreach ($v['templates'] as $name => $template) {
+                        if (is_string($name) && !array_key_exists($name, $templates)) {
+                            $templates[$name] = $template;
+                        }
+                    }
+                    $webUi['templates'] = $templates;
+                    $v['web_ui']        = $webUi;
+
+                    return $v;
+                })
+            ->end()
             ->children()
                 ->booleanNode('enabled')
                     ->info('Master switch for PWA features (manifest, service worker, head tags).')
@@ -71,9 +108,21 @@ final class Configuration implements ConfigurationInterface
                 ->scalarNode('mark_asset')->defaultNull()->end()
                 ->scalarNode('title')->defaultNull()->end()
                 ->scalarNode('eyebrow')->defaultNull()->end()
-                ->scalarNode('button_class')->defaultValue('')->end()
-                ->scalarNode('dismiss_button_class')->defaultNull()->end()
-                ->scalarNode('never_button_class')->defaultNull()->end()
+                ->scalarNode('button_class')
+                    ->info('Deprecated: replaces the classes of the install button (theme slot btn_primary).')
+                    ->defaultValue('')
+                    ->setDeprecated(self::DEPRECATION_PACKAGE, self::DEPRECATION_VERSION, 'The "%path%.%node%" option is deprecated, use "nowo_ui_kit.theme.bundles.NowoPwaBundle.classes.btn_primary" (UiKit theme slot) instead.')
+                ->end()
+                ->scalarNode('dismiss_button_class')
+                    ->info('Deprecated: replaces the classes of the "Not now" button (theme slot btn_secondary).')
+                    ->defaultNull()
+                    ->setDeprecated(self::DEPRECATION_PACKAGE, self::DEPRECATION_VERSION, 'The "%path%.%node%" option is deprecated, use "nowo_ui_kit.theme.bundles.NowoPwaBundle.classes.btn_secondary" (UiKit theme slot) instead.')
+                ->end()
+                ->scalarNode('never_button_class')
+                    ->info('Deprecated: replaces the classes of the "Don\'t ask again" button (theme slot btn_link).')
+                    ->defaultNull()
+                    ->setDeprecated(self::DEPRECATION_PACKAGE, self::DEPRECATION_VERSION, 'The "%path%.%node%" option is deprecated, use "nowo_ui_kit.theme.bundles.NowoPwaBundle.classes.btn_link" (UiKit theme slot) instead.')
+                ->end()
                 ->integerNode('delay_ms')->defaultValue(0)->min(0)->end()
                 ->enumNode('visibility')->values(['all', 'mobile', 'desktop'])->defaultValue('all')->end()
             ->end();
@@ -152,13 +201,41 @@ final class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-                ->arrayNode('templates')
+                ->arrayNode('web_ui')
+                    ->info('UiKit page contract (REQ-UI-003): offline page layout and per-template overrides.')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('head')->defaultValue('@NowoPwaBundle/pwa/head.html.twig')->cannotBeEmpty()->end()
-                        ->scalarNode('install_prompt')->defaultValue('@NowoPwaBundle/pwa/install_prompt.html.twig')->cannotBeEmpty()->end()
-                        ->scalarNode('install_links')->defaultValue('@NowoPwaBundle/pwa/install_links.html.twig')->cannotBeEmpty()->end()
-                        ->scalarNode('offline')->defaultValue('@NowoPwaBundle/pwa/offline.html.twig')->cannotBeEmpty()->end()
+                        ->scalarNode('layout_template')
+                            ->info('Layout of the offline page. Null (default): ' . self::OFFLINE_LAYOUT . ' (self-contained, works offline).')
+                            ->defaultNull()
+                        ->end()
+                        ->arrayNode('templates')
+                            ->info('Per-template overrides (a host template extending @!NowoPwaBundle/pwa/... and overriding a block).')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('head')->defaultValue(self::TEMPLATE_DEFAULTS['head'])->cannotBeEmpty()->end()
+                                ->scalarNode('install_prompt')->defaultValue(self::TEMPLATE_DEFAULTS['install_prompt'])->cannotBeEmpty()->end()
+                                ->scalarNode('install_links')->defaultValue(self::TEMPLATE_DEFAULTS['install_links'])->cannotBeEmpty()->end()
+                                ->scalarNode('offline')->defaultValue(self::TEMPLATE_DEFAULTS['offline'])->cannotBeEmpty()->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('templates')
+                    ->info('Deprecated alias of web_ui.templates.')
+                    ->children()
+                        ->scalarNode('head')
+                            ->setDeprecated(self::DEPRECATION_PACKAGE, self::DEPRECATION_VERSION, 'The "%path%.%node%" option is deprecated, use "nowo_pwa.web_ui.templates.head" instead.')
+                        ->end()
+                        ->scalarNode('install_prompt')
+                            ->setDeprecated(self::DEPRECATION_PACKAGE, self::DEPRECATION_VERSION, 'The "%path%.%node%" option is deprecated, use "nowo_pwa.web_ui.templates.install_prompt" instead.')
+                        ->end()
+                        ->scalarNode('install_links')
+                            ->setDeprecated(self::DEPRECATION_PACKAGE, self::DEPRECATION_VERSION, 'The "%path%.%node%" option is deprecated, use "nowo_pwa.web_ui.templates.install_links" instead.')
+                        ->end()
+                        ->scalarNode('offline')
+                            ->setDeprecated(self::DEPRECATION_PACKAGE, self::DEPRECATION_VERSION, 'The "%path%.%node%" option is deprecated, use "nowo_pwa.web_ui.templates.offline" instead.')
+                        ->end()
                     ->end()
                 ->end()
             ->end();

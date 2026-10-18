@@ -15,6 +15,8 @@
       css_class           default nowo-pwa-push-diagnostics
       check_class_prefix  default nowo-pwa-push-check (classes of the rendered <li> rows)
       button_class        extra class for both buttons
+    Theme (REQ-UI-003): the check button uses the UiKit theme slot btn_primary, the test button btn_secondary
+    (NowoPwaBundle).
 #}
 {% set _web_push = nowo_pwa_web_push() %}
 {% set _ctrl = stimulus_controller|default('push-diagnostics') %}
@@ -85,11 +87,11 @@
     </p>
     <ul class="{{ _bem }}__list" data-{{ _ctrl }}-target="list" data-testid="push-diagnostics-list"></ul>
     {% block push_diagnostics_actions %}
-        <div class="{{ _bem }}__actions">
-            <button type="button" class="{{ _bem }}__check {{ button_class|default('') }}" data-action="{{ _ctrl }}#check" data-{{ _ctrl }}-target="checkButton" data-testid="push-diagnostics-check">
+        <div class="{{ nowo_ui_class('toolbar', 'NowoPwaBundle') }} {{ _bem }}__actions">
+            <button type="button" class="{{ nowo_ui_class('btn_primary', 'NowoPwaBundle') }} {{ _bem }}__check {{ button_class|default('') }}" data-action="{{ _ctrl }}#check" data-{{ _ctrl }}-target="checkButton" data-testid="push-diagnostics-check">
                 {{- 'push_diagnostics.check'|trans({}, 'NowoPwaBundle') -}}
             </button>
-            <button type="button" class="{{ _bem }}__test {{ button_class|default('') }}" data-action="{{ _ctrl }}#test" data-{{ _ctrl }}-target="testButton" data-testid="push-diagnostics-test" hidden>
+            <button type="button" class="{{ nowo_ui_class('btn_secondary', 'NowoPwaBundle') }} {{ _bem }}__test {{ button_class|default('') }}" data-action="{{ _ctrl }}#test" data-{{ _ctrl }}-target="testButton" data-testid="push-diagnostics-test" hidden>
                 {{- 'push_diagnostics.test'|trans({}, 'NowoPwaBundle') -}}
             </button>
         </div>

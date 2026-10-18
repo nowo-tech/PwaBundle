@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\Controller;
 
+use Nowo\PwaBundle\DependencyInjection\Configuration;
 use Nowo\PwaBundle\Service\ManifestBuilder;
 use Nowo\PwaBundle\Service\ManifestOverlayProviderInterface;
 use Nowo\PwaBundle\Service\ServiceWorkerScriptBuilder;
+use Nowo\PwaBundle\View\OfflinePage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,9 +23,10 @@ final class PwaController extends AbstractController
      * @param array<string, mixed> $manifestConfig
      * @param array<string, mixed> $serviceWorkerConfig
      * @param array<string, mixed> $httpConfig
-     * @param array{head: string, install_prompt: string, offline: string} $templates
+     * @param array{head: string, install_prompt: string, offline: string} $templates web_ui.templates
      * @param array<string, array{path: string, name: string}> $routes
      * @param iterable<ManifestOverlayProviderInterface> $manifestOverlayProviders
+     * @param string|null $offlineLayout web_ui.layout_template (null = UiKit status layout)
      */
     public function __construct(
         private readonly bool $enabled,
@@ -36,6 +39,7 @@ final class PwaController extends AbstractController
         private readonly array $routes,
         private readonly iterable $manifestOverlayProviders = [],
         private readonly ?UrlGeneratorInterface $urlGenerator = null,
+        private readonly ?string $offlineLayout = null,
     ) {
     }
 
@@ -97,11 +101,15 @@ final class PwaController extends AbstractController
         }
 
         $startUrl = (string) ($this->manifestConfig['start_url'] ?? '/');
+        $retryUrl = $startUrl !== '' ? $startUrl : '/';
+        $name     = (string) ($this->manifestConfig['name'] ?? 'App');
 
+        // `page` (UiKit AuthPage) feeds the page/auth scaffold; the 1.x variables stay for host templates.
         return $this->render($this->templates['offline'], [
-            'manifest_name' => (string) ($this->manifestConfig['name'] ?? 'App'),
+            'page'          => OfflinePage::create($name, $retryUrl, $this->offlineLayout ?? Configuration::OFFLINE_LAYOUT),
+            'manifest_name' => $name,
             'manifest'      => $this->manifestConfig,
-            'retry_url'     => $startUrl !== '' ? $startUrl : '/',
+            'retry_url'     => $retryUrl,
         ]);
     }
 

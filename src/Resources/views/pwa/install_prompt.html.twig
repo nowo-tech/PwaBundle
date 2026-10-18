@@ -1,4 +1,19 @@
-{# Install prompt — dismissible (remind later / never ask again) #}
+{#
+  Install prompt — dismissible (remind later / never ask again). pwa.js shows it (removes `hidden`) when the browser
+  offers the install.
+
+  Theme (REQ-UI-003, UiKit theme slots of NowoPwaBundle): panel `card`, title `card_title`, message `card_intro`,
+  actions `toolbar`, buttons `btn_primary` (install), `btn_secondary` (not now), `btn_link` (never). The BEM classes
+  (`install_prompt.css_class`, default `nowo-pwa-install`) stay on every element; pwa.css paints them from the
+  `--nowo-pwa-install-*` tokens, which fall back to the UiKit `--nowo-ui-*` tokens.
+
+  Change one part without copying the file: point nowo_pwa.web_ui.templates.install_prompt to a template that
+  {% extends '@!NowoPwaBundle/pwa/install_prompt.html.twig' %} and redefines one block:
+  pwa_install_backdrop, pwa_install_panel, pwa_install_mark (brand mark), pwa_install_text (eyebrow + title +
+  message), pwa_install_eyebrow, pwa_install_title, pwa_install_message, pwa_install_actions (the three buttons),
+  pwa_install_button_install, pwa_install_button_remind, pwa_install_button_never.
+#}
+{% set _b = 'NowoPwaBundle' %}
 {% set display = install_prompt.display|default('banner') %}
 {% set css_class = install_prompt.css_class|default('nowo-pwa-install') %}
 {# BEM suffixes must use a single root token; extra classes on css_class stay on the root only. #}
@@ -10,63 +25,83 @@
 {% set install_eyebrow = install_prompt.eyebrow is defined and install_prompt.eyebrow is not same as(null) and install_prompt.eyebrow is not same as('')
     ? install_prompt.eyebrow|trans
     : null %}
+{# Deprecated 1.x class options (button_class, dismiss_button_class, never_button_class) replace the slot classes. #}
 {% set install_button_class = install_prompt.button_class|default('') %}
 {% if install_button_class is same as('') %}
-    {% set install_button_class = bem ~ '__button ' ~ bem ~ '__button--install' %}
+    {% set install_button_class = nowo_ui_class('btn_primary', _b) ~ ' ' ~ bem ~ '__button ' ~ bem ~ '__button--install' %}
 {% endif %}
 {% set dismiss_button_class = install_prompt.dismiss_button_class is defined ? install_prompt.dismiss_button_class : null %}
 {% if dismiss_button_class is same as(null) %}
-    {% set dismiss_button_class = bem ~ '__button ' ~ bem ~ '__button--dismiss' %}
+    {% set dismiss_button_class = nowo_ui_class('btn_secondary', _b) ~ ' ' ~ bem ~ '__button ' ~ bem ~ '__button--dismiss' %}
 {% endif %}
 {% set never_button_class = install_prompt.never_button_class is defined ? install_prompt.never_button_class : null %}
 {% if never_button_class is same as(null) %}
-    {% set never_button_class = bem ~ '__button ' ~ bem ~ '__button--never' %}
+    {% set never_button_class = nowo_ui_class('btn_link', _b) ~ ' ' ~ bem ~ '__button ' ~ bem ~ '__button--never' %}
 {% endif %}
 <div id="nowo-pwa-install"
      class="{{ css_class }} {{ bem }}--{{ display }} {{ bem }}--{{ install_prompt.position|default('bottom') }}"
      hidden
      role="dialog"
      aria-labelledby="nowo-pwa-install-title"
+     aria-describedby="nowo-pwa-install-message"
      aria-modal="{{ display == 'modal' ? 'true' : 'false' }}"
+     data-nowo-ui-bundle="{{ _b }}"
+     data-testid="pwa-install-prompt"
      data-display="{{ display }}"
      data-dismiss-key="{{ install_prompt.dismiss_key|default('nowo_pwa_install_dismissed') }}"
      data-dismiss-days="{{ install_prompt.dismiss_days|default(7) }}"
      data-never-dismiss-key="{{ install_prompt.never_dismiss_key|default('nowo_pwa_install_never') }}"
-     data-show-never-option="{{ install_prompt.show_never_option|default(true) ? '1' : '0' }}"
+     data-show-never-option="{{ (install_prompt.show_never_option ?? true) ? '1' : '0' }}"
      data-delay-ms="{{ install_prompt.delay_ms|default(0) }}"
      data-visibility="{{ install_prompt.visibility|default('all') }}">
-    {% if display == 'modal' %}
-        <div class="{{ bem }}__backdrop" data-pwa-install-action="dismiss-remind" aria-hidden="true"></div>
-    {% endif %}
-    <div class="{{ bem }}__panel">
-        {% block pwa_install_mark %}
-            {% if mark_asset %}
-                <div class="{{ bem }}__brand">
-                    <img src="{{ mark_asset }}" alt="{{ manifest.short_name|default(manifest.name|default('App')) }}" class="{{ bem }}__mark" width="40" height="40">
-                </div>
-            {% endif %}
-        {% endblock %}
-
-        {% block pwa_install_eyebrow %}
-            {% if install_eyebrow %}
-                <p class="{{ bem }}__eyebrow">{{ install_eyebrow }}</p>
-            {% endif %}
-        {% endblock %}
-
-        {% block pwa_install_title %}
-            <h2 id="nowo-pwa-install-title" class="{{ bem }}__title">{{ install_title }}</h2>
-        {% endblock %}
-
-        <p id="nowo-pwa-install-message" class="{{ bem }}__message">{{ 'install.message'|trans({}, 'NowoPwaBundle') }}</p>
-
-        {% block pwa_install_actions %}
-            <div class="{{ bem }}__actions">
-                <button type="button" class="{{ install_button_class }}" data-pwa-install-action="install">{{ 'install.action'|trans({}, 'NowoPwaBundle') }}</button>
-                <button type="button" class="{{ dismiss_button_class }}" data-pwa-install-action="dismiss-remind">{{ 'install.dismiss_remind'|trans({}, 'NowoPwaBundle') }}</button>
-                {% if install_prompt.show_never_option|default(true) %}
-                    <button type="button" class="{{ never_button_class }}" data-pwa-install-action="dismiss-never">{{ 'install.dismiss_never'|trans({}, 'NowoPwaBundle') }}</button>
+    {% block pwa_install_backdrop %}
+        {% if display == 'modal' %}
+            <div class="{{ bem }}__backdrop" data-pwa-install-action="dismiss-remind" aria-hidden="true"></div>
+        {% endif %}
+    {% endblock %}
+    {% block pwa_install_panel %}
+        <div class="{{ nowo_ui_class('card', _b) }} {{ bem }}__panel"{{ nowo_ui_attrs('card', _b) }}>
+            {% block pwa_install_mark %}
+                {% if mark_asset %}
+                    <div class="{{ bem }}__brand">
+                        <img src="{{ mark_asset }}" alt="{{ manifest.short_name|default(manifest.name|default('App')) }}" class="{{ bem }}__mark" width="40" height="40">
+                    </div>
                 {% endif %}
-            </div>
-        {% endblock %}
-    </div>
+            {% endblock %}
+
+            {% block pwa_install_text %}
+                <div class="{{ bem }}__text">
+                    {% block pwa_install_eyebrow %}
+                        {% if install_eyebrow %}
+                            <p class="{{ nowo_ui_class('muted', _b) }} {{ bem }}__eyebrow">{{ install_eyebrow }}</p>
+                        {% endif %}
+                    {% endblock %}
+
+                    {% block pwa_install_title %}
+                        <h2 id="nowo-pwa-install-title" class="{{ nowo_ui_class('card_title', _b) }} {{ bem }}__title">{{ install_title }}</h2>
+                    {% endblock %}
+
+                    {% block pwa_install_message %}
+                        <p id="nowo-pwa-install-message" class="{{ nowo_ui_class('card_intro', _b) }} {{ bem }}__message">{{ 'install.message'|trans({}, 'NowoPwaBundle') }}</p>
+                    {% endblock %}
+                </div>
+            {% endblock %}
+
+            {% block pwa_install_actions %}
+                <div class="{{ nowo_ui_class('toolbar', _b) }} {{ bem }}__actions"{{ nowo_ui_attrs('toolbar', _b) }}>
+                    {% block pwa_install_button_install %}
+                        <button type="button" class="{{ install_button_class }}" data-pwa-install-action="install">{{ 'install.action'|trans({}, 'NowoPwaBundle') }}</button>
+                    {% endblock %}
+                    {% block pwa_install_button_remind %}
+                        <button type="button" class="{{ dismiss_button_class }}" data-pwa-install-action="dismiss-remind">{{ 'install.dismiss_remind'|trans({}, 'NowoPwaBundle') }}</button>
+                    {% endblock %}
+                    {% block pwa_install_button_never %}
+                        {% if (install_prompt.show_never_option ?? true) %}
+                            <button type="button" class="{{ never_button_class }}" data-pwa-install-action="dismiss-never">{{ 'install.dismiss_never'|trans({}, 'NowoPwaBundle') }}</button>
+                        {% endif %}
+                    {% endblock %}
+                </div>
+            {% endblock %}
+        </div>
+    {% endblock %}
 </div>

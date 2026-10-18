@@ -6,6 +6,8 @@ namespace Nowo\PwaBundle\Tests\Integration;
 
 use Nowo\PwaBundle\Twig\PwaWebPushTwigExtension;
 use Nowo\PwaBundle\WebPush\MinishlinkWebPushSender;
+use Nowo\UiKitBundle\Theme\Theme;
+use Nowo\UiKitBundle\Twig\ThemeExtension;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
@@ -95,7 +97,7 @@ final class PushTemplatesTest extends TestCase
         self::assertStringContainsString('data-my-push-auto-value="false"', $html);
         self::assertStringContainsString('data-my-push-class-prefix-value="push-check"', $html);
         self::assertStringContainsString('data-action="my-push#test"', $html);
-        self::assertStringContainsString('class="panel__check btn-ghost"', $html);
+        self::assertStringContainsString('class="nowo-ui-btn nowo-ui-btn--primary panel__check btn-ghost"', $html);
         self::assertStringContainsString('Press “Check again” to run the check for this device.', $html);
     }
 
@@ -138,6 +140,7 @@ final class PushTemplatesTest extends TestCase
         $translator->addLoader('yaml', new YamlFileLoader());
         $translator->addResource('yaml', self::TRANSLATIONS . '/NowoPwaBundle.' . $locale . '.yaml', $locale, 'NowoPwaBundle');
         $twig->addExtension(new TranslationExtension($translator));
+        $twig->addExtension(new ThemeExtension(Theme::fromConfig('none', [])));
 
         $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
         $urlGenerator->method('generate')->willReturn('/pwa/push/test');

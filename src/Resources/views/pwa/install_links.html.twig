@@ -1,14 +1,26 @@
-{# REQ-TWIG-001: override via templates/bundles/NowoPwaBundle/pwa/install_links.html.twig #}
+{#
+  Install / uninstall links (one visible at a time, toggled by pwa.js).
+  Theme (REQ-UI-003): theme slots btn_primary + btn_sm (install) and btn_secondary + btn_sm (uninstall) of
+  NowoPwaBundle, plus the BEM classes painted by pwa.css (--nowo-pwa-install-links-* tokens → --nowo-ui-* tokens).
+  Override one link with nowo_pwa.web_ui.templates.install_links → a template that
+  {% extends '@!NowoPwaBundle/pwa/install_links.html.twig' %} and redefines pwa_install_link or pwa_uninstall_link.
+#}
+{% set _b = 'NowoPwaBundle' %}
 <div id="nowo-pwa-install-links"
      class="{{ install_links.css_class|default('nowo-pwa-install-links') }}"
+     data-nowo-ui-bundle="{{ _b }}"
      data-visibility="{{ install_links.visibility|default('all') }}"
      data-uninstall-help="{{ 'install.uninstall_help'|trans({}, 'NowoPwaBundle')|e('html_attr') }}">
-    <a href="#"
-       class="nowo-pwa-install-links__install"
-       data-pwa-install-action="install"
-       hidden>{{ 'install.link'|trans({}, 'NowoPwaBundle') }}</a>
-    <a href="#"
-       class="nowo-pwa-install-links__uninstall"
-       data-pwa-install-action="uninstall"
-       hidden>{{ 'install.uninstall_link'|trans({}, 'NowoPwaBundle') }}</a>
+    {% block pwa_install_link %}
+        <a href="#"
+           class="{{ nowo_ui_class('btn_primary', _b) }} {{ nowo_ui_class('btn_sm', _b) }} nowo-pwa-install-links__install"
+           data-pwa-install-action="install"
+           hidden>{{ 'install.link'|trans({}, 'NowoPwaBundle') }}</a>
+    {% endblock %}
+    {% block pwa_uninstall_link %}
+        <a href="#"
+           class="{{ nowo_ui_class('btn_secondary', _b) }} {{ nowo_ui_class('btn_sm', _b) }} nowo-pwa-install-links__uninstall"
+           data-pwa-install-action="uninstall"
+           hidden>{{ 'install.uninstall_link'|trans({}, 'NowoPwaBundle') }}</a>
+    {% endblock %}
 </div>

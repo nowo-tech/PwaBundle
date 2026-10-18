@@ -45,6 +45,7 @@ services:
             $httpConfig: '%nowo_pwa.http%'
             $templates: '%nowo_pwa.templates%'
             $routes: '%nowo_pwa.routes%'
+            $offlineLayout: '%nowo_pwa.web_ui.layout_template%'
             $manifestOverlayProviders: !tagged_iterator nowo_pwa.manifest_overlay_provider
 
     Nowo\PwaBundle\Twig\PwaTwigExtension:
