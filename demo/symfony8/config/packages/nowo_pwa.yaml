@@ -177,12 +177,11 @@ nowo_pwa:
         # Optional brand mark image URL/path rendered above the title.
         # mark_asset: '/icons/mark.svg'
         # Optional title/eyebrow strings (or translation keys resolved by your app translator).
-        # title: 'Install Demo'
-        # eyebrow: 'Available offline'
-        # Install button class. Empty string keeps bundle-generated BEM classes.
-        # button_class: ''
-        # dismiss_button_class: null
-        # never_button_class: null
+        title: demo.install_prompt.title
+        eyebrow: demo.install_prompt.eyebrow
+        # Buttons and panel use the UiKit theme slots (btn_primary, btn_secondary, btn_link, card…): theme them in
+        # nowo_ui_kit.theme (config/packages/nowo_ui_kit.yaml). The 1.x button_class / dismiss_button_class /
+        # never_button_class options are deprecated.
         # Delay in milliseconds before showing the banner after the event fires.
         # delay_ms: 0
         # Device visibility: all | mobile | desktop.
@@ -234,8 +233,13 @@ nowo_pwa:
             path: /offline
             # name: nowo_pwa_offline
 
-    # Twig template overrides — use your own templates to customise markup.
-    # templates:
-    #     head: '@NowoPwaBundle/pwa/head.html.twig'
-    #     install_prompt: '@NowoPwaBundle/pwa/install_prompt.html.twig'
-    #     offline: '@NowoPwaBundle/pwa/offline.html.twig'
+    # UiKit page contract (REQ-UI-003): offline page layout and per-template overrides.
+    web_ui:
+        # Layout of the offline page; null = @NowoUiKit/layout/status.html.twig (self-contained, works offline).
+        # layout_template: null
+        templates:
+            # The demo overrides ONE block of the install prompt (brand mark) with a thin @! template.
+            install_prompt: 'pwa/install_prompt.html.twig'
+            # head: '@NowoPwaBundle/pwa/head.html.twig'
+            # install_links: '@NowoPwaBundle/pwa/install_links.html.twig'
+            # offline: '@NowoPwaBundle/pwa/offline.html.twig'

@@ -13,7 +13,7 @@ use function is_string;
 use function rtrim;
 
 /**
- * REQ-TWIG-001: application overrides win over bundle templates.
+ * REQ-TWIG-001: application overrides win over bundle templates; `@!NowoPwaBundle` reaches the bundle templates.
  */
 final class TwigPathsPass implements CompilerPassInterface
 {
@@ -43,6 +43,10 @@ final class TwigPathsPass implements CompilerPassInterface
 
         // @igor-ignore - Container compile-time DI mutation; not runtime worker state.
         $definition->addMethodCall('addPath', [$viewsPath, self::TWIG_NAMESPACE]);
+        // `@!NowoPwaBundle` = the bundle templates without the app overrides (like TwigBundle's `@!<Bundle>`), so a
+        // host override can `{% extends '@!NowoPwaBundle/pwa/….html.twig' %}` and redefine one block.
+        // @igor-ignore - Container compile-time DI mutation; not runtime worker state.
+        $definition->addMethodCall('addPath', [$viewsPath, '!' . self::TWIG_NAMESPACE]);
     }
 
     private function getNativeLoaderServiceId(ContainerBuilder $container): ?string

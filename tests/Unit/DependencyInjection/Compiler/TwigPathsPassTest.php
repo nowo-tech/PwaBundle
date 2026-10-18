@@ -23,6 +23,8 @@ final class TwigPathsPassTest extends TestCase
 
         $calls = $container->getDefinition('twig.loader.native')->getMethodCalls();
         self::assertNotEmpty($calls);
+        $namespaces = array_map(static fn (array $call): string => $call[1][1], $calls);
+        self::assertSame(['NowoPwaBundle', '!NowoPwaBundle'], $namespaces);
     }
 
     public function testPrependsOverridePathWhenDirectoryExists(): void

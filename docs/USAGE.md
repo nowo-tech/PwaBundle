@@ -273,19 +273,25 @@ If you enforce CSP in production, allow the service worker URL and `pwa.js`. See
 | Resource | Override path |
 |----------|---------------|
 | Head partial | `templates/bundles/NowoPwaBundle/pwa/head.html.twig` |
-| Install banner | `templates/bundles/NowoPwaBundle/pwa/install_prompt.html.twig` |
+| Install banner | `templates/bundles/NowoPwaBundle/pwa/install_prompt.html.twig` (or `nowo_pwa.web_ui.templates.install_prompt`) |
 | Install / uninstall links | `templates/bundles/NowoPwaBundle/pwa/install_links.html.twig` |
 | Offline page | `templates/bundles/NowoPwaBundle/pwa/offline.html.twig` |
 | Translations | `translations/NowoPwaBundle.{locale}.yaml` |
 
 Bundled locales: **en**, **es**, **fr**, **it**, **pt**, **de**, **nl** (domain `NowoPwaBundle`). Symfony uses the request locale; override or add languages from your app as shown above.
 
-For lighter customisation, prefer the bundled Twig blocks instead of copying full templates:
+Do not copy full templates: extend the bundle template with `{% extends '@!NowoPwaBundle/pwa/….html.twig' %}` and
+redefine one block (REQ-UI-003):
 
-- Install prompt: `pwa_install_mark`, `pwa_install_eyebrow`, `pwa_install_title`, `pwa_install_actions`
-- Offline page: `pwa_offline_brand`, `pwa_offline_content`
+- Install prompt: `pwa_install_backdrop`, `pwa_install_panel`, `pwa_install_mark`, `pwa_install_text`,
+  `pwa_install_eyebrow`, `pwa_install_title`, `pwa_install_message`, `pwa_install_actions`,
+  `pwa_install_button_install`, `pwa_install_button_remind`, `pwa_install_button_never`
+- Install links: `pwa_install_link`, `pwa_uninstall_link`
+- Offline page: `pwa_offline_head`, `pwa_offline_brand`, `pwa_offline_content`, `pwa_offline_actions`
 
-The default stylesheet also exposes `--nowo-pwa-*` custom properties for brand remapping. See [Configuration — Install prompt](CONFIGURATION.md#install-prompt).
+Classes come from the UiKit theme slots (`nowo_ui_kit.theme`, per bundle `theme.bundles.NowoPwaBundle`) and colours
+from the `--nowo-pwa-*` custom properties, which default to the UiKit `--nowo-ui-*` tokens. See
+[Templates](TEMPLATES.md) and [Configuration — Install prompt](CONFIGURATION.md#install-prompt).
 
 ## Assets
 

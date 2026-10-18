@@ -1,0 +1,19 @@
+/* Demo host styles: masthead + content; colours come from the UiKit tokens (config/packages/nowo_ui_kit.yaml). */
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--nowo-ui-text); background: var(--nowo-ui-surface-muted); }
+.demo-masthead { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 2rem; padding: 0.875rem 1.5rem; background: var(--nowo-ui-surface); border-bottom: 1px solid var(--nowo-ui-border); }
+.demo-masthead__brand { font-weight: 700; color: var(--nowo-ui-text); text-decoration: none; }
+.demo-masthead__brand span { color: var(--nowo-ui-primary); font-weight: 600; }
+.demo-masthead__nav { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+.demo-masthead__nav a { padding: 0.375rem 0.75rem; border-radius: var(--nowo-ui-radius); color: var(--nowo-ui-muted); text-decoration: none; }
+.demo-masthead__nav a[aria-current="page"], .demo-masthead__nav a:hover { color: var(--nowo-ui-primary); background: var(--nowo-ui-surface-muted); }
+.demo-main { max-width: 46rem; margin: 2rem auto 9rem; padding: 0 1.25rem; display: grid; gap: 1.25rem; }
+.demo-main h1 { margin: 0; font-size: 1.75rem; }
+.demo-main > p { margin: 0; color: var(--nowo-ui-muted); }
+.demo-card { background: var(--nowo-ui-surface); border: 1px solid var(--nowo-ui-border); border-radius: var(--nowo-ui-radius); }
+.demo-card h2 { margin: 0 0 0.5rem; font-size: 1.125rem; }
+.demo-btn { display: inline-flex; align-items: center; padding: 0.5rem 1rem; font: inherit; font-weight: 600; color: var(--nowo-ui-text); background: var(--nowo-ui-surface); border: 1px solid var(--nowo-ui-border-strong); border-radius: var(--nowo-ui-radius); cursor: pointer; }
+.demo-btn--primary { color: var(--nowo-ui-primary-contrast); background: var(--nowo-ui-primary); border-color: var(--nowo-ui-primary); }
+.nowo-pwa-install-links { margin: 0.75rem 0; }
+.demo-mark { color: var(--nowo-ui-primary); }
+.demo-mark__name { font-weight: 700; }
+code { font-size: 0.9em; }

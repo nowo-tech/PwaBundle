@@ -1,0 +1,19 @@
+# UiKit host theme of the demo (same tokens as the UiKit host-theme demo): the PWA widgets and the offline page read
+# these tokens and slots — the bundle ships no colours of its own beyond the fallbacks.
+nowo_ui_kit:
+    css_framework: none
+    theme:
+        tokens:
+            primary: '#0f766e'
+            primary-contrast: '#ffffff'
+            surface: '#fffdf8'
+            surface-muted: '#f5efe4'
+            border: '#e8dfd0'
+            border-strong: '#d6c8b2'
+            text: '#1c2a27'
+            muted: '#6b6a5e'
+            radius: '0.75rem'
+        classes:
+            btn_primary: 'demo-btn demo-btn--primary'
+            btn_secondary: 'demo-btn'
+            card: 'demo-card'

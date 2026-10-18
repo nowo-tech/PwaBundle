@@ -213,9 +213,10 @@ nowo_pwa:
         mark_asset: null             # optional brand mark <img src>
         title: null                  # optional title string or translation key
         eyebrow: null                # optional eyebrow string or translation key
-        button_class: ''             # empty = derive BEM class from css_class
-        dismiss_button_class: null   # null = derive BEM class from css_class
-        never_button_class: null     # null = derive BEM class from css_class
+        # Deprecated (1.10): theme the buttons with the UiKit slots btn_primary / btn_secondary / btn_link
+        # button_class: ''           # set: replaces the install button classes
+        # dismiss_button_class: null # set: replaces the "Not now" button classes
+        # never_button_class: null   # set: replaces the "Don't ask again" button classes
         delay_ms: 0
         visibility: all              # all | mobile | desktop
         route_targeting:
@@ -231,13 +232,28 @@ nowo_pwa:
 | `mark_asset` | `null` | Optional `<img src>` for the prompt brand mark; empty / null disables the image |
 | `title` | `null` | Optional title override; when omitted, the bundle falls back to the translated install action label |
 | `eyebrow` | `null` | Optional eyebrow text shown above the title |
-| `button_class` | `''` | Install button class; empty string derives BEM classes from `css_class` |
-| `dismiss_button_class` | `null` | Remind-later button class; `null` derives BEM classes from `css_class` |
-| `never_button_class` | `null` | Never-again button class; `null` derives BEM classes from `css_class` |
+| `button_class` | `''` | **Deprecated** — use the UiKit slot `btn_primary` (`nowo_ui_kit.theme.bundles.NowoPwaBundle.classes.btn_primary`). When set, replaces the install button classes |
+| `dismiss_button_class` | `null` | **Deprecated** — slot `btn_secondary`. When set, replaces the remind-later button classes |
+| `never_button_class` | `null` | **Deprecated** — slot `btn_link`. When set, replaces the never-again button classes |
 | `dismiss_days` | 7 | Days before showing again after "Not now" |
 | `never_dismiss_key` | `nowo_pwa_install_never` | localStorage key when user chooses "Don't ask again" |
 | `show_never_option` | true | Show permanent dismiss button |
 | `route_targeting` | all routes | Limit where the prompt HTML is rendered (independent from global targeting) |
+
+**Theme (UiKit, REQ-UI-003).** Panel, title, message, actions and buttons read the UiKit theme slots of
+`NowoPwaBundle` (`card`, `card_title`, `card_intro`, `muted`, `toolbar`, `btn_primary`, `btn_secondary`, `btn_link`);
+colours come from the `--nowo-pwa-install-*` tokens, which default to the UiKit `--nowo-ui-*` tokens. Theme it once:
+
+```yaml
+nowo_ui_kit:
+    theme:
+        tokens: { primary: '#0f766e', surface: '#fffdf8', text: '#1c2a27', muted: '#6b6a5e', radius: '0.75rem' }
+        classes: { btn_primary: 'app-btn app-btn--primary' }
+        bundles:
+            NowoPwaBundle: { classes: { card: 'app-install-card' } }   # PWA widgets only
+```
+
+Blocks and the one-block override recipe: [TEMPLATES.md](TEMPLATES.md).
 
 Path patterns (when `match_by: path`): exact (`/vault`), prefix (`/vault*`), regex (`regex:/^\/admin/` or `#^/admin#`). See [route targeting](#route-targeting) for the full table.
 
@@ -377,17 +393,22 @@ nowo_pwa:
         offline:
             path: /offline
             name: nowo_pwa_offline
-    templates:
-        head: '@NowoPwaBundle/pwa/head.html.twig'
-        install_prompt: '@NowoPwaBundle/pwa/install_prompt.html.twig'
-        install_links: '@NowoPwaBundle/pwa/install_links.html.twig'
-        offline: '@NowoPwaBundle/pwa/offline.html.twig'
+    web_ui:
+        layout_template: null    # offline page layout; null = @NowoUiKit/layout/status.html.twig (self-contained)
+        templates:
+            head: '@NowoPwaBundle/pwa/head.html.twig'
+            install_prompt: '@NowoPwaBundle/pwa/install_prompt.html.twig'
+            install_links: '@NowoPwaBundle/pwa/install_links.html.twig'
+            offline: '@NowoPwaBundle/pwa/offline.html.twig'
 ```
 
-The bundled offline page exposes two Twig blocks for light-touch overrides:
+`templates.*` (1.x) is a deprecated alias of `web_ui.templates.*`. Point a template key to a host template that
+`{% extends '@!NowoPwaBundle/pwa/….html.twig' %}` and redefines one block ([TEMPLATES.md](TEMPLATES.md)).
 
-- `pwa_offline_brand`
-- `pwa_offline_content`
+The offline page renders on the self-contained UiKit status layout (inline CSS with the CSP nonce, no requests), so
+the service worker can serve it from its cache; keep `web_ui.layout_template` null unless your layout and its assets
+are cached too. Blocks: `pwa_offline_head`, `pwa_offline_brand`, `pwa_offline_content`, `pwa_offline_actions`. The
+1.x standalone page is still available as `@NowoPwaBundle/pwa/offline_standalone.html.twig` (deprecated).
 
 ## Share target and file handlers
 

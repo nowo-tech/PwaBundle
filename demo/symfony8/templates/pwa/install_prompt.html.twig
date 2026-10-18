@@ -1,0 +1,15 @@
+{#
+  Host override of ONE block (REQ-UI-003 "For applications"): the brand mark becomes an inline SVG; everything else
+  comes from the bundle template (wired through nowo_pwa.web_ui.templates.install_prompt).
+#}
+{% extends '@!NowoPwaBundle/pwa/install_prompt.html.twig' %}
+
+{% block pwa_install_mark %}
+    <div class="{{ bem }}__brand">
+        <svg class="{{ bem }}__mark demo-mark" viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
+            <rect width="40" height="40" rx="10" fill="currentColor"/>
+            <path d="M12 26V14h7a5 5 0 0 1 0 10h-3v2z" fill="#fff"/>
+        </svg>
+        <span class="demo-mark__name">{{ manifest.short_name|default('Demo') }}</span>
+    </div>
+{% endblock %}

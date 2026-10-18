@@ -21,6 +21,8 @@ make test-ts
 ```bash
 make qa              # cs-check, phpstan, tests
 make release-check   # full pre-release pipeline
+make -C demo/symfony8 test-e2e          # Playwright e2e against the demo (REQ-DEMO-013)
+make -C demo/symfony8 demo-screenshots  # re-capture docs/images/demo/*.webp
 ```
 
 ## Pull requests

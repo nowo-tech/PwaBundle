@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+  - [Template contract (1.10)](#template-contract-110)
 - [To 1.9.1](#to-191)
 - [To 1.9.0](#to-190)
 - [To 1.8.0](#to-180)
@@ -45,6 +46,67 @@
   - [Twig-CS-Fixer (maintainers)](#twig-cs-fixer-maintainers)
 
 ## Unreleased
+
+### Template contract (1.10)
+
+PwaBundle follows the **UiKit 2.x page contract** (REQ-UI-003) and requires **`nowo-tech/ui-kit-bundle` ^2.2**
+(`composer update nowo-tech/pwa-bundle -W`; register `Nowo\UiKitBundle\NowoUiKitBundle` in `config/bundles.php` if
+Flex did not). Hosts that only configured `nowo_pwa` need no template work; check the points below.
+
+**Widgets and page** ([TEMPLATES.md](TEMPLATES.md))
+
+| Template | Contract | Blocks |
+| --- | --- | --- |
+| `pwa/install_prompt.html.twig` | widget, theme slots `card`, `card_title`, `card_intro`, `muted`, `toolbar`, `btn_primary`, `btn_secondary`, `btn_link` | `pwa_install_backdrop`, `pwa_install_panel`, `pwa_install_mark`, `pwa_install_text`, `pwa_install_eyebrow`, `pwa_install_title`, `pwa_install_message`, `pwa_install_actions`, `pwa_install_button_install`, `pwa_install_button_remind`, `pwa_install_button_never` |
+| `pwa/install_links.html.twig` | widget, slots `btn_primary` / `btn_secondary` + `btn_sm` | `pwa_install_link`, `pwa_uninstall_link` |
+| `pwa/push_diagnostics.html.twig` | widget, slots `toolbar`, `btn_primary`, `btn_secondary` | unchanged |
+| `pwa/offline.html.twig` | unique page on `@NowoUiKit/layout/status.html.twig`, view model `page` (`AuthPage`) | `pwa_offline_head`, `pwa_offline_brand`, `pwa_offline_content`, `pwa_offline_actions` |
+
+**What hosts may notice**
+
+1. **Install prompt colours.** `pwa.css` now reads the UiKit tokens first: with `nowo-ui.css` (or
+   `nowo_ui_kit.theme.tokens`) on the page the prompt follows the host surface / text / primary colours instead of the
+   1.x dark navy panel. To keep the 1.x look, set the bundle tokens in your CSS:
+   `:root { --nowo-pwa-install-bg: #0f172a; --nowo-pwa-install-color: #f8fafc; --nowo-pwa-install-message-color: rgba(248, 250, 252, .92); --nowo-pwa-install-eyebrow-color: #cbd5e1; --nowo-pwa-install-secondary-color: #cbd5e1; --nowo-pwa-install-primary-bg: #2563eb; --nowo-pwa-install-primary-color: #fff; }`.
+   The panel (`.nowo-pwa-install__panel`), not the root, is the painted surface; CSS that painted
+   `.nowo-pwa-install` itself should target the panel (or the tokens).
+2. **Install prompt markup.** Buttons, panel, title, message and actions also carry the slot classes (`nowo-ui-btn
+   nowo-ui-btn--primary` + your `theme.classes.btn_primary`, `nowo-ui-card` …; with `css_framework: bootstrap5` also
+   `btn btn-primary`, `card`, …). Eyebrow / title / message sit in a new `.nowo-pwa-install__text` wrapper. The ids,
+   `data-pwa-install-action` hooks and BEM classes are unchanged.
+3. **Offline page.** `/offline` renders on the self-contained UiKit status layout (inline CSS with the request
+   `csp_nonce`, theme tokens, light / dark from the host tokens) instead of the 1.x dark standalone page; the
+   `--nowo-pwa-offline-*` custom properties no longer apply. The blocks `pwa_offline_brand` and `pwa_offline_content`
+   keep their names (inside `nowo_ui_content`). Want the 1.x page back for one minor version:
+   `nowo_pwa.web_ui.templates.offline: '@NowoPwaBundle/pwa/offline_standalone.html.twig'` (deprecated).
+4. **Template context.** The offline template receives `page` (a UiKit `AuthPage`) in addition to the 1.x
+   `manifest_name`, `manifest` and `retry_url`.
+5. **`show_never_option: false`** now really hides the "Don't ask again" button.
+
+**Migrating overrides.** `@!NowoPwaBundle/…` is now registered, so a fork under
+`templates/bundles/NowoPwaBundle/pwa/install_prompt.html.twig` can shrink to:
+
+```twig
+{% extends '@!NowoPwaBundle/pwa/install_prompt.html.twig' %}
+
+{% block pwa_install_mark %}
+    <div class="{{ bem }}__brand"><span class="{{ bem }}__mark" aria-hidden="true">{% include '_brand_icon.html.twig' %}</span></div>
+{% endblock %}
+```
+
+(or live outside `templates/bundles/` and be wired with `nowo_pwa.web_ui.templates.install_prompt`).
+
+**Deprecated configuration** (still read in 1.x, removed in 2.0)
+
+| Key | Replacement |
+| --- | --- |
+| `templates.head` / `install_prompt` / `install_links` / `offline` | `web_ui.templates.*` (copied there when the canonical key is not set) |
+| `install_prompt.button_class` | `nowo_ui_kit.theme.bundles.NowoPwaBundle.classes.btn_primary` (still replaces the slot classes when set) |
+| `install_prompt.dismiss_button_class` | `nowo_ui_kit.theme.bundles.NowoPwaBundle.classes.btn_secondary` |
+| `install_prompt.never_button_class` | `nowo_ui_kit.theme.bundles.NowoPwaBundle.classes.btn_link` |
+
+A theme exception that should drop the UiKit framework defaults of a slot (e.g. Bootstrap `btn btn-primary`) uses
+the long form: `btn_primary: { value: 'app-install', framework_defaults: false }`.
 
 ## To 1.9.1
 

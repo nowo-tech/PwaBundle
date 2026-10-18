@@ -10,6 +10,19 @@ Turn any Symfony application into a **Progressive Web App** with a fully configu
 
 This bundle is **FrankenPHP worker mode friendly** — including when the kernel is **not** rebooted between requests (`reset_kernel` false). See [FrankenPHP worker audit](docs/FRANKENPHP-WORKER-AUDIT.md).
 
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/images/demo/overview.webp" alt="Install prompt open over the demo page, themed by the host UiKit tokens and slots" />
+      <br /><sub>Install prompt — host UiKit theme, brand mark from a one-block override</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/images/demo/offline.webp" alt="Offline fallback page on the self-contained UiKit status layout" />
+      <br /><sub>Offline fallback — self-contained status page cached by the service worker</sub>
+    </td>
+  </tr>
+</table>
+
 ## Features
 
 - **Web App Manifest** generated from `nowo_pwa.yaml` (name, icons, shortcuts, theme, display mode, scope, start URL)
@@ -18,7 +31,8 @@ This bundle is **FrankenPHP worker mode friendly** — including when the kernel
 - **Twig helpers** `nowo_pwa_head()`, `nowo_pwa_install_prompt()`, `nowo_pwa_install_links()`, and `nowo_pwa_enabled()` with route targeting (`all` / `only` / `except`, route names or URL paths)
 - **Web Profiler** panel `nowo_pwa` (manifest/SW status in debug)
 - **Install prompt modes** — `banner`, `flash` (inline), or `modal`; dismiss remind / never-ask-again options
-- **Override-friendly** Twig templates with install/offline blocks, bundled `pwa.css` tokens, and translations (**en**, **es**, **fr**, **it**, **pt**, **de**, **nl**; REQ-TWIG-001 / REQ-I18N-001)
+- **UiKit page contract** (REQ-UI-003, `nowo-tech/ui-kit-bundle` ^2.2) — widgets on UiKit theme slots and tokens, offline page on the self-contained UiKit status layout ([templates](docs/TEMPLATES.md))
+- **Override-friendly** Twig templates with install/offline blocks (`@!NowoPwaBundle` one-block overrides), bundled `pwa.css` tokens, and translations (**en**, **es**, **fr**, **it**, **pt**, **de**, **nl**; REQ-TWIG-001 / REQ-I18N-001)
 - **TypeScript client** for SW registration and install banner (Vite build → `pwa.js`)
 - **Web Push (optional)** — `WebPushSenderInterface` (minishlink/web-push 11, VAPID, anti-SSRF endpoint guard), dependency checks at compile time, and an opt-in CSRF-protected **test notification** endpoint (`nowo_pwa_push_test`)
 - **Push diagnostics** — `push-checks.ts` + Stimulus peer `push-diagnostics` + partial `pwa/push_diagnostics.html.twig` (per-step checklist: support, VAPID, permission, service worker, subscription/key match, server copy)
@@ -80,6 +94,7 @@ See [Installation](docs/INSTALLATION.md) and [Configuration](docs/CONFIGURATION.
 
 ### Additional documentation
 
+- [Templates (UiKit page contract)](docs/TEMPLATES.md)
 - [Demo with FrankenPHP](docs/DEMO-FRANKENPHP.md)
 - [FrankenPHP worker audit](docs/FRANKENPHP-WORKER-AUDIT.md)
 
@@ -91,6 +106,9 @@ make test-ts
 make test-coverage
 make release-check   # includes demo healthcheck on port 8025
 ```
+
+Playwright end-to-end tests and the README screenshots (WebP under `docs/images/demo/`): `make -C demo/symfony8 test-e2e`
+and `make -C demo/symfony8 demo-screenshots` (REQ-DEMO-013).
 
 ## License
 

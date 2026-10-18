@@ -1,22 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}PWA Demo — {{ parent() }}{% endblock %}
+{% block title %}PWA Demo — Install{% endblock %}
 
 {% block body %}
-    <h1>PWA Bundle Demo</h1>
-    <p>This Symfony 8 application is installable as a Progressive Web App.</p>
+    <h1 class="{{ nowo_ui_class('page_title') }}">Installable Symfony app</h1>
+    <p class="{{ nowo_ui_class('page_intro') }}">Manifest, service worker, offline fallback and a dismissible install prompt — all
+        themed by the host's UiKit tokens and slots.</p>
 
-    <section aria-labelledby="pwa-install-heading">
-        <h2 id="pwa-install-heading">Install</h2>
-        <p>Use the button below when your browser offers installation (Chrome/Edge on localhost or HTTPS).</p>
-        {{ nowo_pwa_install_links() }}
-        <p><small>The install link appears when the app is installable; the uninstall link when it is already installed.</small></p>
+    <section class="{{ nowo_ui_class('card') }}" aria-labelledby="pwa-install-heading">
+        <div class="{{ nowo_ui_class('card_body') }}">
+            <h2 id="pwa-install-heading" class="{{ nowo_ui_class('card_title') }}">Install</h2>
+            <p>The install link appears when the browser offers installation (Chrome / Edge on localhost or HTTPS); the
+                uninstall hint when the app already runs installed.</p>
+            {{ nowo_pwa_install_links() }}
+            <p class="{{ nowo_ui_class('muted') }}">The prompt below opens on <code>beforeinstallprompt</code>.
+                Browsers without the event (or this demo in a headless run) can preview it:</p>
+            <button type="button" class="{{ nowo_ui_class('btn_secondary') }}" data-demo-preview-prompt data-testid="demo-preview-prompt">Preview the install prompt</button>
+        </div>
     </section>
 
-    <ul>
-        <li><a href="/manifest.webmanifest">Web App Manifest</a></li>
-        <li><a href="/sw.js">Service Worker</a></li>
-        <li><a href="/offline">Offline fallback page</a></li>
-    </ul>
-    <p>Open DevTools → Application to inspect manifest and service worker registration.</p>
+    <section class="{{ nowo_ui_class('card') }}" aria-labelledby="pwa-offline-heading">
+        <div class="{{ nowo_ui_class('card_body') }}">
+            <h2 id="pwa-offline-heading" class="{{ nowo_ui_class('card_title') }}">Offline</h2>
+            <p>The service worker precaches <a href="{{ path('nowo_pwa_offline') }}">the offline page</a>: a self-contained
+                UiKit status page (inline CSS, no requests) shown when a navigation fails without network.</p>
+        </div>
+    </section>
 {% endblock %}

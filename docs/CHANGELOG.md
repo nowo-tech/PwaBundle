@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+  - [Added](#added)
+  - [Changed](#changed)
+  - [Deprecated](#deprecated)
+  - [Fixed](#fixed)
 - [[1.9.1] - 2026-10-13](#191---2026-10-13)
 - [[1.9.0] - 2026-10-13](#190---2026-10-13)
 - [[1.8.0] - 2026-10-13](#180---2026-10-13)
@@ -34,6 +38,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[1.0.0] - 2026-07-05](#100---2026-07-05)
 
 ## [Unreleased]
+
+### Added
+
+- **UiKit page contract (REQ-UI-003)** — requires `nowo-tech/ui-kit-bundle` **^2.2**. The install prompt, install links
+  and push diagnostics read the UiKit **theme slots** of `NowoPwaBundle` (`card`, `card_title`, `card_intro`, `muted`,
+  `toolbar`, `btn_primary`, `btn_secondary`, `btn_link`, `btn_sm`; `nowo_ui_attrs('card' | 'toolbar')`), so a host
+  themes them once in `nowo_ui_kit.theme` (or `theme.bundles.NowoPwaBundle`). Widget roots carry
+  `data-nowo-ui-bundle="NowoPwaBundle"` (per-bundle tokens) and `data-testid="pwa-install-prompt"`.
+- Install prompt blocks for one-block `@!` overrides: `pwa_install_backdrop`, `pwa_install_panel`, `pwa_install_text`,
+  `pwa_install_message`, `pwa_install_button_install`, `pwa_install_button_remind`, `pwa_install_button_never`
+  (existing: `pwa_install_mark`, `pwa_install_eyebrow`, `pwa_install_title`, `pwa_install_actions`); install links:
+  `pwa_install_link`, `pwa_uninstall_link`.
+- `nowo_pwa.web_ui.templates.{head,install_prompt,install_links,offline}` and `nowo_pwa.web_ui.layout_template`
+  (layout of the offline page; `null` = `@NowoUiKit/layout/status.html.twig`).
+- `Nowo\PwaBundle\View\OfflinePage::create()` — the offline page view model (UiKit `AuthPage`).
+- `docs/TEMPLATES.md`; contract test (`PageContractTestCase`) and widget tests with a stub theme.
+- Demo: UiKit document layout with a host theme (tokens + class map), a one-block install prompt override, Playwright
+  e2e (`make -C demo/symfony8 test-e2e`) and README screenshots (`make -C demo/symfony8 demo-screenshots`, REQ-DEMO-013).
+
+### Changed
+
+- **Offline page** (`pwa/offline.html.twig`): renders on the self-contained UiKit **status layout** (inline critical CSS
+  with the request CSP nonce, theme tokens, no stylesheet / script request) with the `page/auth` panel regions and
+  slots; the 1.x standalone page (dark `--nowo-pwa-offline-*` palette) moved to `pwa/offline_standalone.html.twig`.
+- `pwa.css`: the `--nowo-pwa-install-*` tokens fall back to the UiKit `--nowo-ui-*` tokens (surface, text, muted, border,
+  radius, primary); the panel (not the root) is the painted surface; `[hidden]` always hides the prompt.
+- Install prompt markup: eyebrow / title / message wrapped in `.nowo-pwa-install__text`; `aria-describedby` on the root.
+
+### Deprecated
+
+- `nowo_pwa.templates.*` → `nowo_pwa.web_ui.templates.*`.
+- `nowo_pwa.install_prompt.button_class` / `dismiss_button_class` / `never_button_class` → UiKit theme slots
+  `btn_primary` / `btn_secondary` / `btn_link` (`nowo_ui_kit.theme.bundles.NowoPwaBundle.classes.*`). Still applied
+  when set.
+- `pwa/offline_standalone.html.twig` (1.x offline page, opt-in).
+
+### Fixed
+
+- `@!NowoPwaBundle/…` is now registered (the bundle templates without the app overrides), so a host override can extend
+  the bundle template and redefine one block instead of copying the file.
+- `install_prompt.show_never_option: false` hides the "Don't ask again" button (the Twig `default` filter turned
+  `false` into `true`).
 
 ## [1.9.1] - 2026-10-13
 

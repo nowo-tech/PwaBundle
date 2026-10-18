@@ -1,0 +1,4 @@
+demo:
+    install_prompt:
+        title: 'Install PWA Demo'
+        eyebrow: 'Works offline'
