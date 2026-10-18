@@ -8,10 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
-  - [Added](#added)
-  - [Changed](#changed)
-  - [Deprecated](#deprecated)
-  - [Fixed](#fixed)
+- [[1.10.0] - 2026-10-18](#1100---2026-10-18)
 - [[1.9.1] - 2026-10-13](#191---2026-10-13)
 - [[1.9.0] - 2026-10-13](#190---2026-10-13)
 - [[1.8.0] - 2026-10-13](#180---2026-10-13)
@@ -38,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[1.0.0] - 2026-07-05](#100---2026-07-05)
 
 ## [Unreleased]
+
+## [1.10.0] - 2026-10-18
+
+Install prompt and offline page on the UiKit 2.2 page contract (REQ-UI-003): theme slots, one-block `@!NowoPwaBundle` overrides (namespace now registered), self-contained offline status page; `show_never_option: false` honoured. See [UPGRADING](UPGRADING.md#to-1100).
 
 ### Added
 
@@ -80,6 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the bundle template and redefine one block instead of copying the file.
 - `install_prompt.show_never_option: false` hides the "Don't ask again" button (the Twig `default` filter turned
   `false` into `true`).
+
+[1.10.0]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.10.0
 
 ## [1.9.1] - 2026-10-13
 
