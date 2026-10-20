@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.10.1] - 2026-10-20](#1101---2026-10-20)
 - [[1.10.0] - 2026-10-18](#1100---2026-10-18)
 - [[1.9.1] - 2026-10-13](#191---2026-10-13)
 - [[1.9.0] - 2026-10-13](#190---2026-10-13)
@@ -36,11 +37,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.1] - 2026-10-20
+
+Dependency refresh (bundle and demos), php-cs-fixer ParallelConfig(2). See [UPGRADING](UPGRADING.md#to-1101).
+
 ### Changed
 
 - Dependencies refreshed (Composer and pnpm/npm lock files of the bundle and its demos, campaign 2026-10-19); shipped assets rebuilt.
 - `.php-cs-fixer.dist.php`: `new ParallelConfig(2)` (REQ-CS-001).
 - Documentation: wave-1 REQ compliance — README standard badge line (order, Symfony 7.4 | 8.0 | 8.1+, Coverage badge), canonical FrankenPHP claim line and documentation list order, CONTRIBUTING Cursor Agent settings and post-release-commit trailer check, CODEOWNERS header and canonical bug-report template, demo `.env.example` comments, doc TOCs, Spec Kit inventory refresh (64/64).
+
+[1.10.1]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.10.1
 
 ## [1.10.0] - 2026-10-18
 

@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.10.1](#to-1101)
 - [To 1.10.0](#to-1100)
   - [Template contract (1.10)](#template-contract-110)
 - [To 1.9.1](#to-191)
@@ -47,6 +48,14 @@
   - [Twig-CS-Fixer (maintainers)](#twig-cs-fixer-maintainers)
 
 ## Unreleased
+
+## To 1.10.1
+
+From **1.10.0**:
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
 
 ## To 1.10.0
 
