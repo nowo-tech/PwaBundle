@@ -10,6 +10,7 @@ The bundle includes a **Symfony 8.1** demo under `demo/symfony8/` using **Franke
 - [What the demo shows](#what-the-demo-shows)
 - [Development vs production](#development-vs-production)
 - [Commands](#commands)
+- [Switching classic vs worker (`FRANKENPHP_MODE`)](#switching-classic-vs-worker-frankenphp_mode)
 - [Troubleshooting](#troubleshooting)
 
 ## Quick start

@@ -8,6 +8,18 @@
 | Method | Manual review of every PHP file under `src/` (controller, Twig extension, subscriber, route loader, data collector, services, DI extension, compiler pass, config) + PHPStan FrankenPHP classic/worker rulesets |
 | **Verdict** | ✅ **100% compatible** with FrankenPHP worker mode when the kernel is **not** rebooted between requests (`reset_kernel` / reboot disabled). Runtime services hold only compiled config; request data is read lazily per call and never stored on shared instances. |
 
+## Table of contents
+
+- [Execution model assumed](#execution-model-assumed)
+- [Summary](#summary)
+- [Services reviewed](#services-reviewed)
+- [Findings](#findings)
+  - [W-01 — Profiler data collector (Info, debug only)](#w-01--profiler-data-collector-info-debug-only)
+  - [W-02 — Absolute URLs computed per request (Info)](#w-02--absolute-urls-computed-per-request-info)
+- [Hardening in v1.5.1](#hardening-in-v151)
+- [Usage recommendations in worker mode](#usage-recommendations-in-worker-mode)
+- [Re-audit triggers](#re-audit-triggers)
+
 ## Execution model assumed
 
 FrankenPHP worker mode boots the Symfony kernel once per worker and serves many requests with the same container. This audit assumes the **strict** variant: the kernel is **not** rebooted between requests, so every shared service, static property and PHP global survives from one request to the next. Two scenarios are evaluated:

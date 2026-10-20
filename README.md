@@ -1,6 +1,6 @@
 # PWA Bundle
 
-[![CI](https://github.com/nowo-tech/PwaBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/PwaBundle/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/nowo-tech/PwaBundle/graph/badge.svg)](https://codecov.io/gh/nowo-tech/PwaBundle) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/pwa-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/pwa-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/pwa-bundle.svg)](https://packagist.org/packages/nowo-tech/pwa-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-7.4%2B%20%7C%208.0%2B-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/PwaBundle.svg?style=social&label=Star)](https://github.com/nowo-tech/PwaBundle)
+[![CI](https://github.com/nowo-tech/PwaBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/PwaBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/pwa-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/pwa-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/pwa-bundle.svg)](https://packagist.org/packages/nowo-tech/pwa-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-7.4%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/pwa-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/PwaBundle) [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](#tests-and-coverage) [![codecov](https://codecov.io/gh/nowo-tech/PwaBundle/graph/badge.svg)](https://codecov.io/gh/nowo-tech/PwaBundle)
 
 > ⭐ **Found this useful?** Give it a **star** on [GitHub](https://github.com/nowo-tech/PwaBundle) so more developers can find it.
 
@@ -8,7 +8,9 @@ Turn any Symfony application into a **Progressive Web App** with a fully configu
 
 ![FrankenPHP Friendly Worker Mode](docs/images/frankenphp-friendly.png)
 
-This bundle is **FrankenPHP worker mode friendly** — including when the kernel is **not** rebooted between requests (`reset_kernel` false). See [FrankenPHP worker audit](docs/FRANKENPHP-WORKER-AUDIT.md).
+This bundle is **FrankenPHP worker mode friendly**.
+
+This includes running when the kernel is **not** rebooted between requests (`reset_kernel` false); see [FrankenPHP worker audit](docs/FRANKENPHP-WORKER-AUDIT.md).
 
 <table>
   <tr>
@@ -77,16 +79,14 @@ See [Installation](docs/INSTALLATION.md) and [Configuration](docs/CONFIGURATION.
 
 ## Documentation
 
-- [GitHub Actions CI requirements](docs/GITHUB_CI.md)
 - [Installation](docs/INSTALLATION.md)
 - [Configuration](docs/CONFIGURATION.md)
-- [PSR evaluation (REQ-CS-007)](docs/PSR.md)
 - [Usage](docs/USAGE.md)
 - [Contributing](docs/CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Changelog](docs/CHANGELOG.md)
 - [Upgrading](docs/UPGRADING.md)
-- [Release process](docs/RELEASE.md)
+- [Release](docs/RELEASE.md)
 - [Security](docs/SECURITY.md)
 - [Engram](docs/ENGRAM.md)
 - [Spec-driven development](docs/SPEC-DRIVEN-DEVELOPMENT.md)
@@ -94,11 +94,16 @@ See [Installation](docs/INSTALLATION.md) and [Configuration](docs/CONFIGURATION.
 
 ### Additional documentation
 
+- [GitHub Actions CI requirements](docs/GITHUB_CI.md)
+- [PSR evaluation (REQ-CS-007)](docs/PSR.md)
 - [Templates (UiKit page contract)](docs/TEMPLATES.md)
 - [Demo with FrankenPHP](docs/DEMO-FRANKENPHP.md)
 - [FrankenPHP worker audit](docs/FRANKENPHP-WORKER-AUDIT.md)
 
 ## Tests and coverage
+
+- PHP: 100% (`composer test-coverage-100` enforces `--min-percent=100`)
+- TS/JS: 100% (Vitest thresholds in `vitest.config.ts`)
 
 ```bash
 make test

@@ -76,6 +76,7 @@ See user stories US-01…US-06 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 - **FR-TWIG-001**: App overrides MUST win via `TwigPathsPass` prepend + bundle namespace `NowoPwaBundle`.
 - **FR-TWIG-002**: Extension MUST expose `nowo_pwa_enabled()`, `nowo_pwa_head()`, `nowo_pwa_install_prompt()`, `nowo_pwa_install_links()`.
 - **FR-TWIG-003…006**: Templates MUST match documented markup and translation keys.
+- **FR-TWIG-006** (offline page, 1.10): the default offline page is `pwa/offline.html.twig`, a UiKit `page/auth` scaffold on the self-contained status layout built from the `OfflinePage` view model (inline CSS, no extra request, cacheable by the service worker); the deprecated 1.x `pwa/offline_standalone.html.twig` stays available through `web_ui.templates.offline` until 2.0.
 
 ### Frontend
 
@@ -83,6 +84,7 @@ See user stories US-01…US-06 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 - **FR-ASSET-003 / FR-ASSET-004**: Published `pwa.js` / `pwa.css` MUST ship via asset package; build documented in README/Makefile.
 - **FR-TEST-001**: `pwa-client.test.ts` MUST maintain Vitest coverage contract (see `REQ-TEST-009` in SDD).
 - **FR-I18N-001**: Seven locale files MUST share keys `install.*` and `offline.*` under domain `NowoPwaBundle`.
+- **FR-BUILD-001**: `src/Resources/public/pwa.js` MUST be the committed Vite build output of the TypeScript sources in `src/Resources/assets/src/` (`pnpm run build`), not hand-edited.
 
 ### Web Profiler
 
@@ -92,7 +94,7 @@ See user stories US-01…US-06 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 
 ## Success Criteria
 
-- **SC-001**: **35/35** files mapped in [`code-inventory.md`](code-inventory.md).
+- **SC-001**: **64/64** files mapped in [`code-inventory.md`](code-inventory.md).
 - **SC-002**: Config keys in [`docs/CONFIGURATION.md`](../../docs/CONFIGURATION.md) match `Configuration.php` and node definitions.
 - **SC-003**: `make release-check` passes (PHPUnit 100%, Vitest 100%, PHPStan).
 - **SC-004**: Demo healthcheck returns valid manifest JSON and SW with cache prefix.

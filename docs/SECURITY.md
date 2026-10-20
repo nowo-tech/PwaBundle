@@ -3,13 +3,15 @@
 ## Table of contents
 
 - [Threat model](#threat-model)
+- [Multi-tenant scope example](#multi-tenant-scope-example)
 - [Caching authenticated routes](#caching-authenticated-routes)
+  - [Built-in protections](#built-in-protections)
 - [Web Push test endpoint](#web-push-test-endpoint)
 - [Content Security Policy](#content-security-policy)
 - [Trusted proxies](#trusted-proxies)
 - [Supported versions](#supported-versions)
 - [Reporting a vulnerability](#reporting-a-vulnerability)
-- [Release security checklist](#release-security-checklist)
+- [Release security checklist (12.4.1)](#release-security-checklist-1241)
 
 ## Threat model
 

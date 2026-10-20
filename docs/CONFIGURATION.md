@@ -6,15 +6,21 @@ All options live under the `nowo_pwa` root key in `config/packages/nowo_pwa.yaml
 
 - [Master switch](#master-switch)
 - [Manifest (W3C Web App Manifest)](#manifest-w3c-web-app-manifest)
+  - [Share target](#share-target)
 - [Meta tags (HTML head)](#meta-tags-html-head)
 - [Service worker](#service-worker)
+  - [Web Push SW handlers (`web_push`)](#web-push-sw-handlers-web_push)
 - [Web Push sender and test notification](#web-push-sender-and-test-notification)
+  - [Dependencies (checked at container compile time)](#dependencies-checked-at-container-compile-time)
+  - [Why the test endpoint is off by default](#why-the-test-endpoint-is-off-by-default)
 - [Install prompt](#install-prompt)
+  - [Install prompt blocks and CSS tokens](#install-prompt-blocks-and-css-tokens)
 - [Install links](#install-links)
 - [Client script](#client-script)
 - [HTTP caching](#http-caching)
 - [Route targeting](#route-targeting)
 - [Routes & templates](#routes--templates)
+- [Share target and file handlers](#share-target-and-file-handlers)
 - [Full example](#full-example)
 
 ## Master switch

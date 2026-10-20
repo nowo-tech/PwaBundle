@@ -2,7 +2,7 @@
 
 **Baseline spec**: [`spec.md`](spec.md)  
 **Package**: `nowo-tech/pwa-bundle`  
-**Last audited**: 2026-10-13 (v1.7.0 push diagnostics — see [`../002-push-diagnostics/spec.md`](../002-push-diagnostics/spec.md))
+**Last audited**: 2026-10-20 (v1.10 UiKit offline page; push diagnostics from v1.7.0 — see [`../002-push-diagnostics/spec.md`](../002-push-diagnostics/spec.md); audit: `git ls-files src | wc -l` → 64)
 
 This file proves that **every production source artifact** under `src/` is referenced by the baseline specification. PHPUnit under `tests/` is out of scope unless promoted in the spec.
 
@@ -41,6 +41,7 @@ This file proves that **every production source artifact** under `src/` is refer
 | `WebPush/Exception/InvalidPushEndpointException.php` | Guard failure | 002: FR-PUSH-007 |
 | `WebPush/Exception/WebPushDependencyException.php` | Missing dependency | 002: FR-PUSH-003 |
 | `WebPush/Exception/PushTestDeniedException.php` | Host refusal (error code) | 002: FR-PUSH-004 |
+| `View/OfflinePage.php` | Offline page view model (UiKit `page/auth`) | FR-CTRL-003, FR-TWIG-006 |
 
 ## Symfony config (`src/Resources/config/`)
 
@@ -57,6 +58,7 @@ This file proves that **every production source artifact** under `src/` is refer
 | `Resources/views/pwa/install_prompt.html.twig` | Install banner/modal | FR-TWIG-004 |
 | `Resources/views/pwa/install_links.html.twig` | Install/uninstall links | FR-TWIG-005 |
 | `Resources/views/pwa/offline.html.twig` | Offline fallback page | FR-TWIG-006 |
+| `Resources/views/pwa/offline_standalone.html.twig` | Deprecated 1.x standalone offline page (opt-in) | FR-TWIG-006 |
 | `Resources/views/Collector/pwa.html.twig` | Profiler panel UI | FR-PROF-002 |
 | `Resources/views/Icon/pwa.svg` | Profiler toolbar icon | FR-PROF-003 |
 | `Resources/views/pwa/push_diagnostics.html.twig` | Push diagnostics panel | 002: FR-PUSH-010 |
@@ -107,14 +109,14 @@ This file proves that **every production source artifact** under `src/` is refer
 
 | Category | Files | Mapped |
 | --- | ---: | ---: |
-| PHP classes | 31 | 31 |
+| PHP classes | 32 | 32 |
 | YAML config | 2 | 2 |
-| Twig / SVG views | 9 | 9 |
+| Twig / SVG views | 10 | 10 |
 | TS production | 6 | 6 |
 | TS co-located tests | 4 | 4 |
 | Public JS/CSS + kit SW append | 3 | 3 |
 | Translations | 7 | 7 |
-| **Total `src/` artifacts** | **62** | **62** |
+| **Total `src/` artifacts** | **64** | **64** |
 
 Build output `pwa.js` is documented as produced from `pwa.ts`; it is counted as a shipped artifact, not a separate authoring unit.
 

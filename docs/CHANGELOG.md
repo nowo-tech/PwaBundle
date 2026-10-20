@@ -36,6 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Documentation: wave-1 REQ compliance — README standard badge line (order, Symfony 7.4 | 8.0 | 8.1+, Coverage badge), canonical FrankenPHP claim line and documentation list order, CONTRIBUTING Cursor Agent settings and post-release-commit trailer check, CODEOWNERS header and canonical bug-report template, demo `.env.example` comments, doc TOCs, Spec Kit inventory refresh (64/64).
+
 ## [1.10.0] - 2026-10-18
 
 Install prompt and offline page on the UiKit 2.2 page contract (REQ-UI-003): theme slots, one-block `@!NowoPwaBundle` overrides (namespace now registered), self-contained offline status page; `show_never_option: false` honoured. See [UPGRADING](UPGRADING.md#to-1100).

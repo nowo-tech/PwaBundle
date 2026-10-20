@@ -1,5 +1,24 @@
 # Usage
 
+## Table of contents
+
+- [Layout integration](#layout-integration)
+- [Icons](#icons)
+- [Route targeting](#route-targeting)
+- [Install prompt display modes](#install-prompt-display-modes)
+- [Service worker strategies](#service-worker-strategies)
+  - [Exclude authenticated routes from cache](#exclude-authenticated-routes-from-cache)
+- [Browser and platform notes](#browser-and-platform-notes)
+- [Share target (Web Share Target API)](#share-target-web-share-target-api)
+- [Push diagnostics, test notification and browser hints](#push-diagnostics-test-notification-and-browser-hints)
+  - [1. Server side (optional)](#1-server-side-optional)
+  - [2. Stimulus peers (Vite / AssetMapper)](#2-stimulus-peers-vite--assetmapper)
+  - [3. Twig partials](#3-twig-partials)
+- [Content Security Policy](#content-security-policy)
+- [Overrides](#overrides)
+- [Assets](#assets)
+- [Web Profiler (dev)](#web-profiler-dev)
+
 ## Layout integration
 
 Add to your base Twig layout (e.g. `templates/base.html.twig`):
