@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.10.2] - 2026-10-22](#1102---2026-10-22)
 - [[1.10.1] - 2026-10-20](#1101---2026-10-20)
 - [[1.10.0] - 2026-10-18](#1100---2026-10-18)
 - [[1.9.1] - 2026-10-13](#191---2026-10-13)
@@ -37,6 +38,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.2] - 2026-10-22
+
+Controllers in coverage scope, translation key parity, Web Push timeout docs, demo smoke fixes. See [UPGRADING](UPGRADING.md#to-1102).
+
 ### Changed
 
 - Controllers are part of the PHPUnit coverage scope again (`src/Controller` no longer excluded); new tests for the disabled-feature guards and cacheable manifest responses keep lines at 100% (REQ-TEST-003).
@@ -49,6 +54,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.scripts/check-no-cursor-coauthor.sh` also runs inside git worktrees (`.git` file instead of directory).
 - Demo `make up` installs Composer dependencies in a one-off container before FrankenPHP starts (a fresh checkout crash-looped the worker on the missing `vendor/`, so `make demo-smoke` failed).
 - Pending Rector code-quality suggestions applied (`PwaController` offline URL concatenation, `PwaRouteTargeting` legacy pattern check) so `rector-dry` is clean again.
+
+[1.10.2]: https://github.com/nowo-tech/PwaBundle/releases/tag/v1.10.2
 
 ## [1.10.1] - 2026-10-20
 
