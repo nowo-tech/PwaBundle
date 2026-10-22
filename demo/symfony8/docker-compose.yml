@@ -23,6 +23,7 @@ services:
       - APP_SECRET=${APP_SECRET:-demo-secret}
       - APP_NAME=PWA Demo
       - FRANKENPHP_MODE=${FRANKENPHP_MODE:-worker}
+    # Mitigate Docker/WSL DNS failures resolving repo.packagist.org (composer curl error 6) (REQ-DEMO-009).
     dns:
       - 8.8.8.8
       - 8.8.4.4

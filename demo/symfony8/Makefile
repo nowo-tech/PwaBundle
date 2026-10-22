@@ -26,6 +26,8 @@ help:
 	@echo "  make demo-screenshots  Re-capture docs/images/demo/*.webp (REQ-DEMO-013)"
 
 up: ensure-env
+	@echo "Installing dependencies (one-off container: the worker-mode server needs vendor/ before it starts)..."
+	@$(COMPOSE) run --rm -T --no-deps --entrypoint composer -e COMPOSER_MEMORY_LIMIT=-1 $(SERVICE_PHP) install --no-interaction --no-scripts
 	@$(COMPOSE) up -d
 	@echo "Waiting for container..."
 	@sleep 5

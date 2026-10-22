@@ -114,6 +114,7 @@ phpstan: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer phpstan
 
 validate-translations: ensure-up
+	python3 .scripts/check-translation-key-parity.py
 	$(COMPOSE) exec -T $(SERVICE_PHP) sh -c 'for f in src/Resources/translations/*.yaml; do php -r "require \"vendor/autoload.php\"; Symfony\\Component\\Yaml\\Yaml::parseFile(\$$argv[1]);" "$$f" || exit 1; done'
 
 qa: ensure-up

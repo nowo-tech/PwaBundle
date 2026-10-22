@@ -129,7 +129,7 @@ final class PwaController extends AbstractController
             return $this->urlGenerator->generate($routeName, [], UrlGeneratorInterface::ABSOLUTE_URL);
         }
 
-        return $request->getSchemeAndHttpHost() . (string) ($this->routes['offline']['path'] ?? '/offline');
+        return $request->getSchemeAndHttpHost() . ($this->routes['offline']['path'] ?? '/offline');
     }
 
     private function applyCacheHeaders(Response $response, int $maxAge, bool $public): void

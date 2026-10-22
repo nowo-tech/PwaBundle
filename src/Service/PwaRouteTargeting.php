@@ -168,7 +168,7 @@ final class PwaRouteTargeting
         }
 
         $body = substr($pattern, 1, -1);
-        if (strpbrk($body, self::LEGACY_REGEX_SYNTAX) === false && !(str_contains($body, '.') && !str_contains($body, '/'))) {
+        if (strpbrk($body, self::LEGACY_REGEX_SYNTAX) === false && (!str_contains($body, '.') || str_contains($body, '/'))) {
             return null;
         }
 

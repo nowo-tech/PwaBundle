@@ -37,6 +37,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Controllers are part of the PHPUnit coverage scope again (`src/Controller` no longer excluded); new tests for the disabled-feature guards and cacheable manifest responses keep lines at 100% (REQ-TEST-003).
+- `validate-translations` checks key parity across the shipped locales (REQ-MAKE-004).
+- Docs: Web Push HTTP timeout guidance (REQ-RUNTIME-001), documented route-loader exception to attribute routes (REQ-SF-004), PSR evaluation updated for the Web Push sender (PSR-3, PSR-7/17, PSR-18) (REQ-CS-007).
+- Demo DNS block commented (REQ-DEMO-009); new `Demo smoke` workflow (tags, weekly, manual) (REQ-TEST-011).
+
+### Fixed
+
+- `.scripts/check-no-cursor-coauthor.sh` also runs inside git worktrees (`.git` file instead of directory).
+- Demo `make up` installs Composer dependencies in a one-off container before FrankenPHP starts (a fresh checkout crash-looped the worker on the missing `vendor/`, so `make demo-smoke` failed).
+- Pending Rector code-quality suggestions applied (`PwaController` offline URL concatenation, `PwaRouteTargeting` legacy pattern check) so `rector-dry` is clean again.
+
 ## [1.10.1] - 2026-10-20
 
 Dependency refresh (bundle and demos), php-cs-fixer ParallelConfig(2). See [UPGRADING](UPGRADING.md#to-1101).

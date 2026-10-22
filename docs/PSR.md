@@ -23,10 +23,10 @@ Others are **N/A** (or already covered by Symfony) so the decision stays auditab
 
 | PSR | Decision | Notes |
 | --- | -------- | ----- |
-| PSR-3 Logger | **N/A** | Logging calls exist but there is no public/injectable logger SPI yet; do not add `psr/log` without type-hints. |
+| PSR-3 Logger | **Adopted** | `MinishlinkWebPushSender` takes an optional `Psr\Log\LoggerInterface` (the `logger` service) and passes it to minishlink/web-push for delivery diagnostics. |
 | PSR-6 / PSR-16 Cache | **N/A** | No package-owned cache layer. |
-| PSR-7 / PSR-17 HTTP messages | **N/A** | Symfony HttpFoundation (or no HTTP messages API) is the correct surface; a PSR-7 bridge would not help consumers. |
-| PSR-18 HTTP client | **N/A** | No outbound HTTP client. |
+| PSR-7 / PSR-17 HTTP messages | **Adopted** (Web Push only) | minishlink/web-push builds PSR-7 requests from the injected PSR-17 `RequestFactoryInterface` / `StreamFactoryInterface`; the bundle's own controllers use HttpFoundation. |
+| PSR-18 HTTP client | **Adopted** | Web Push deliveries go through the host `Psr\Http\Client\ClientInterface` (any PSR-18 client; Symfony `Psr18Client` recommended), with PSR-17 request/stream factories; timeouts are configured on that client (see CONFIGURATION.md › HTTP timeouts). |
 | PSR-11 Container | **N/A** | No container locator in the public API; constructor injection only. |
 | PSR-14 Event dispatcher | **N/A** | No domain event extension points that need a dispatcher SPI. |
 | PSR-15 HTTP middleware | **N/A** | Uses Symfony kernel listeners/subscribers (or has no HTTP middleware pipeline). |
@@ -40,4 +40,4 @@ Others are **N/A** (or already covered by Symfony) so the decision stays auditab
 
 ---
 
-_REQ-CS-007 evaluation date: 2026-08-21._
+_REQ-CS-007 evaluation date: 2026-10-22 (PSR-3, PSR-7/17 and PSR-18 re-evaluated for Web Push)._

@@ -19,7 +19,6 @@
         </include>
         <exclude>
             <directory>src/Resources</directory>
-            <directory>src/Controller</directory>
         </exclude>
     </source>
     <php>
