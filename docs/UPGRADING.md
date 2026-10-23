@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.11.0](#to-1110)
 - [To 1.10.2](#to-1102)
 - [To 1.10.1](#to-1101)
 - [To 1.10.0](#to-1100)
@@ -49,6 +50,11 @@
   - [Twig-CS-Fixer (maintainers)](#twig-cs-fixer-maintainers)
 
 ## Unreleased
+
+## To 1.11.0
+
+From **1.10.2**: `composer update nowo-tech/pwa-bundle`. Optional: if you override `pwa/install_prompt.html.twig` only to
+redefine `pwa_install_mark`, set `nowo_pwa.install_prompt.mark_template` to your mark template and delete the override.
 
 ## To 1.10.2
 

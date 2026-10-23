@@ -9,7 +9,7 @@
 
   Change one part without copying the file: point nowo_pwa.web_ui.templates.install_prompt to a template that
   {% extends '@!NowoPwaBundle/pwa/install_prompt.html.twig' %} and redefines one block:
-  pwa_install_backdrop, pwa_install_panel, pwa_install_mark (brand mark), pwa_install_text (eyebrow + title +
+  pwa_install_backdrop, pwa_install_panel, pwa_install_mark (brand mark; or set install_prompt.mark_template), pwa_install_text (eyebrow + title +
   message), pwa_install_eyebrow, pwa_install_title, pwa_install_message, pwa_install_actions (the three buttons),
   pwa_install_button_install, pwa_install_button_remind, pwa_install_button_never.
 #}
@@ -19,6 +19,7 @@
 {# BEM suffixes must use a single root token; extra classes on css_class stay on the root only. #}
 {% set bem = css_class|trim|split(' ')|filter(c => c != '')|first|default('nowo-pwa-install') %}
 {% set mark_asset = install_prompt.mark_asset|default(null) %}
+{% set mark_template = install_prompt.mark_template|default(null) %}
 {% set install_title = install_prompt.title is defined and install_prompt.title is not same as(null) and install_prompt.title is not same as('')
     ? install_prompt.title|trans
     : 'install.action'|trans({}, 'NowoPwaBundle') %}
@@ -62,7 +63,11 @@
     {% block pwa_install_panel %}
         <div class="{{ nowo_ui_class('card', _b) }} {{ bem }}__panel"{{ nowo_ui_attrs('card', _b) }}>
             {% block pwa_install_mark %}
-                {% if mark_asset %}
+                {% if mark_template %}
+                    <div class="{{ bem }}__brand">
+                        <span class="{{ bem }}__mark" aria-hidden="true">{% include mark_template %}</span>
+                    </div>
+                {% elseif mark_asset %}
                     <div class="{{ bem }}__brand">
                         <img src="{{ mark_asset }}" alt="{{ manifest.short_name|default(manifest.name|default('App')) }}" class="{{ bem }}__mark" width="40" height="40">
                     </div>

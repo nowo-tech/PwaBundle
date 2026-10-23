@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.11.0] - 2026-10-23](#1110---2026-10-23)
 - [[1.10.2] - 2026-10-22](#1102---2026-10-22)
 - [[1.10.1] - 2026-10-20](#1101---2026-10-20)
 - [[1.10.0] - 2026-10-18](#1100---2026-10-18)
@@ -37,6 +38,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[1.0.0] - 2026-07-05](#100---2026-07-05)
 
 ## [Unreleased]
+
+## [1.11.0] - 2026-10-23
+
+### Added
+
+- `nowo_pwa.install_prompt.mark_template`: a Twig template included as the install prompt's brand mark (for example an
+  inline SVG that follows the site theme), so a host no longer overrides `pwa/install_prompt.html.twig` for it; wins
+  over `mark_asset`.
 
 ## [1.10.2] - 2026-10-22
 

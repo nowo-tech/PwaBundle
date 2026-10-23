@@ -164,6 +164,17 @@ final class WidgetTemplatesTest extends TestCase
         ];
     }
 
+    public function testInstallPromptRendersAMarkTemplateBeforeTheMarkAsset(): void
+    {
+        $html = $this->twig('none', self::STUB_THEME, ['app/mark.html.twig' => '<svg data-testid="app-mark"></svg>'])->render('@NowoPwaBundle/pwa/install_prompt.html.twig', $this->context([
+            'mark_template' => 'app/mark.html.twig',
+            'mark_asset'    => '/icons/mark.svg',
+        ]));
+
+        self::assertStringContainsString('<span class="nowo-pwa-install__mark" aria-hidden="true"><svg data-testid="app-mark"></svg></span>', $html);
+        self::assertStringNotContainsString('/icons/mark.svg', $html);
+    }
+
     private function assertSafeMarkup(string $html): void
     {
         self::assertDoesNotMatchRegularExpression('/<[a-z][^>]*\son[a-z]+\s*=/i', $html);

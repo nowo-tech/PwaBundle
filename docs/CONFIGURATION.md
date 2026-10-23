@@ -232,6 +232,7 @@ nowo_pwa:
         position: bottom             # top | bottom (banner mode only)
         css_class: nowo-pwa-install
         mark_asset: null             # optional brand mark <img src>
+        mark_template: null          # optional Twig template for the brand mark (wins over mark_asset)
         title: null                  # optional title string or translation key
         eyebrow: null                # optional eyebrow string or translation key
         # Deprecated (1.10): theme the buttons with the UiKit slots btn_primary / btn_secondary / btn_link
@@ -251,6 +252,7 @@ nowo_pwa:
 | `display` | `banner` | `banner` (fixed bar), `flash` (inline, place `{{ nowo_pwa_install_prompt() }}` in content), `modal` (dialog) |
 | `css_class` | `nowo-pwa-install` | Root class(es). BEM suffixes (`__mark`, `--banner`, …) use the **first** token only — prefer a single root class |
 | `mark_asset` | `null` | Optional `<img src>` for the prompt brand mark; empty / null disables the image |
+| `mark_template` | `null` | Optional Twig template included as the brand mark (e.g. an inline SVG that follows the site theme), inside `<span class="…__mark" aria-hidden="true">`; wins over `mark_asset`, so no template override is needed |
 | `title` | `null` | Optional title override; when omitted, the bundle falls back to the translated install action label |
 | `eyebrow` | `null` | Optional eyebrow text shown above the title |
 | `button_class` | `''` | **Deprecated** — use the UiKit slot `btn_primary` (`nowo_ui_kit.theme.bundles.NowoPwaBundle.classes.btn_primary`). When set, replaces the install button classes |
