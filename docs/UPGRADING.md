@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.12.0](#to-1120)
 - [To 1.11.0](#to-1110)
 - [To 1.10.2](#to-1102)
 - [To 1.10.1](#to-1101)
@@ -50,6 +51,14 @@
   - [Twig-CS-Fixer (maintainers)](#twig-cs-fixer-maintainers)
 
 ## Unreleased
+
+## To 1.12.0
+
+From **1.11.0**:
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
 
 Web Push deliveries now run with bundle deadlines (REQ-RUNTIME-001): `web_push.connect_timeout: 3.0` and
 `web_push.timeout: 5.0` seconds. If your app relies on the FrameworkBundle `Psr\Http\Client\ClientInterface`

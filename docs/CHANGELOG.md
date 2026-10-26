@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.12.0] - 2026-10-26](#1120---2026-10-26)
 - [[1.11.0] - 2026-10-23](#1110---2026-10-23)
 - [[1.10.2] - 2026-10-22](#1102---2026-10-22)
 - [[1.10.1] - 2026-10-20](#1101---2026-10-20)
@@ -38,6 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[1.0.0] - 2026-07-05](#100---2026-07-05)
 
 ## [Unreleased]
+
+## [1.12.0] - 2026-10-26
+
+Bundle-level HTTP timeouts on Web Push deliveries (REQ-RUNTIME-001). See [UPGRADING](UPGRADING.md#to-1120).
 
 ### Added
 
