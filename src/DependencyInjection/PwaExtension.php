@@ -9,6 +9,7 @@ use Nowo\PwaBundle\Service\ManifestOverlayProviderInterface;
 use Nowo\PwaBundle\WebPush\MinishlinkWebPushSender;
 use Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface;
 use Nowo\PwaBundle\WebPush\WebPushEndpointGuard;
+use Nowo\PwaBundle\WebPush\WebPushHttpClientFactory;
 use Nowo\PwaBundle\WebPush\WebPushRequirements;
 use Nowo\PwaBundle\WebPush\WebPushSenderInterface;
 use Psr\Http\Client\ClientInterface;
@@ -71,7 +72,7 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
             (string) $config['routes']['service_worker']['path'],
         ]);
 
-        /** @var array{enabled: bool, vapid: array{public_key: string, private_key: string, subject: string}, allowed_endpoint_hosts: list<string>, test_notification: array<string, mixed>} $webPush */
+        /** @var array{enabled: bool, vapid: array{public_key: string, private_key: string, subject: string}, timeout: float, connect_timeout: float, allowed_endpoint_hosts: list<string>, test_notification: array<string, mixed>} $webPush */
         $webPush     = $config['web_push'];
         $testEnabled = $webPush['enabled'] && (bool) $webPush['test_notification']['enabled'];
         $container->setParameter('nowo_pwa.web_push.test_notification.enabled', $testEnabled);
@@ -100,7 +101,7 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
     /**
      * Registers the Web Push sender (and the test-notification controller) after fail-fast dependency checks.
      *
-     * @param array{enabled: bool, vapid: array{public_key: string, private_key: string, subject: string}, allowed_endpoint_hosts: list<string>, test_notification: array<string, mixed>} $webPush
+     * @param array{enabled: bool, vapid: array{public_key: string, private_key: string, subject: string}, timeout: float, connect_timeout: float, allowed_endpoint_hosts: list<string>, test_notification: array<string, mixed>} $webPush
      * @param array<string, mixed> $serviceWorker
      */
     private function registerWebPush(ContainerBuilder $container, array $webPush, bool $testEnabled, array $serviceWorker): void
@@ -111,16 +112,23 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
         $container->register(WebPushEndpointGuard::class, WebPushEndpointGuard::class)
             ->setArgument('$allowedHostSuffixes', $webPush['allowed_endpoint_hosts']);
 
+        $container->register(WebPushHttpClientFactory::class, WebPushHttpClientFactory::class)
+            ->setArguments([
+                '$timeout'        => (float) $webPush['timeout'],
+                '$connectTimeout' => (float) $webPush['connect_timeout'],
+            ]);
+
         $container->register(MinishlinkWebPushSender::class, MinishlinkWebPushSender::class)
             ->setArguments([
-                '$publicKey'      => $webPush['vapid']['public_key'],
-                '$privateKey'     => $webPush['vapid']['private_key'],
-                '$subject'        => $webPush['vapid']['subject'],
-                '$endpointGuard'  => new Reference(WebPushEndpointGuard::class),
-                '$httpClient'     => new Reference(ClientInterface::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
-                '$requestFactory' => new Reference(RequestFactoryInterface::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
-                '$streamFactory'  => new Reference(StreamFactoryInterface::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
-                '$logger'         => new Reference('logger', ContainerInterface::NULL_ON_INVALID_REFERENCE),
+                '$publicKey'         => $webPush['vapid']['public_key'],
+                '$privateKey'        => $webPush['vapid']['private_key'],
+                '$subject'           => $webPush['vapid']['subject'],
+                '$endpointGuard'     => new Reference(WebPushEndpointGuard::class),
+                '$httpClient'        => new Reference(ClientInterface::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
+                '$requestFactory'    => new Reference(RequestFactoryInterface::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
+                '$streamFactory'     => new Reference(StreamFactoryInterface::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
+                '$logger'            => new Reference('logger', ContainerInterface::NULL_ON_INVALID_REFERENCE),
+                '$httpClientFactory' => new Reference(WebPushHttpClientFactory::class),
             ]);
         $container->setAlias(WebPushSenderInterface::class, MinishlinkWebPushSender::class)->setPublic(true);
 

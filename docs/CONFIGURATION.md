@@ -165,6 +165,8 @@ nowo_pwa:
             public_key: '%env(VAPID_PUBLIC_KEY)%'    # URL-safe base64
             private_key: '%env(VAPID_PRIVATE_KEY)%'
             subject: 'mailto:ops@example.com'          # empty: mailto:webmaster@localhost
+        timeout: 5.0                   # total deadline per push request, seconds (REQ-RUNTIME-001)
+        connect_timeout: 3.0           # connect / inactivity deadline per push request, seconds (≤ timeout)
         # Anti-SSRF allow-list of push service host suffixes (defaults below).
         allowed_endpoint_hosts: [fcm.googleapis.com, android.googleapis.com, push.services.mozilla.com, push.apple.com, notify.windows.com]
         test_notification:
@@ -202,17 +204,44 @@ composer require minishlink/web-push:^11.0 nyholm/psr7
 
 ### HTTP timeouts (REQ-RUNTIME-001)
 
-The sender delivers pushes through the host PSR-18 client (`Psr\Http\Client\ClientInterface`); the bundle does not create its own. With Symfony HttpClient (`Psr18Client`), bound every push request in `framework.http_client`, keeping the deadline below PHP `max_execution_time` and the FrankenPHP/Caddy write timeout:
+Every push delivery is an outbound HTTP request to a third-party push service, so the bundle bounds it with its own
+deadlines instead of relying on `php.ini` or the host client defaults:
 
-```yaml
-framework:
-    http_client:
-        default_options:
-            timeout: 5          # idle timeout (s)
-            max_duration: 10    # total deadline (s)
-```
+| Key | Default | Meaning |
+|-----|---------|---------|
+| `web_push.timeout` | `5.0` | Total deadline per push request in seconds (Symfony HttpClient `max_duration`). Min `0.1`. |
+| `web_push.connect_timeout` | `3.0` | Connect / inactivity deadline per push request in seconds (Symfony HttpClient `timeout`: bounds the TCP/TLS connect and any stalled read). Min `0.1`; must not exceed `timeout` (checked at container compile time). |
 
-A timed-out push is reported as a failed delivery (`WebPushDeliveryReport::$success = false`), never as an uncaught exception in the request. When no client is registered, php-http discovery falls back to a client using `default_socket_timeout` — set it explicitly in production.
+`WebPushHttpClientFactory` resolves the PSR-18 client for each send, in this order of precedence:
+
+1. **Host Symfony `Psr18Client`** (the FrameworkBundle `Psr\Http\Client\ClientInterface` service when
+   `symfony/http-client` is installed): kept — proxy, headers, scoped options and the rest of
+   `framework.http_client.default_options` still apply — but cloned with `withOptions()` so the bundle `timeout` /
+   `connect_timeout` **win** over the host values for push requests only.
+2. **Any other host PSR-18 client** (Guzzle, Buzz, a custom decorator…): used **as-is**; the bundle cannot change its
+   deadlines, so configure them on that client (e.g. Guzzle `timeout` / `connect_timeout`).
+3. **No host client**: when `symfony/http-client` is installed the bundle builds its own `Psr18Client` with the
+   deadlines; otherwise minishlink/web-push auto-discovers a client, which only honours `default_socket_timeout` —
+   install `symfony/http-client` or register a configured client in production.
+
+A timed-out push is reported as a failed delivery (`WebPushDeliveryReport::$success = false`, `reason` holds the
+transport message), never as an uncaught exception in the request — including a push service that sends headers and
+then stalls the body.
+
+#### Timeout hierarchy (innermost → outermost)
+
+| Layer | Default / recommendation | Role |
+|-------|--------------------------|------|
+| `web_push.connect_timeout` | 3 s | Fires first when the push service does not accept or stops sending data. |
+| `web_push.timeout` | 5 s | Hard cap per push request. |
+| One test-notification request | `test_notification.max_subscriptions × timeout` (10 × 5 s = 50 s worst case) | Sequential sends; lower `max_subscriptions` or `timeout` if this exceeds the outer layers. |
+| PHP `max_execution_time` / `max_input_time` | **greater** than the worst case above (e.g. 60 s) | Last resort inside PHP (on Linux it counts CPU time, so the HTTP deadlines are the real guard while waiting on the network). |
+| Reverse proxy / Caddy `servers { timeouts { write … } }` | **greater** than PHP (e.g. 75 s) | Keeps the proxy from cutting a response PHP is still allowed to produce. |
+| FrankenPHP `max_wait_time` (worker / thread pool) | e.g. 30 s | Caps how long a request waits for a free PHP thread (→ 504) instead of queueing forever. |
+
+When you raise `web_push.timeout`, raise the PHP and proxy write deadlines in the same change. Send bulk pushes from
+Messenger workers or console commands rather than in an HTTP request. FrankenPHP specifics:
+[DEMO-FRANKENPHP.md › Timeouts](DEMO-FRANKENPHP.md#timeouts-req-runtime-001).
 
 ### Why the test endpoint is off by default
 

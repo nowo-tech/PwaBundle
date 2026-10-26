@@ -51,6 +51,13 @@
 
 ## Unreleased
 
+Web Push deliveries now run with bundle deadlines (REQ-RUNTIME-001): `web_push.connect_timeout: 3.0` and
+`web_push.timeout: 5.0` seconds. If your app relies on the FrameworkBundle `Psr\Http\Client\ClientInterface`
+(Symfony `Psr18Client`), these values now **override** `framework.http_client.default_options.timeout` /
+`max_duration` for push requests only — set the new keys if a push service legitimately needs longer. Non-Symfony
+PSR-18 clients (Guzzle…) are unaffected and keep their own timeouts. `connect_timeout` greater than `timeout` fails
+the container build.
+
 ## To 1.11.0
 
 From **1.10.2**: `composer update nowo-tech/pwa-bundle`. Optional: if you override `pwa/install_prompt.html.twig` only to

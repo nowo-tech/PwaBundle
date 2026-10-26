@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\PwaBundle\DependencyInjection\Configuration;
 
 use Nowo\PwaBundle\WebPush\WebPushEndpointGuard;
+use Nowo\PwaBundle\WebPush\WebPushHttpClientFactory;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
 /**
@@ -31,6 +32,16 @@ final class WebPushNodeDefinition
                         ->scalarNode('private_key')->info('URL-safe base64 VAPID private key (e.g. %env(VAPID_PRIVATE_KEY)%).')->defaultValue('')->end()
                         ->scalarNode('subject')->info('mailto: or https: contact sent to push services. Empty falls back to mailto:webmaster@localhost.')->defaultValue('')->end()
                     ->end()
+                ->end()
+                ->floatNode('timeout')
+                    ->info('Total deadline in seconds for each push request (Symfony HttpClient max_duration). Keep max_subscriptions × timeout below PHP / proxy deadlines.')
+                    ->defaultValue(WebPushHttpClientFactory::DEFAULT_TIMEOUT)
+                    ->min(0.1)
+                ->end()
+                ->floatNode('connect_timeout')
+                    ->info('Connect / inactivity deadline in seconds for each push request (Symfony HttpClient timeout). Must not exceed timeout.')
+                    ->defaultValue(WebPushHttpClientFactory::DEFAULT_CONNECT_TIMEOUT)
+                    ->min(0.1)
                 ->end()
                 ->arrayNode('allowed_endpoint_hosts')
                     ->info('Push service host suffixes the server may POST to (anti-SSRF). Defaults cover FCM, Mozilla, Apple and Windows WNS.')
@@ -67,6 +78,10 @@ final class WebPushNodeDefinition
                         ->enumNode('urgency')->values(['very-low', 'low', 'normal', 'high'])->defaultValue('high')->end()
                     ->end()
                 ->end()
+            ->end()
+            ->validate()
+                ->ifTrue(static fn (array $v): bool => $v['connect_timeout'] > $v['timeout'])
+                ->thenInvalid('nowo_pwa.web_push.connect_timeout must not exceed nowo_pwa.web_push.timeout.')
             ->end()
             ->validate()
                 ->ifTrue(static fn (array $v): bool => $v['test_notification']['enabled'] && !$v['enabled'])

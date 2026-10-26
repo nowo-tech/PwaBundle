@@ -79,7 +79,7 @@ Also review `precache_urls` and `runtime_cache_patterns` — never precache logi
 
 ## Web Push test endpoint
 
-`nowo_pwa.web_push.test_notification` is disabled by default. When enabled, `PushTestController` requires an authenticated user holding one of `roles`, a valid CSRF token (`X-CSRF-TOKEN` header, id `csrf_token_id`) and only POSTs to subscription endpoints whose host matches `web_push.allowed_endpoint_hosts` over HTTPS (no literal IPs) — `WebPushEndpointGuard` prevents SSRF through stored endpoints. At most `max_subscriptions` devices are notified per request; add a rate limiter on the route if your users can trigger it repeatedly. The Stimulus peers render server data with `textContent` only (no HTML sinks).
+`nowo_pwa.web_push.test_notification` is disabled by default. When enabled, `PushTestController` requires an authenticated user holding one of `roles`, a valid CSRF token (`X-CSRF-TOKEN` header, id `csrf_token_id`) and only POSTs to subscription endpoints whose host matches `web_push.allowed_endpoint_hosts` over HTTPS (no literal IPs) — `WebPushEndpointGuard` prevents SSRF through stored endpoints. At most `max_subscriptions` devices are notified per request; add a rate limiter on the route if your users can trigger it repeatedly. Every delivery is bounded by `web_push.connect_timeout` (3 s) and `web_push.timeout` (5 s) (REQ-RUNTIME-001), so a slow or malicious push service cannot pin a PHP / FrankenPHP worker thread; a host PSR-18 client that is not a Symfony `Psr18Client` keeps its own timeouts and must be configured with a deadline ([CONFIGURATION › HTTP timeouts](CONFIGURATION.md#http-timeouts-req-runtime-001)). The Stimulus peers render server data with `textContent` only (no HTML sinks).
 
 ## Content Security Policy
 

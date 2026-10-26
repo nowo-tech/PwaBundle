@@ -11,6 +11,7 @@ use Nowo\PwaBundle\WebPush\Exception\InvalidPushEndpointException;
 use Nowo\PwaBundle\WebPush\Exception\WebPushDependencyException;
 use Nowo\PwaBundle\WebPush\MinishlinkWebPushSender;
 use Nowo\PwaBundle\WebPush\PushSubscriptionData;
+use Nowo\PwaBundle\WebPush\WebPushHttpClientFactory;
 use Nowo\PwaBundle\WebPush\WebPushRequirements;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
@@ -21,6 +22,9 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Psr18Client;
+use Symfony\Component\HttpClient\Response\MockResponse;
 
 use function base64_encode;
 use function openssl_pkey_get_details;
@@ -120,6 +124,36 @@ final class MinishlinkWebPushSenderTest extends TestCase
         self::assertFalse($report->success);
         self::assertNull($report->statusCode);
         self::assertSame('timeout', $report->reason);
+    }
+
+    public function testDeliveriesRunWithTheBundleDeadlines(): void
+    {
+        $seen = [];
+        $host = new Psr18Client(new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen): MockResponse {
+            $seen = $options;
+
+            // An empty chunk simulates a push service that stops sending data: an inactivity timeout.
+            return new MockResponse(['']);
+        }), new Psr17Factory(), new Psr17Factory());
+
+        $factory = new Psr17Factory();
+        $sender  = new MinishlinkWebPushSender(
+            self::$vapid['publicKey'],
+            self::$vapid['privateKey'],
+            httpClient: $host,
+            requestFactory: $factory,
+            streamFactory: $factory,
+            logger: new NullLogger(),
+            httpClientFactory: new WebPushHttpClientFactory(4.0, 1.0),
+        );
+
+        $report = $sender->send($this->subscription(), '{}');
+
+        self::assertSame(1.0, $seen['timeout']);
+        self::assertSame(4.0, $seen['max_duration']);
+        self::assertFalse($report->success);
+        self::assertNull($report->statusCode);
+        self::assertStringContainsStringIgnoringCase('timeout', (string) $report->reason);
     }
 
     public function testMissingLibraryIsReportedAsDependencyError(): void

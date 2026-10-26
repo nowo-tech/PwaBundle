@@ -6,6 +6,7 @@ namespace Nowo\PwaBundle\Tests\Unit\DependencyInjection;
 
 use Nowo\PwaBundle\DependencyInjection\Configuration;
 use Nowo\PwaBundle\WebPush\WebPushEndpointGuard;
+use Nowo\PwaBundle\WebPush\WebPushHttpClientFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
@@ -19,6 +20,8 @@ final class WebPushConfigurationTest extends TestCase
         self::assertFalse($config['web_push']['enabled']);
         self::assertSame(['public_key' => '', 'private_key' => '', 'subject' => ''], $config['web_push']['vapid']);
         self::assertSame(WebPushEndpointGuard::DEFAULT_ALLOWED_HOST_SUFFIXES, $config['web_push']['allowed_endpoint_hosts']);
+        self::assertSame(WebPushHttpClientFactory::DEFAULT_TIMEOUT, $config['web_push']['timeout']);
+        self::assertSame(WebPushHttpClientFactory::DEFAULT_CONNECT_TIMEOUT, $config['web_push']['connect_timeout']);
         $test = $config['web_push']['test_notification'];
         self::assertFalse($test['enabled']);
         self::assertSame(['ROLE_USER'], $test['roles']);
@@ -30,6 +33,25 @@ final class WebPushConfigurationTest extends TestCase
         self::assertNull($test['title']);
         self::assertNull($test['route']);
         self::assertSame(['path' => '/pwa/push/test', 'name' => 'nowo_pwa_push_test'], $config['routes']['push_test']);
+    }
+
+    public function testConnectTimeoutMustNotExceedTotalTimeout(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('connect_timeout must not exceed nowo_pwa.web_push.timeout');
+
+        (new Processor())->processConfiguration(new Configuration(), [[
+            'web_push' => ['timeout' => 2, 'connect_timeout' => 3],
+        ]]);
+    }
+
+    public function testRejectsNonPositiveTimeouts(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+
+        (new Processor())->processConfiguration(new Configuration(), [[
+            'web_push' => ['timeout' => 0],
+        ]]);
     }
 
     public function testTestNotificationRequiresTheSender(): void

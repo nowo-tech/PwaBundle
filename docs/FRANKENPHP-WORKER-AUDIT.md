@@ -42,7 +42,7 @@ A bundle that is safe under **B** is safe under **A** and under classic mode / P
 | Output, headers, `exit`, shutdown functions | ✅ | Headers and cookies are set on `Response` objects only (`PwaBootstrapStatelessCookieSubscriber` strips `Set-Cookie` on bootstrap paths) |
 | Resources (files, sockets, cURL) held open | ✅ | Only `file_get_contents()` of the Web Push SW snippet at container build time (`PwaExtension`) |
 | Memory growth across requests | ✅ | No caches or accumulating arrays |
-| Blocking I/O and timeouts | ✅ N/A | No runtime I/O besides Twig template rendering |
+| Blocking I/O and timeouts | ✅ | Only optional Web Push deliveries (outbound HTTP), bounded by `web_push.connect_timeout` / `timeout` through `WebPushHttpClientFactory` (REQ-RUNTIME-001); the client is built per send, nothing is kept between requests |
 | Third-party static state | ✅ | Only Symfony / Twig |
 | PHPStan FrankenPHP rulesets | ✅ | `ruleset-classic.neon` + `ruleset-worker.neon` in `phpstan.neon.dist` |
 

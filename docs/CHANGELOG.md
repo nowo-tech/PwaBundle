@@ -39,6 +39,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `nowo_pwa.web_push.timeout` (default `5.0` s, total) and `nowo_pwa.web_push.connect_timeout` (default `3.0` s,
+  connect / inactivity): bundle-level deadlines on every Web Push delivery (REQ-RUNTIME-001). A host Symfony
+  `Psr18Client` is kept and cloned with these deadlines; without a host client the bundle builds a Symfony
+  `Psr18Client` with them (when `symfony/http-client` is installed); other PSR-18 clients are used as-is.
+- `WebPushHttpClientFactory` (resolves the PSR-18 client with the deadlines) and a timeout test against an
+  unresponsive local socket.
+
+### Fixed
+
+- A push service that sends headers and then stalls the body is now reported as a failed delivery instead of a
+  Symfony `TransportException` escaping `MinishlinkWebPushSender::send()`.
+
 ## [1.11.0] - 2026-10-23
 
 ### Added

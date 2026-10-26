@@ -12,6 +12,7 @@ use Nowo\PwaBundle\WebPush\MinishlinkWebPushSender;
 use Nowo\PwaBundle\WebPush\PushSubscriptionData;
 use Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface;
 use Nowo\PwaBundle\WebPush\WebPushEndpointGuard;
+use Nowo\PwaBundle\WebPush\WebPushHttpClientFactory;
 use Nowo\PwaBundle\WebPush\WebPushRequirements;
 use Nowo\PwaBundle\WebPush\WebPushSenderInterface;
 use PHPUnit\Framework\TestCase;
@@ -53,6 +54,19 @@ final class WebPushExtensionTest extends TestCase
         self::assertSame(MinishlinkWebPushSender::class, (string) $container->getAlias(WebPushSenderInterface::class));
         self::assertSame(['push.example.org'], $container->getDefinition(WebPushEndpointGuard::class)->getArgument('$allowedHostSuffixes'));
         self::assertFalse($this->isRegistered($container, PushTestController::class));
+        $factory = $container->getDefinition(WebPushHttpClientFactory::class);
+        self::assertSame(WebPushHttpClientFactory::DEFAULT_TIMEOUT, $factory->getArgument('$timeout'));
+        self::assertSame(WebPushHttpClientFactory::DEFAULT_CONNECT_TIMEOUT, $factory->getArgument('$connectTimeout'));
+        self::assertSame(WebPushHttpClientFactory::class, (string) $container->getDefinition(MinishlinkWebPushSender::class)->getArgument('$httpClientFactory'));
+    }
+
+    public function testWiresConfiguredHttpTimeouts(): void
+    {
+        $container = $this->load(['web_push' => ['enabled' => true, 'timeout' => 8, 'connect_timeout' => 1.5]]);
+
+        $factory = $container->getDefinition(WebPushHttpClientFactory::class);
+        self::assertSame(8.0, $factory->getArgument('$timeout'));
+        self::assertSame(1.5, $factory->getArgument('$connectTimeout'));
     }
 
     public function testCompilesAndWiresTheTestEndpoint(): void
@@ -77,7 +91,7 @@ final class WebPushExtensionTest extends TestCase
 
         // Keep only the web push services, add the host/framework services they need, and compile.
         foreach (array_keys($container->getDefinitions()) as $id) {
-            if (!in_array($id, ['service_container', PushTestController::class, MinishlinkWebPushSender::class, WebPushEndpointGuard::class], true)) {
+            if (!in_array($id, ['service_container', PushTestController::class, MinishlinkWebPushSender::class, WebPushEndpointGuard::class, WebPushHttpClientFactory::class], true)) {
                 $container->removeDefinition($id);
             }
         }

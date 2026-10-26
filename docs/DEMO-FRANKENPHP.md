@@ -11,6 +11,7 @@ The bundle includes a **Symfony 8.1** demo under `demo/symfony8/` using **Franke
 - [Development vs production](#development-vs-production)
 - [Commands](#commands)
 - [Switching classic vs worker (`FRANKENPHP_MODE`)](#switching-classic-vs-worker-frankenphp_mode)
+- [Timeouts (REQ-RUNTIME-001)](#timeouts-req-runtime-001)
 - [Troubleshooting](#troubleshooting)
 
 ## Quick start
@@ -88,6 +89,22 @@ Demos select the FrankenPHP runtime via **`FRANKENPHP_MODE`** in `.env` / `.env.
 Compose passes `FRANKENPHP_MODE=${FRANKENPHP_MODE:-worker}` into the PHP service. After changing `.env`, run `docker compose up -d` (or `make up`) so the container is **recreated** — a plain `restart` does not reload env. No image rebuild is required.
 
 **Worker + kernel not rebooted:** the bundle keeps no per-request state on shared services (`PwaRouteLoader` is stateless; Twig helpers read `RequestStack` per call). Full matrix: [FRANKENPHP-WORKER-AUDIT.md](FRANKENPHP-WORKER-AUDIT.md).
+
+## Timeouts (REQ-RUNTIME-001)
+
+The only blocking I/O the bundle performs at runtime is the optional Web Push delivery (`nowo_pwa.web_push`, not
+enabled in this demo). Each push request is bounded by `web_push.connect_timeout` (default 3 s) and `web_push.timeout`
+(default 5 s), so a stuck push service fails the delivery instead of pinning a FrankenPHP worker thread. When an app
+enables Web Push behind FrankenPHP, keep each outer layer strictly greater than the inner one:
+
+| Layer | Example |
+|-------|---------|
+| `web_push.timeout` (× `test_notification.max_subscriptions` for the test endpoint) | 5 s (≤ 50 s per test request) |
+| PHP `max_execution_time` | 60 s |
+| Caddy `servers { timeouts { write 75s } }` (global options) | 75 s |
+| FrankenPHP `max_wait_time` (`frankenphp { max_wait_time 30s }`) | 30 s → 504 instead of an endless queue for a free thread |
+
+Full option reference and client precedence: [CONFIGURATION.md › HTTP timeouts](CONFIGURATION.md#http-timeouts-req-runtime-001).
 
 ## Troubleshooting
 

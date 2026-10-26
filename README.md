@@ -10,7 +10,7 @@ Turn any Symfony application into a **Progressive Web App** with a fully configu
 
 This bundle is **FrankenPHP worker mode friendly**.
 
-This includes running when the kernel is **not** rebooted between requests (`reset_kernel` false); see [FrankenPHP worker audit](docs/FRANKENPHP-WORKER-AUDIT.md).
+This includes running when the kernel is **not** rebooted between requests (`reset_kernel` false); see [FrankenPHP worker audit](docs/FRANKENPHP-WORKER-AUDIT.md). The only runtime blocking I/O, optional Web Push deliveries, is bounded by `web_push.connect_timeout` / `timeout` so a slow push service cannot pin a worker thread ([HTTP timeouts](docs/CONFIGURATION.md#http-timeouts-req-runtime-001)).
 
 <table>
   <tr>

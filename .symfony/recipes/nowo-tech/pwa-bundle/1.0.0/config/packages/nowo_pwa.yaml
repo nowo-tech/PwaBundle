@@ -222,6 +222,18 @@ nowo_pwa:
         # When true, manifest responses include public cache visibility.
         # manifest_public_cache: true
 
+    # Server-side Web Push sender (off by default; needs minishlink/web-push ^11 + nyholm/psr7, see docs/CONFIGURATION.md).
+    # web_push:
+    #     enabled: false
+    #     vapid:
+    #         public_key: '%env(VAPID_PUBLIC_KEY)%'
+    #         private_key: '%env(VAPID_PRIVATE_KEY)%'
+    #         subject: 'mailto:ops@example.com'
+    #     # Total deadline per push request in seconds (REQ-RUNTIME-001). Keep it below PHP / proxy timeouts.
+    #     timeout: 5.0
+    #     # Connect / inactivity deadline per push request in seconds (must not exceed timeout).
+    #     connect_timeout: 3.0
+
     # Limit PWA head tags and client script to specific Symfony routes.
     # route_targeting:
     #     mode: all          # all | only | except
