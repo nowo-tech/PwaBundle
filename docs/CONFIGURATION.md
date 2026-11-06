@@ -284,6 +284,7 @@ nowo_pwa:
 | `mark_template` | `null` | Optional Twig template included as the brand mark (e.g. an inline SVG that follows the site theme), inside `<span class="…__mark" aria-hidden="true">`; wins over `mark_asset`, so no template override is needed |
 | `title` | `null` | Optional title override; when omitted, the bundle falls back to the translated install action label |
 | `eyebrow` | `null` | Optional eyebrow text shown above the title |
+| `button_paint` | `kit` | `kit`: `pwa.css` paints the buttons from the tokens. `host`: the buttons carry only the UiKit slot classes (`btn_primary`, `btn_secondary`, `btn_link`), with no `__button*` classes and no kit paint, and the actions wrapper is `__actions-host` instead of `__actions`, so your own button styles win with no specificity override. Set the slots to classes that style a complete button |
 | `button_class` | `''` | **Deprecated** — use the UiKit slot `btn_primary` (`nowo_ui_kit.theme.bundles.NowoPwaBundle.classes.btn_primary`). When set, replaces the install button classes |
 | `dismiss_button_class` | `null` | **Deprecated** — slot `btn_secondary`. When set, replaces the remind-later button classes |
 | `never_button_class` | `null` | **Deprecated** — slot `btn_link`. When set, replaces the never-again button classes |
@@ -326,6 +327,29 @@ The bundled stylesheet exposes neutral custom properties such as:
 - `--nowo-pwa-install-eyebrow-color`
 - `--nowo-pwa-install-primary-bg`
 - `--nowo-pwa-install-secondary-color`
+
+Placement and typography values have tokens too, with the same values `pwa.css` used before they existed:
+
+| Token | Default |
+|-------|---------|
+| `--nowo-pwa-install-z-index` | `1050` |
+| `--nowo-pwa-install-banner-max-width` | `38rem` |
+| `--nowo-pwa-install-banner-inset-x` | `1rem` |
+| `--nowo-pwa-install-banner-offset-bottom` | `1rem` |
+| `--nowo-pwa-install-banner-offset-top` | `1rem` |
+| `--nowo-pwa-install-flash-max-width` | `42rem` |
+| `--nowo-pwa-install-modal-padding` | `1rem` |
+| `--nowo-pwa-install-modal-panel-padding` | `1.25rem 1.5rem` |
+| `--nowo-pwa-install-eyebrow-font-weight` | `700` |
+| `--nowo-pwa-install-eyebrow-letter-spacing` | `0.08em` |
+| `--nowo-pwa-install-title-line-height` | `1.25` |
+| `--nowo-pwa-install-button-border-color` | `transparent` |
+| `--nowo-pwa-install-links-font-size` | `0.8125rem` |
+| `--nowo-pwa-install-links-font-weight` | `600` |
+| `--nowo-pwa-install-links-line-height` | `1.25` |
+
+Set them on `:root` or on the prompt's root class. A safe-area-aware banner, for example:
+`--nowo-pwa-install-banner-offset-bottom: max(1rem, env(safe-area-inset-bottom));`.
 
 Remap them from your app theme:
 

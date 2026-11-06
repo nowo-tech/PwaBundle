@@ -40,6 +40,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Host control of the install prompt buttons and more `pwa.css` tokens. No change for hosts that change nothing. The
+service worker, the manifest and what they cache are untouched. See [UPGRADING](UPGRADING.md#unreleased).
+
+### Added
+
+- `nowo_pwa.install_prompt.button_paint` (`kit` by default, or `host`): with `host` the install prompt buttons carry
+  only the UiKit slot classes and `pwa.css` does not paint them, so host button classes win without specificity
+  overrides. The actions wrapper is `__actions-host` in that mode.
+- `pwa.css` tokens for values that were hard-coded: `--nowo-pwa-install-z-index`, `-banner-max-width`,
+  `-banner-inset-x`, `-banner-offset-bottom`, `-banner-offset-top`, `-flash-max-width`, `-modal-padding`,
+  `-modal-panel-padding`, `-eyebrow-font-weight`, `-eyebrow-letter-spacing`, `-title-line-height`,
+  `-button-border-color`, `--nowo-pwa-install-links-font-size`, `-links-font-weight`, `-links-line-height`. Their
+  defaults are the previous values.
+
+### Documentation
+
+- `src/push-checks.ts` is declared a public entry covered by semver, with a test that pins its exports.
+
+### Security
+
+- REQ-SEC-004 audit: Pass (good) / Low (2026-11-06). No advisory needed. The service worker, the manifest, their scope and their cache rules did not change.
+- Known issue, also in 1.12.0: with `install_prompt.display: modal` the "Not now" button has no effect; "Don't ask again" and a backdrop click work. A fix follows in a patch release.
+
 ## [1.12.0] - 2026-10-26
 
 Bundle-level HTTP timeouts on Web Push deliveries (REQ-RUNTIME-001). See [UPGRADING](UPGRADING.md#to-1120).
