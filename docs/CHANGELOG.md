@@ -58,6 +58,11 @@ service worker, the manifest and what they cache are untouched. See [UPGRADING](
 
 - `src/push-checks.ts` is declared a public entry covered by semver, with a test that pins its exports.
 
+### Security
+
+- REQ-SEC-004 audit: Pass (good) / Low (2026-11-06). No advisory needed. The service worker, the manifest, their scope and their cache rules did not change.
+- Known issue, also in 1.12.0: with `install_prompt.display: modal` the "Not now" button has no effect; "Don't ask again" and a backdrop click work. A fix follows in a patch release.
+
 ## [1.12.0] - 2026-10-26
 
 Bundle-level HTTP timeouts on Web Push deliveries (REQ-RUNTIME-001). See [UPGRADING](UPGRADING.md#to-1120).

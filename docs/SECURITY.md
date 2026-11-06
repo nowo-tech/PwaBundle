@@ -22,7 +22,7 @@
 | Offline page | Misleading content if compromised | Override `@NowoPwaBundle/pwa/offline.html.twig` in your app; serve over HTTPS |
 | Manifest | User deception (fake app name/icons) | Control `nowo_pwa.yaml`; only deploy trusted icon assets |
 | Install prompt | UX spam | Use `install_prompt.dismiss_days`; disable with `install_prompt.enabled: false` if not needed |
-| Install prompt `button_paint: host` (unreleased; audit status: re-verification pending) | Host styling hiding or disguising the dismiss buttons | Validated enum, presentation only: the actions, JS hooks (`data-pwa-install-action`), service worker, manifest and cache rules do not change. The host is responsible for keeping "Not now" and "Don't ask again" visible |
+| Install prompt `button_paint: host` | Host styling hiding or disguising the dismiss buttons | Validated enum, presentation only: the actions, JS hooks (`data-pwa-install-action`), service worker, manifest and cache rules do not change. Hosts could already hide these buttons with their own CSS or a block override, in `kit` mode too, and installing always goes through the browser's own dialog. The host is responsible for keeping "Not now" and "Don't ask again" visible. |
 | Cached assets | Stale or poisoned responses | Bump `service_worker.cache_version` after security fixes; use HTTPS everywhere |
 | Content Security Policy | Service worker or `pwa.js` blocked | Allow `worker-src` and script sources for your SW URL and `/bundles/pwa/pwa.js`; see [Content Security Policy](#content-security-policy) |
 | Reverse proxy / Host header | Wrong absolute `start_url` in manifest | Configure Symfony trusted proxies when `manifest.absolute_start_url` is true; see [Trusted proxies](#trusted-proxies) |
@@ -147,7 +147,7 @@ Before tagging a release, confirm:
 | **Cryptography** | N/A — no custom cryptography in this bundle. |
 | **Permissions / exposure** | Service worker scope and cache rules documented for integrators. |
 | **Limits / DoS** | Cache size and offline asset limits reviewed for production. |
-| **AI security audit (REQ-SEC-004)** | Grade **Pass (good)** / re-audit **2026-09-28**. Default site-wide SW scope `/` remains valid for full-site PWAs; `start_url` must stay under `service_worker.scope`; multi-tenant apps must set a narrower scope (documented above). |
+| **AI security audit (REQ-SEC-004)** | Grade **Pass (good)** / Low, re-audit **2026-11-06** (1.13.0, `button_paint` and tokens). Known issue, also in 1.12.0: with `install_prompt.display: modal` the "Not now" button has no effect; "Don't ask again" and a backdrop click work. Default site-wide SW scope `/` remains valid for full-site PWAs; `start_url` must stay under `service_worker.scope`; multi-tenant apps must set a narrower scope (documented above). |
 
 Record confirmation in the release PR or tag notes.
 
