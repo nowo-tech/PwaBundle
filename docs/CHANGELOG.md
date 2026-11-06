@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.13.0] - 2026-11-06](#1130---2026-11-06)
 - [[1.12.0] - 2026-10-26](#1120---2026-10-26)
 - [[1.11.0] - 2026-10-23](#1110---2026-10-23)
 - [[1.10.2] - 2026-10-22](#1102---2026-10-22)
@@ -40,8 +41,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-11-06
+
 Host control of the install prompt buttons and more `pwa.css` tokens. No change for hosts that change nothing. The
-service worker, the manifest and what they cache are untouched. See [UPGRADING](UPGRADING.md#unreleased).
+service worker, the manifest and what they cache are untouched. See [UPGRADING](UPGRADING.md#to-1130).
 
 ### Added
 

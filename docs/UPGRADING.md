@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.13.0](#to-1130)
 - [To 1.12.0](#to-1120)
 - [To 1.11.0](#to-1110)
 - [To 1.10.2](#to-1102)
@@ -51,6 +52,14 @@
   - [Twig-CS-Fixer (maintainers)](#twig-cs-fixer-maintainers)
 
 ## Unreleased
+
+## To 1.13.0
+
+From **1.12.0**:
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
 
 `composer update nowo-tech/pwa-bundle`. Nothing is required: rendered markup and the computed style of the widgets
 stay the same, and the service worker script and the manifest do not change.
