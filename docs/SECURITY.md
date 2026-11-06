@@ -22,6 +22,7 @@
 | Offline page | Misleading content if compromised | Override `@NowoPwaBundle/pwa/offline.html.twig` in your app; serve over HTTPS |
 | Manifest | User deception (fake app name/icons) | Control `nowo_pwa.yaml`; only deploy trusted icon assets |
 | Install prompt | UX spam | Use `install_prompt.dismiss_days`; disable with `install_prompt.enabled: false` if not needed |
+| Install prompt `button_paint: host` (unreleased; audit status: re-verification pending) | Host styling hiding or disguising the dismiss buttons | Validated enum, presentation only: the actions, JS hooks (`data-pwa-install-action`), service worker, manifest and cache rules do not change. The host is responsible for keeping "Not now" and "Don't ask again" visible |
 | Cached assets | Stale or poisoned responses | Bump `service_worker.cache_version` after security fixes; use HTTPS everywhere |
 | Content Security Policy | Service worker or `pwa.js` blocked | Allow `worker-src` and script sources for your SW URL and `/bundles/pwa/pwa.js`; see [Content Security Policy](#content-security-policy) |
 | Reverse proxy / Host header | Wrong absolute `start_url` in manifest | Configure Symfony trusted proxies when `manifest.absolute_start_url` is true; see [Trusted proxies](#trusted-proxies) |

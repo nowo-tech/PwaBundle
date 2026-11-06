@@ -52,6 +52,22 @@
 
 ## Unreleased
 
+`composer update nowo-tech/pwa-bundle`. Nothing is required: rendered markup and the computed style of the widgets
+stay the same, and the service worker script and the manifest do not change.
+
+`pwa.css` changed and its URL (`/bundles/pwa/pwa.css`) carries no version. If your `runtime_cache_patterns` or
+`precache_urls` include it, or a proxy caches it for long, bump `service_worker.cache_version` before using the new
+option, because a stale copy has no `__actions-host` rule and the buttons would lose their row layout.
+
+Optional:
+
+- Own button styles fighting `pwa.css`: set `install_prompt.button_paint: host`, keep your classes in the UiKit slots
+  `btn_primary`, `btn_secondary` and `btn_link`, and delete the selectors that out-rank `.nowo-pwa-install__actions
+  button`. Selectors of yours that target `__button*` or `__actions` stop matching in this mode.
+- Hard-coded placement or typography overrides: use the new tokens listed in
+  [CONFIGURATION](CONFIGURATION.md#install-prompt-blocks-and-css-tokens).
+- `src/push-checks.ts` is now a declared public entry. Existing imports of it keep working, no change needed.
+
 ## To 1.12.0
 
 From **1.11.0**:

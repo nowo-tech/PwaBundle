@@ -44,7 +44,7 @@ Widgets are not pages (no scaffold, no layout); they use theme slots so a host t
 
 Every widget root carries `data-nowo-ui-bundle="NowoPwaBundle"` (install prompt, install links), so per-bundle tokens
 (`theme.bundles.NowoPwaBundle.tokens`) apply to it. The BEM classes (`nowo-pwa-install__*`, configurable root
-`install_prompt.css_class`) stay next to the slot classes; the JavaScript hooks are the `data-pwa-install-action`
+`install_prompt.css_class`) stay next to the slot classes (with `install_prompt.button_paint: host` the buttons lose their `__button*` classes and the actions wrapper becomes `__actions-host`); the JavaScript hooks are the `data-pwa-install-action`
 attributes and the `nowo-pwa-install` / `nowo-pwa-install-links` ids.
 
 ## Unique pages

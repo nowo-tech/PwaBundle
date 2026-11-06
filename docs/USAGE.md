@@ -239,7 +239,7 @@ TypeScript sources (not part of `pwa.js`; the host compiles them and provides `@
 
 | Path under `vendor/nowo-tech/pwa-bundle/src/Resources/assets/` | Purpose |
 |----------------------------------------------------------------|---------|
-| `src/push-checks.ts` | `runPushChecks()`, `applicableChecks()`, `urlBase64ToUint8Array()`, `PUSH_CHECK_ORDER`, types `PushConfig` / `PushCheck` / `PushCheckReport` |
+| `src/push-checks.ts` | **Public entry** (covered by semver): `runPushChecks()`, `applicableChecks()`, `urlBase64ToUint8Array()`, `PUSH_CHECK_ORDER`, types `PushConfig` / `PushCheckOptions` / `PushCheck` / `PushCheckReport`. Its other exports are internal |
 | `src/browser-detect.ts` | `detectBrowser()`, `BROWSER_IDS`, type `BrowserId` |
 | `stimulus-peers/push_diagnostics_controller.ts` | Stimulus controller, identifier **`push-diagnostics`** |
 | `stimulus-peers/browser_hint_controller.ts` | Stimulus controller, identifier **`browser-hint`** (also re-exports `detectBrowser`) |

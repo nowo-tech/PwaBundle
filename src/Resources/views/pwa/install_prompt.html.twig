@@ -6,6 +6,8 @@
   actions `toolbar`, buttons `btn_primary` (install), `btn_secondary` (not now), `btn_link` (never). The BEM classes
   (`install_prompt.css_class`, default `nowo-pwa-install`) stay on every element; pwa.css paints them from the
   `--nowo-pwa-install-*` tokens, which fall back to the UiKit `--nowo-ui-*` tokens.
+  `install_prompt.button_paint: host` leaves the buttons to the host: no kit button classes and no kit button paint,
+  so the slot classes win without a specificity fight.
 
   Change one part without copying the file: point nowo_pwa.web_ui.templates.install_prompt to a template that
   {% extends '@!NowoPwaBundle/pwa/install_prompt.html.twig' %} and redefines one block:
@@ -27,17 +29,18 @@
     ? install_prompt.eyebrow|trans
     : null %}
 {# Deprecated 1.x class options (button_class, dismiss_button_class, never_button_class) replace the slot classes. #}
+{% set host_paint = install_prompt.button_paint|default('kit') == 'host' %}
 {% set install_button_class = install_prompt.button_class|default('') %}
 {% if install_button_class is same as('') %}
-    {% set install_button_class = nowo_ui_class('btn_primary', _b) ~ ' ' ~ bem ~ '__button ' ~ bem ~ '__button--install' %}
+    {% set install_button_class = nowo_ui_class('btn_primary', _b) ~ (host_paint ? '' : ' ' ~ bem ~ '__button ' ~ bem ~ '__button--install') %}
 {% endif %}
 {% set dismiss_button_class = install_prompt.dismiss_button_class is defined ? install_prompt.dismiss_button_class : null %}
 {% if dismiss_button_class is same as(null) %}
-    {% set dismiss_button_class = nowo_ui_class('btn_secondary', _b) ~ ' ' ~ bem ~ '__button ' ~ bem ~ '__button--dismiss' %}
+    {% set dismiss_button_class = nowo_ui_class('btn_secondary', _b) ~ (host_paint ? '' : ' ' ~ bem ~ '__button ' ~ bem ~ '__button--dismiss') %}
 {% endif %}
 {% set never_button_class = install_prompt.never_button_class is defined ? install_prompt.never_button_class : null %}
 {% if never_button_class is same as(null) %}
-    {% set never_button_class = nowo_ui_class('btn_link', _b) ~ ' ' ~ bem ~ '__button ' ~ bem ~ '__button--never' %}
+    {% set never_button_class = nowo_ui_class('btn_link', _b) ~ (host_paint ? '' : ' ' ~ bem ~ '__button ' ~ bem ~ '__button--never') %}
 {% endif %}
 <div id="nowo-pwa-install"
      class="{{ css_class }} {{ bem }}--{{ display }} {{ bem }}--{{ install_prompt.position|default('bottom') }}"
@@ -93,7 +96,7 @@
             {% endblock %}
 
             {% block pwa_install_actions %}
-                <div class="{{ nowo_ui_class('toolbar', _b) }} {{ bem }}__actions"{{ nowo_ui_attrs('toolbar', _b) }}>
+                <div class="{{ nowo_ui_class('toolbar', _b) }} {{ bem }}{{ host_paint ? '__actions-host' : '__actions' }}"{{ nowo_ui_attrs('toolbar', _b) }}>
                     {% block pwa_install_button_install %}
                         <button type="button" class="{{ install_button_class }}" data-pwa-install-action="install">{{ 'install.action'|trans({}, 'NowoPwaBundle') }}</button>
                     {% endblock %}
