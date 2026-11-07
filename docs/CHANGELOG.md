@@ -41,6 +41,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Install prompt motion:** the banner, flash and modal displays open and close on UiKit's `--nowo-ui-motion-medium*`, `--nowo-ui-motion-scale` and easing tokens (own fallbacks: 200 ms in, 150 ms out, scale 0.98). The close waits for the fade before `hidden`, with a timer if `transitionend` never fires. Reduced motion keeps an 80 ms fade with no movement; `html[data-motion="full"]` keeps the full effect. No `!important`.
+- **Turbo:** running fades finish on `turbo:before-cache`, so that a cached page never holds a half-closed surface. Install prompt: audit finding HW-L5.
+
 ## [1.13.0] - 2026-11-06
 
 Host control of the install prompt buttons and more `pwa.css` tokens. No change for hosts that change nothing. The

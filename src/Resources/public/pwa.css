@@ -298,3 +298,60 @@ body.nowo-pwa-install-modal-open {
 .nowo-pwa-browser-guide__current[hidden] { display: none; }
 
 .nowo-pwa-browser-hint__text { margin: 0; }
+
+/*
+ * Motion: UiKit's scale, read with own fallbacks. The prompt and its backdrop fade, the panel scales a little.
+ * The close waits for this fade (motion.ts), then sets `hidden`. No `!important`, so a host's html[data-motion] rule wins.
+ */
+.nowo-pwa-install {
+    --nowo-pwa-install-motion-open: var(--nowo-ui-motion-medium, 200ms);
+    --nowo-pwa-install-motion-close: var(--nowo-ui-motion-medium-close, 150ms);
+    --nowo-pwa-install-motion-scale: var(--nowo-ui-motion-scale, 0.98);
+}
+
+.nowo-pwa-install:not([hidden]) {
+    animation: nowo-pwa-install-fade var(--nowo-pwa-install-motion-open) var(--nowo-ui-motion-ease-out, cubic-bezier(0.2, 0, 0, 1));
+}
+
+.nowo-pwa-install:not([hidden]) .nowo-pwa-install__panel {
+    animation: nowo-pwa-install-scale var(--nowo-pwa-install-motion-open) var(--nowo-ui-motion-ease-out, cubic-bezier(0.2, 0, 0, 1));
+}
+
+.nowo-pwa-install[data-nowo-pwa-closing] {
+    animation: none;
+    opacity: 0;
+    transition: opacity var(--nowo-pwa-install-motion-close) var(--nowo-ui-motion-ease-in, cubic-bezier(0.4, 0, 1, 1));
+}
+
+.nowo-pwa-install[data-nowo-pwa-closing] .nowo-pwa-install__panel {
+    animation: none;
+    transform: scale(var(--nowo-pwa-install-motion-scale));
+    transition: transform var(--nowo-pwa-install-motion-close) var(--nowo-ui-motion-ease-in, cubic-bezier(0.4, 0, 1, 1));
+}
+
+@keyframes nowo-pwa-install-fade {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes nowo-pwa-install-scale {
+    from {
+        transform: scale(var(--nowo-pwa-install-motion-scale));
+    }
+}
+
+/* Reduced motion keeps a short fade and no movement; html[data-motion='full'] keeps the full effect. */
+@media (prefers-reduced-motion: reduce) {
+    html:not([data-motion='full']) .nowo-pwa-install {
+        --nowo-pwa-install-motion-open: var(--nowo-ui-motion-medium, 80ms);
+        --nowo-pwa-install-motion-close: var(--nowo-ui-motion-medium-close, 80ms);
+        --nowo-pwa-install-motion-scale: 1;
+    }
+}
+
+[data-motion='reduce'] .nowo-pwa-install {
+    --nowo-pwa-install-motion-open: var(--nowo-ui-motion-medium, 80ms);
+    --nowo-pwa-install-motion-close: var(--nowo-ui-motion-medium-close, 80ms);
+    --nowo-pwa-install-motion-scale: 1;
+}

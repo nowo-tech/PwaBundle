@@ -1,3 +1,5 @@
+import { closeWithEffect, finishClosing } from './motion';
+
 export interface PwaClientOptions {
     serviceWorkerUrl: string;
     scope: string;
@@ -70,14 +72,17 @@ export function setupInstallPrompt(doc: Document): void {
     let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
     const hidePrompt = (): void => {
-        banner.hidden = true;
-        if (display === 'modal') {
-            doc.body.classList.remove('nowo-pwa-install-modal-open');
-        }
+        closeWithEffect(banner, () => {
+            banner.hidden = true;
+            if (display === 'modal') {
+                doc.body.classList.remove('nowo-pwa-install-modal-open');
+            }
+        });
     };
 
     const showPrompt = (): void => {
         const reveal = (): void => {
+            finishClosing(banner);
             banner.hidden = false;
             if (display === 'modal') {
                 doc.body.classList.add('nowo-pwa-install-modal-open');
