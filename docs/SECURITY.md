@@ -148,6 +148,7 @@ Before tagging a release, confirm:
 | **Permissions / exposure** | Service worker scope and cache rules documented for integrators. |
 | **Limits / DoS** | Cache size and offline asset limits reviewed for production. |
 | **AI security audit (REQ-SEC-004)** | Grade **Pass (good)** / Low, re-audit **2026-11-06** (1.13.0, `button_paint` and tokens). Known issue, also in 1.12.0: with `install_prompt.display: modal` the "Not now" button has no effect; "Don't ask again" and a backdrop click work. Default site-wide SW scope `/` remains valid for full-site PWAs; `start_url` must stay under `service_worker.scope`; multi-tenant apps must set a narrower scope (documented above). |
+| **Motion batch (REQ-SEC-004)** | Independent audit 2026-11-07 (Appendix HW, PR #64 at `ae6eb37`): **Pass (good).** Can tag. HW-L5 fixed afterwards at `<final SHA>`, a commit outside that audit. |
 
 Record confirmation in the release PR or tag notes.
 
