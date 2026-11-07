@@ -626,4 +626,32 @@ describe('pwa-client', () => {
 
         await expect(isPwaInstalledAsync()).resolves.toBe(false);
     });
+
+    it('setupInstallPrompt fades the prompt before hiding it, and showing it again ends the fade', () => {
+        document.body.innerHTML = installBannerHtml().replace('id="nowo-pwa-install"', 'id="nowo-pwa-install" data-display="modal"');
+        setupInstallPrompt(document);
+        const banner = document.querySelector<HTMLElement>('#nowo-pwa-install')!;
+        const prompt = (): void => {
+            const event = new Event('beforeinstallprompt');
+            window.dispatchEvent(event);
+        };
+        prompt();
+        expect(banner.hidden).toBe(false);
+        const style = vi.spyOn(window, 'getComputedStyle').mockReturnValue({ transitionDuration: '150ms', transitionDelay: '0s' } as CSSStyleDeclaration);
+        const dismiss = banner.querySelector<HTMLElement>('[data-pwa-install-action="dismiss-remind"]')!;
+        dismiss.click();
+        expect(banner.hidden).toBe(false);
+        expect(banner.hasAttribute('data-nowo-pwa-closing')).toBe(true);
+        expect(document.body.classList.contains('nowo-pwa-install-modal-open')).toBe(true);
+        banner.dispatchEvent(new Event('transitionend'));
+        expect(banner.hidden).toBe(true);
+        expect(document.body.classList.contains('nowo-pwa-install-modal-open')).toBe(false);
+
+        prompt();
+        dismiss.click();
+        prompt();
+        expect(banner.hasAttribute('data-nowo-pwa-closing')).toBe(false);
+        expect(banner.hidden).toBe(false);
+        style.mockRestore();
+    });
 });
