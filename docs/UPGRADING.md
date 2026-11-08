@@ -54,6 +54,11 @@
 
 ## Unreleased
 
+Nothing to do for most hosts. With `install_prompt.display: modal`, "Not now" now works (audit HC-L1): `pwa.js` binds
+every element carrying a `data-pwa-install-action`, not only the first one. If you worked around it with your own click
+handler on that button, you can remove it; keeping it only stores the same dismissal twice. `pwa.js` is served without a
+version in its URL, so clear any HTTP cache you put in front of `/bundles/pwa/`.
+
 ## To 1.14.0
 
 From **1.13.0**:

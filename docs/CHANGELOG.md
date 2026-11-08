@@ -42,6 +42,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Install prompt, `display: modal`:** the "Not now" button now stores the dismissal and closes the prompt. Every element with an install action is bound, not only the first one; in modal mode the backdrop came first and took the only `dismiss-remind` listener (audit HC-L1, Low, since 1.1.0). `pwa.js` rebuilt. No change in `banner` or `flash` mode, nor in the markup.
+
+### Security
+
+- HC-L1 fix. Audit status: re-verification pending.
+
 ## [1.14.0] - 2026-11-07
 
 ### Changed
