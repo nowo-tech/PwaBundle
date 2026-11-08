@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.15.0] - 2026-11-09](#1150---2026-11-09)
 - [[1.14.1] - 2026-11-08](#1141---2026-11-08)
 - [[1.14.0] - 2026-11-07](#1140---2026-11-07)
 - [[1.13.0] - 2026-11-06](#1130---2026-11-06)
@@ -42,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[1.0.0] - 2026-07-05](#100---2026-07-05)
 
 ## [Unreleased]
+
+## [1.15.0] - 2026-11-09
 
 Optional brand consumer (spec 220 S4). No change for hosts without a `nowo-tech/brand-contracts` brand provider. See
 [UPGRADING](UPGRADING.md#unreleased).
