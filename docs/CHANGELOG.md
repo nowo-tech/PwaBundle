@@ -74,8 +74,9 @@ Optional brand consumer (spec 220 S4). No change for hosts without a `nowo-tech/
 
 - The brand values reach the manifest only through `JsonResponse`'s escaping (`<`, `>`, `&`, quotes as `\u00XX`) and the
   head only through Twig auto-escaping; colours are `#rrggbb` (contract-checked); icon URLs are re-checked with
-  `BrandAsset::isSafeUrl()` (root-relative or `https://` only); only raster icons are used. Audit status:
-  re-verification pending.
+  `BrandAsset::isSafeUrl()` (root-relative or `https://` only); only raster icons are used. Audited: Appendix IU,
+  Pass-Low. IU-L2: the icons use the full-size original upload until BrandContracts 1.1 adds variant URLs; IU-I6 / IU-I7
+  (overlay scope and per-session providers) are documented in USAGE and SECURITY.
 
 ## [1.14.1] - 2026-11-08
 

@@ -78,6 +78,14 @@ With a brand provider, `nowo_pwa.brand.mode` defaults to `auto`, so after the up
   `meta.apple_touch_icons` with one entry. Keep `manifest.icons` configured: it is the end of the chain when the brand
   has no usable icon (for example an SVG default asset).
 - The manifest link carries `?v=<brand version>` and the manifest response an `ETag`.
+- Icon sizes (audit IU-L2): the manifest icons and the Apple icon point at the **full-size original upload** (declared
+  with its real `WxH`), not at the 192 / 512 / 180 px PNG variants that InstanceSettings generates. Browsers scale it,
+  but they download the whole file. BrandContracts 1.0 has no variant URLs; they are planned for BrandContracts 1.1,
+  and a later Pwa minor will then use them.
+- Host overlays win in the manifest JSON only, and only at a priority below 1024 (the default 0 is fine); the head tags
+  never see overlays (audit IU-I6, details in [USAGE](USAGE.md#brand-from-a-brand-provider)).
+- If your `BrandProviderInterface` returns a different brand per session, cookie or tenant, set
+  `nowo_pwa.http.manifest_public_cache: false` (audit IU-I7).
 
 To keep 1.14 behaviour with a brand provider installed, set:
 

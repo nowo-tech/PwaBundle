@@ -73,11 +73,18 @@ Spec 220 S4. When the app has a `Nowo\Brand\Contract\BrandProviderInterface` ser
 
 - The configuration is the fallback: anything the brand does not give (an SVG or too small icon, no provider, a
   provider that throws) keeps the `nowo_pwa` value. A failing provider is logged as a warning.
-- Icons are declared with their real size (`sizes` is the uploaded width × height): the contract carries no variant
-  URLs, and browsers scale the image. A `mark` reached through the contract's fallback chain is used as `any` only,
+- Icons are declared with their real size (`sizes` is the uploaded width × height). The manifest icons and the
+  `apple-touch-icon` use the full-size original upload, not the 192 / 512 / 180 px variants, until BrandContracts gains
+  variant URLs (planned for 1.1, then a Pwa minor; audit IU-L2). Browsers scale the image, but download it whole. A `mark` reached through the contract's fallback chain is used as `any` only,
   because only the `app_icon` slot is drawn with the maskable safe zone.
-- Host overlays (`ManifestOverlayProviderInterface`) still run after the brand overlay (priority 1024) and can change
-  any value.
+- Host overlays (`ManifestOverlayProviderInterface`) at a priority below 1024 (the default is 0) run after the brand
+  overlay and can change any value **of the manifest JSON**. An overlay with a priority above 1024 runs first, and the
+  brand overwrites what it set. The head tags (`theme-color`, icon links, Apple title) are built from the
+  configuration and the brand only and never see overlays, so an overlay that pins `theme_color` makes the manifest and
+  the head disagree; set the matching `meta.*` value or override the head template (audit IU-I6).
+- The manifest is served `public, max-age=3600` by default, which fits the contract's single brand per instance. A
+  provider that varies per session, cookie or tenant needs `nowo_pwa.http.manifest_public_cache: false`, or a shared
+  cache could serve one tenant's manifest to another (audit IU-I7).
 - Nothing is cached between requests: each manifest or page asks the provider again (providers memoise per request).
 
 ## Route targeting
