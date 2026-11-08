@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.14.1](#to-1141)
 - [To 1.14.0](#to-1140)
 - [To 1.13.0](#to-1130)
 - [To 1.12.0](#to-1120)
@@ -53,6 +54,14 @@
   - [Twig-CS-Fixer (maintainers)](#twig-cs-fixer-maintainers)
 
 ## Unreleased
+
+## To 1.14.1
+
+From **1.14.0**:
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
 
 Nothing to do for most hosts. With `install_prompt.display: modal`, "Not now" now works (audit HC-L1): `pwa.js` binds
 every element carrying a `data-pwa-install-action`, not only the first one. If you worked around it with your own click
