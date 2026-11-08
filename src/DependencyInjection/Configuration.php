@@ -48,6 +48,11 @@ final class Configuration implements ConfigurationInterface
     /** Default layout of the offline page (self-contained: inline CSS, no stylesheet or script request). */
     public const OFFLINE_LAYOUT = '@NowoUiKit/layout/status.html.twig';
 
+    /** brand.mode values (spec 220 S4). */
+    public const BRAND_AUTO = 'auto';
+
+    public const BRAND_OFF = 'off';
+
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder(self::ALIAS);
@@ -161,6 +166,25 @@ final class Configuration implements ConfigurationInterface
                         ->booleanNode('register_on_load')->defaultTrue()->end()
                         ->booleanNode('check_updates_on_visibility')->defaultTrue()->end()
                         ->booleanNode('reload_on_update')->defaultFalse()->end()
+                    ->end()
+                ->end()
+                ->arrayNode('brand')
+                    ->info('Spec 220: read name, colours and icons from a nowo-tech/brand-contracts BrandProviderInterface service when the app has one. "auto" or "off" is accepted as a shorthand for mode.')
+                    ->addDefaultsIfNotSet()
+                    ->beforeNormalization()
+                        ->ifString()
+                        ->then(static fn (string $v): array => ['mode' => $v])
+                    ->end()
+                    ->children()
+                        ->enumNode('mode')
+                            ->info('auto: use the brand provider when one exists (the configuration stays the fallback). off: ignore it.')
+                            ->values([self::BRAND_AUTO, self::BRAND_OFF])
+                            ->defaultValue(self::BRAND_AUTO)
+                        ->end()
+                        ->booleanNode('override_name')
+                            ->info('Apply the brand name to the manifest name / short_name (and the Apple title) even while the brand is the default one.')
+                            ->defaultFalse()
+                        ->end()
                     ->end()
                 ->end()
                 ->arrayNode('http')

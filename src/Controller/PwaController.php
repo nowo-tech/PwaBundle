@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\Controller;
 
+use Nowo\Brand\Contract\Brand;
+use Nowo\PwaBundle\Brand\PwaBrand;
 use Nowo\PwaBundle\DependencyInjection\Configuration;
 use Nowo\PwaBundle\Service\ManifestBuilder;
 use Nowo\PwaBundle\Service\ManifestOverlayProviderInterface;
@@ -15,7 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+use function hash;
 use function sprintf;
+use function substr;
 
 final class PwaController extends AbstractController
 {
@@ -27,6 +31,7 @@ final class PwaController extends AbstractController
      * @param array<string, array{path: string, name: string}> $routes
      * @param iterable<ManifestOverlayProviderInterface> $manifestOverlayProviders
      * @param string|null $offlineLayout web_ui.layout_template (null = UiKit status layout)
+     * @param PwaBrand|null $brand brand consumer (spec 220 S4); null when `brand.mode: off` or brand-contracts is absent
      */
     public function __construct(
         private readonly bool $enabled,
@@ -40,6 +45,7 @@ final class PwaController extends AbstractController
         private readonly iterable $manifestOverlayProviders = [],
         private readonly ?UrlGeneratorInterface $urlGenerator = null,
         private readonly ?string $offlineLayout = null,
+        private readonly ?PwaBrand $brand = null,
     ) {
     }
 
@@ -68,6 +74,14 @@ final class PwaController extends AbstractController
             (int) ($this->httpConfig['manifest_cache_max_age'] ?? 3600),
             (bool) ($this->httpConfig['manifest_public_cache'] ?? true),
         );
+
+        // Spec 220 S4: with a brand, the ETag follows Brand::$version (and the body, so config and host overlays
+        // count too); a matching If-None-Match gets a 304. Without a brand no ETag is set, as before 1.15.
+        $brand = $this->brand?->current();
+        if ($brand instanceof Brand) {
+            $response->setEtag($brand->version . '-' . substr(hash('sha256', (string) $response->getContent()), 0, 16));
+            $response->isNotModified($request);
+        }
 
         return $response;
     }

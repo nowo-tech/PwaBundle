@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\Twig;
 
+use Nowo\Brand\Contract\Brand;
+use Nowo\PwaBundle\Brand\PwaBrand;
 use Nowo\PwaBundle\Service\PwaRouteTargeting;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -30,6 +32,7 @@ final class PwaTwigExtension extends AbstractExtension
      * @param array{match_by?: string, mode: string, routes: list<string>} $routeTargetingConfig
      * @param array{head: string, install_prompt: string, install_links: string, offline: string} $templates
      * @param array<string, array{path: string, name: string}> $routes
+     * @param PwaBrand|null $brand brand consumer (spec 220 S4); null when `brand.mode: off` or brand-contracts is absent
      */
     public function __construct(
         private readonly bool $enabled,
@@ -46,6 +49,7 @@ final class PwaTwigExtension extends AbstractExtension
         private readonly array $routeTargetingConfig,
         private readonly array $templates,
         private readonly array $routes,
+        private readonly ?PwaBrand $brand = null,
     ) {
     }
 
@@ -136,7 +140,7 @@ final class PwaTwigExtension extends AbstractExtension
      */
     private function buildViewContext(): array
     {
-        return [
+        $context = [
             'manifest'           => $this->manifestConfig,
             'meta'               => $this->metaConfig,
             'service_worker'     => $this->serviceWorkerConfig,
@@ -147,6 +151,13 @@ final class PwaTwigExtension extends AbstractExtension
             'service_worker_url' => $this->urlGenerator->generate($this->routes['service_worker']['name']),
             'theme_color'        => (string) ($this->manifestConfig['theme_color'] ?? '#0f172a'),
         ];
+
+        if (!$this->brand instanceof PwaBrand) {
+            return $context;
+        }
+        $brand = $this->brand->current();
+
+        return $brand instanceof Brand ? $this->brand->viewContext($context, $brand) : $context;
     }
 
     private function resolveCurrentRoute(): string

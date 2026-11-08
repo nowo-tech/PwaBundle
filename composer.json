@@ -48,6 +48,7 @@
         "friendsofphp/php-cs-fixer": "^3.0",
         "igor-php/igor-php": "^0.10.0",
         "minishlink/web-push": "^11.0",
+        "nowo-tech/brand-contracts": "^1.0",
         "nowo-tech/phpstan-frankenphp": "^1.0",
         "nyholm/psr7": "^1.8",
         "phpstan/extension-installer": "^1.0",
@@ -64,8 +65,12 @@
         "symfony/translation": "^7.4 || ^8.0",
         "vincentlanglet/twig-cs-fixer": "^4.0"
     },
+    "conflict": {
+        "nowo-tech/brand-contracts": "<1.0 || >=2.0"
+    },
     "suggest": {
         "minishlink/web-push": "^11.0 — required by nowo_pwa.web_push (server-side Web Push sender + push diagnostics test endpoint)",
+        "nowo-tech/brand-contracts": "^1.0 — brand name, colours and icons for the manifest and head tags from a BrandProviderInterface service (nowo_pwa.brand, spec 220)",
         "nyholm/psr7": "PSR-7/PSR-17 implementation needed by minishlink/web-push to build push requests (checked at container compile time when nowo_pwa.web_push.enabled)",
         "symfony/http-client": "Recommended PSR-18 client for minishlink/web-push: receives the bundle deadlines web_push.timeout / connect_timeout (other PSR-18 clients keep their own timeouts)",
         "symfony/security-bundle": "Required by nowo_pwa.web_push.test_notification (authenticated endpoint)",

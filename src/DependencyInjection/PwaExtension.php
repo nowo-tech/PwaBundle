@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle\DependencyInjection;
 
+use Nowo\Brand\Contract\BrandProviderInterface;
+use Nowo\PwaBundle\Brand\BrandManifestOverlayProvider;
+use Nowo\PwaBundle\Brand\PwaBrand;
 use Nowo\PwaBundle\Controller\PushTestController;
 use Nowo\PwaBundle\Service\ManifestOverlayProviderInterface;
 use Nowo\PwaBundle\WebPush\MinishlinkWebPushSender;
@@ -26,6 +29,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 
 use function array_values;
+use function interface_exists;
 use function is_array;
 use function sprintf;
 
@@ -60,6 +64,7 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
         $container->setParameter('nowo_pwa.http', $config['http']);
         $container->setParameter('nowo_pwa.route_targeting', $config['route_targeting']);
         $container->setParameter('nowo_pwa.routes', $config['routes']);
+        $container->setParameter('nowo_pwa.brand', $config['brand']);
         // REQ-UI-003: web_ui.templates (1.x templates.* copied there by the configuration); the parameter keeps its name.
         $container->setParameter('nowo_pwa.templates', $config['web_ui']['templates']);
         $container->setParameter('nowo_pwa.web_ui.layout_template', $config['web_ui']['layout_template']);
@@ -89,6 +94,8 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
 
+        $this->registerBrand($container, $config['brand']);
+
         if ($webPush['enabled']) {
             $this->registerWebPush($container, $webPush, $testEnabled, $config['service_worker']);
         }
@@ -96,6 +103,31 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
         if ($container->hasParameter('kernel.debug') && $container->getParameter('kernel.debug')) {
             $loader->load('data_collector.yaml');
         }
+    }
+
+    /**
+     * Spec 220 S4: the brand consumer and its manifest overlay, only with `brand.mode: auto` and brand-contracts
+     * installed. The provider is an optional reference: without a BrandProviderInterface service the consumer reads
+     * no brand and every output stays the configuration.
+     *
+     * @param array{mode: string, override_name: bool} $brand
+     */
+    private function registerBrand(ContainerBuilder $container, array $brand): void
+    {
+        if ($brand['mode'] !== Configuration::BRAND_AUTO || !interface_exists(BrandProviderInterface::class)) {
+            return;
+        }
+
+        $container->register(PwaBrand::class, PwaBrand::class)
+            ->setArguments([
+                '$provider'     => new Reference(BrandProviderInterface::class, ContainerInterface::NULL_ON_INVALID_REFERENCE),
+                '$overrideName' => $brand['override_name'],
+                '$logger'       => new Reference('logger', ContainerInterface::NULL_ON_INVALID_REFERENCE),
+            ]);
+
+        $container->register(BrandManifestOverlayProvider::class, BrandManifestOverlayProvider::class)
+            ->setArguments([new Reference(PwaBrand::class)])
+            ->addTag(ManifestOverlayProviderInterface::TAG, ['priority' => PwaBrand::OVERLAY_PRIORITY]);
     }
 
     /**
