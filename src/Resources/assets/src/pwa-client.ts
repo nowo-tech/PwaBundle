@@ -104,7 +104,14 @@ export function setupInstallPrompt(doc: Document): void {
         showPrompt();
     });
 
-    banner.querySelector('[data-pwa-install-action="install"]')?.addEventListener('click', async () => {
+    // Every match is bound (audit HC-L1): in `display: modal` the backdrop carries `dismiss-remind` before the button does.
+    const onAction = (action: string, handler: () => void): void => {
+        banner.querySelectorAll(`[data-pwa-install-action="${action}"]`).forEach((element) => {
+            element.addEventListener('click', handler);
+        });
+    };
+
+    onAction('install', async () => {
         if (!deferredPrompt) {
             return;
         }
@@ -113,18 +120,18 @@ export function setupInstallPrompt(doc: Document): void {
         hidePrompt();
     });
 
-    banner.querySelector('[data-pwa-install-action="dismiss-remind"]')?.addEventListener('click', () => {
+    onAction('dismiss-remind', () => {
         storeDismiss(dismissKey, dismissDays);
         hidePrompt();
     });
 
-    banner.querySelector('[data-pwa-install-action="dismiss-never"]')?.addEventListener('click', () => {
+    onAction('dismiss-never', () => {
         storeNeverDismiss(neverDismissKey);
         hidePrompt();
     });
 
     // Backward compatibility with legacy dismiss action name.
-    banner.querySelector('[data-pwa-install-action="dismiss"]')?.addEventListener('click', () => {
+    onAction('dismiss', () => {
         storeDismiss(dismissKey, dismissDays);
         hidePrompt();
     });

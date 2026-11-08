@@ -147,7 +147,7 @@ Before tagging a release, confirm:
 | **Cryptography** | N/A — no custom cryptography in this bundle. |
 | **Permissions / exposure** | Service worker scope and cache rules documented for integrators. |
 | **Limits / DoS** | Cache size and offline asset limits reviewed for production. |
-| **AI security audit (REQ-SEC-004)** | Grade **Pass (good)** / Low, re-audit **2026-11-06** (1.13.0, `button_paint` and tokens). Known issue, also in 1.12.0: with `install_prompt.display: modal` the "Not now" button has no effect; "Don't ask again" and a backdrop click work. Default site-wide SW scope `/` remains valid for full-site PWAs; `start_url` must stay under `service_worker.scope`; multi-tenant apps must set a narrower scope (documented above). |
+| **AI security audit (REQ-SEC-004)** | Grade **Pass (good)** / Low, re-audit **2026-11-06** (1.13.0, `button_paint` and tokens). Known issue HC-L1 (1.1.0 to 1.14.0): with `install_prompt.display: modal` the "Not now" button had no effect; "Don't ask again" and a backdrop click worked. Fixed in [Unreleased] (every element with an install action is bound); re-verification pending. Default site-wide SW scope `/` remains valid for full-site PWAs; `start_url` must stay under `service_worker.scope`; multi-tenant apps must set a narrower scope (documented above). |
 | **Motion batch (REQ-SEC-004)** | Batch audit Appendix HW (2026-11-07), at `ae6eb37`: Pass (good). HW-L5 fixed at `7b12b0b`; delta audit: **Pass (good)**. |
 
 Record confirmation in the release PR or tag notes.

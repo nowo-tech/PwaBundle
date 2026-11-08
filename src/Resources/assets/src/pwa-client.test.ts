@@ -262,6 +262,38 @@ describe('pwa-client', () => {
         expect(document.body.classList.contains('nowo-pwa-install-modal-open')).toBe(false);
     });
 
+    it('setupInstallPrompt binds Not now after the modal backdrop (HC-L1)', () => {
+        // As install_prompt.html.twig renders modal mode: the backdrop carries the same action before the button.
+        document.body.innerHTML = installBannerHtml()
+            .replace('id="nowo-pwa-install"', 'id="nowo-pwa-install" data-display="modal"')
+            .replace('<button type="button" data-pwa-install-action="install">', '<div data-pwa-install-action="dismiss-remind" aria-hidden="true"></div><button type="button" data-pwa-install-action="install">');
+        setupInstallPrompt(document);
+        window.dispatchEvent(new Event('beforeinstallprompt'));
+        const banner = document.getElementById('nowo-pwa-install') as HTMLElement;
+        const [backdrop, button] = Array.from(banner.querySelectorAll<HTMLElement>('[data-pwa-install-action="dismiss-remind"]'));
+        expect(backdrop.tagName).toBe('DIV');
+        expect(button.tagName).toBe('BUTTON');
+
+        button.click();
+
+        expect(banner.hidden).toBe(true);
+        expect(localStorage.getItem('dismiss')).not.toBeNull();
+        expect(document.body.classList.contains('nowo-pwa-install-modal-open')).toBe(false);
+    });
+
+    it('setupInstallPrompt still dismisses on a modal backdrop click', () => {
+        document.body.innerHTML = installBannerHtml()
+            .replace('id="nowo-pwa-install"', 'id="nowo-pwa-install" data-display="modal"')
+            .replace('<button type="button" data-pwa-install-action="install">', '<div data-pwa-install-action="dismiss-remind" aria-hidden="true"></div><button type="button" data-pwa-install-action="install">');
+        setupInstallPrompt(document);
+        window.dispatchEvent(new Event('beforeinstallprompt'));
+
+        (document.querySelector('div[data-pwa-install-action="dismiss-remind"]') as HTMLElement).click();
+
+        expect((document.getElementById('nowo-pwa-install') as HTMLElement).hidden).toBe(true);
+        expect(localStorage.getItem('dismiss')).not.toBeNull();
+    });
+
     it('setupInstallPrompt skips mobile when visibility is desktop', () => {
         Object.defineProperty(navigator, 'userAgent', {
             value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)',
