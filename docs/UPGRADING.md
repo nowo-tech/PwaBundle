@@ -55,6 +55,42 @@
 
 ## Unreleased
 
+From **1.14.1** (target 1.15.0):
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
+
+Nothing changes unless the app has a `Nowo\Brand\Contract\BrandProviderInterface` service (from
+`nowo-tech/brand-contracts` ^1.0, for example InstanceSettingsBundle with `nowo_instance_settings.brand.enabled: true`).
+Without one, the manifest, its headers and the head tags are byte for byte the same as in 1.14.1.
+
+With a brand provider, `nowo_pwa.brand.mode` defaults to `auto`, so after the update:
+
+- `theme_color` / `background_color` in the manifest become the light `primary` / `paper` of the brand, and the two
+  `theme-color` meta tags become the light / dark `paper`, **even while the brand is the default one** (a provider
+  with nothing stored returns its defaults). Check them against your `manifest.theme_color` and
+  `meta.theme_color_light` / `_dark`: an app whose meta tags used its accent colour now gets its paper colour, which is
+  what UiKit's `nowo_ui_appearance_head()` prints too.
+- `name`, `short_name` and the Apple title follow the brand only once it is not the default one; set
+  `brand.override_name: true` to apply the default brand name as well.
+- An `app_icon` (PNG, JPEG or WebP, square, at least 192 px) replaces `manifest.icons`, and the configured
+  `meta.apple_touch_icons` with one entry. Keep `manifest.icons` configured: it is the end of the chain when the brand
+  has no usable icon (for example an SVG default asset).
+- The manifest link carries `?v=<brand version>` and the manifest response an `ETag`.
+
+To keep 1.14 behaviour with a brand provider installed, set:
+
+```yaml
+nowo_pwa:
+    brand: off
+```
+
+A host overlay (`ManifestOverlayProviderInterface`, default priority 0) that did the same job, such as Beacon's
+`AppearanceManifestOverlayProvider`, still runs after the brand overlay and wins; delete it once the brand provider is in
+place. If you print UiKit's `nowo_ui_appearance_head()` as well, both emit `theme-color` meta tags with the same values;
+keep one of them.
+
 ## To 1.14.1
 
 From **1.14.0**:

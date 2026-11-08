@@ -43,6 +43,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Optional brand consumer (spec 220 S4). No change for hosts without a `nowo-tech/brand-contracts` brand provider. See
+[UPGRADING](UPGRADING.md#unreleased).
+
+### Added
+
+- **Brand from a `BrandProviderInterface` service** (`nowo-tech/brand-contracts` ^1.0, optional): when the app has a
+  brand provider (InstanceSettingsBundle's opt-in brand bridge, or a small host class), the manifest and the head tags
+  read the brand. The `nowo_pwa` configuration stays the fallback for everything the brand does not give, and for
+  everything when there is no provider or the provider fails (the error is logged, the manifest and the page never
+  fail because of the brand).
+  - Manifest (new `BrandManifestOverlayProvider`, tag `nowo_pwa.manifest_overlay_provider`, priority 1024, so host
+    overlays still run after it): `theme_color` from the light `primary`, `background_color` from the light `paper`,
+    and `icons` from the `app_icon` slot (after the contract's fallback chain to a square `mark` of 512 px or more)
+    when it is PNG, JPEG or WebP, square and at least 192 px: one `any` entry and, for an `app_icon` of 512 px or
+    more, one `maskable` entry. SVG, ICO and other images are never used as icons; the configured `manifest.icons`
+    then stay. `name` and `short_name` come from the brand only when it is not the default brand (Beacon's rule),
+    unless `brand.override_name: true`.
+  - Head (`nowo_pwa_head()` and the context of the install prompt and links): the two `theme-color` meta tags from
+    the light and dark `paper`, the same manifest values, the Apple title from the brand short name when the name
+    applies, the brand icon as `apple-touch-icon` where the configuration declares one, and the manifest URL with
+    `?v=<Brand::$version>`, so browsers fetch the new manifest as soon as the brand changes.
+  - Manifest HTTP cache: with a brand, the response carries an `ETag` built from `Brand::$version` and a hash of the
+    body, and a matching `If-None-Match` gets a `304`. `Cache-Control` is unchanged.
+- `nowo_pwa.brand`: `mode: auto` (default) or `off`, `override_name: false` (default). `brand: off` is accepted as a
+  shorthand.
+- `nowo-tech/brand-contracts` in `require-dev` and `suggest`, with a `conflict` on `<1.0 || >=2.0`.
+
+### Security
+
+- The brand values reach the manifest only through `JsonResponse`'s escaping (`<`, `>`, `&`, quotes as `\u00XX`) and the
+  head only through Twig auto-escaping; colours are `#rrggbb` (contract-checked); icon URLs are re-checked with
+  `BrandAsset::isSafeUrl()` (root-relative or `https://` only); only raster icons are used. Audit status:
+  re-verification pending.
+
 ## [1.14.1] - 2026-11-08
 
 "Not now" works in the modal install prompt (HC-L1).

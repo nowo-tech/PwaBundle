@@ -19,6 +19,7 @@ All options live under the `nowo_pwa` root key in `config/packages/nowo_pwa.yaml
 - [Install links](#install-links)
 - [Client script](#client-script)
 - [HTTP caching](#http-caching)
+- [Brand (spec 220)](#brand-spec-220)
 - [Route targeting](#route-targeting)
 - [Routes & templates](#routes--templates)
 - [Share target and file handlers](#share-target-and-file-handlers)
@@ -414,6 +415,27 @@ nowo_pwa:
         service_worker_cache_max_age: 0
         manifest_public_cache: true
 ```
+
+## Brand (spec 220)
+
+Optional. With `nowo-tech/brand-contracts` installed and a `Nowo\Brand\Contract\BrandProviderInterface` service in the
+app, the manifest and the head tags read the brand. See [USAGE](USAGE.md#brand-from-a-brand-provider).
+
+```yaml
+nowo_pwa:
+    brand:
+        mode: auto            # auto (default): use the brand provider when one exists; off: ignore it
+        override_name: false  # true: apply the brand name even while the brand is the default one
+    # shorthand: brand: off
+```
+
+| Option | Default | Effect |
+|--------|---------|--------|
+| `brand.mode` | `auto` | `auto` registers the brand consumer when brand-contracts is installed; it reads the provider through an optional reference, so an app without a provider sees no change. `off` registers nothing. |
+| `brand.override_name` | `false` | The brand name and short name replace `manifest.name` / `short_name` (and the Apple title) only when `Brand::$isDefault` is false. `true` applies them always. |
+
+Every `manifest.*` and `meta.*` value stays the fallback for what the brand does not provide, and for everything when
+the provider is missing or fails.
 
 ## Route targeting
 

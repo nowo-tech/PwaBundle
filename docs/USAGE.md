@@ -4,6 +4,7 @@
 
 - [Layout integration](#layout-integration)
 - [Icons](#icons)
+- [Brand from a brand provider](#brand-from-a-brand-provider)
 - [Route targeting](#route-targeting)
 - [Install prompt display modes](#install-prompt-display-modes)
 - [Service worker strategies](#service-worker-strategies)
@@ -55,6 +56,29 @@ nowo_pwa:
             - { src: '/icons/icon-192.png', sizes: '192x192', type: image/png }
             - { src: '/icons/icon-512.png', sizes: '512x512', type: image/png, purpose: 'any maskable' }
 ```
+
+## Brand from a brand provider
+
+Spec 220 S4. When the app has a `Nowo\Brand\Contract\BrandProviderInterface` service (`nowo-tech/brand-contracts`
+^1.0: InstanceSettingsBundle's brand bridge, or a host class), the bundle maps the brand like this:
+
+| Brand | Manifest | Head |
+|-------|----------|------|
+| `name`, `shortName` (only when `!isDefault`, or with `brand.override_name: true`) | `name`, `short_name` | `apple-mobile-web-app-title` |
+| `light->primary` | `theme_color` | |
+| `light->paper` | `background_color` | `<meta name="theme-color" media="(prefers-color-scheme: light)">` |
+| `dark->paper` | | `<meta name="theme-color" media="(prefers-color-scheme: dark)">` |
+| `asset('app_icon')` (PNG / JPEG / WebP, square, ≥ 192 px) | `icons`: `any`, plus `maskable` for an `app_icon` ≥ 512 px | `<link rel="icon">`, `apple-touch-icon` |
+| `version` | `ETag` of the manifest response | `?v=` on the manifest link |
+
+- The configuration is the fallback: anything the brand does not give (an SVG or too small icon, no provider, a
+  provider that throws) keeps the `nowo_pwa` value. A failing provider is logged as a warning.
+- Icons are declared with their real size (`sizes` is the uploaded width × height): the contract carries no variant
+  URLs, and browsers scale the image. A `mark` reached through the contract's fallback chain is used as `any` only,
+  because only the `app_icon` slot is drawn with the maskable safe zone.
+- Host overlays (`ManifestOverlayProviderInterface`) still run after the brand overlay (priority 1024) and can change
+  any value.
+- Nothing is cached between requests: each manifest or page asks the provider again (providers memoise per request).
 
 ## Route targeting
 
