@@ -4,6 +4,7 @@
 
 - [Layout integration](#layout-integration)
 - [Icons](#icons)
+- [Brand from a brand provider](#brand-from-a-brand-provider)
 - [Route targeting](#route-targeting)
 - [Install prompt display modes](#install-prompt-display-modes)
 - [Service worker strategies](#service-worker-strategies)
@@ -55,6 +56,36 @@ nowo_pwa:
             - { src: '/icons/icon-192.png', sizes: '192x192', type: image/png }
             - { src: '/icons/icon-512.png', sizes: '512x512', type: image/png, purpose: 'any maskable' }
 ```
+
+## Brand from a brand provider
+
+Spec 220 S4. When the app has a `Nowo\Brand\Contract\BrandProviderInterface` service (`nowo-tech/brand-contracts`
+^1.0: InstanceSettingsBundle's brand bridge, or a host class), the bundle maps the brand like this:
+
+| Brand | Manifest | Head |
+|-------|----------|------|
+| `name`, `shortName` (only when `!isDefault`, or with `brand.override_name: true`) | `name`, `short_name` | `apple-mobile-web-app-title` |
+| `light->primary` | `theme_color` | |
+| `light->paper` | `background_color` | `<meta name="theme-color" media="(prefers-color-scheme: light)">` |
+| `dark->paper` | | `<meta name="theme-color" media="(prefers-color-scheme: dark)">` |
+| `asset('app_icon')` (PNG / JPEG / WebP, square, ≥ 192 px) | `icons`: `any`, plus `maskable` for an `app_icon` ≥ 512 px | `<link rel="icon">`, `apple-touch-icon` |
+| `version` | `ETag` of the manifest response | `?v=` on the manifest link |
+
+- The configuration is the fallback: anything the brand does not give (an SVG or too small icon, no provider, a
+  provider that throws) keeps the `nowo_pwa` value. A failing provider is logged as a warning.
+- Icons are declared with their real size (`sizes` is the uploaded width × height). The manifest icons and the
+  `apple-touch-icon` use the full-size original upload, not the 192 / 512 / 180 px variants, until BrandContracts gains
+  variant URLs (planned for 1.1, then a Pwa minor; audit IU-L2). Browsers scale the image, but download it whole. A `mark` reached through the contract's fallback chain is used as `any` only,
+  because only the `app_icon` slot is drawn with the maskable safe zone.
+- Host overlays (`ManifestOverlayProviderInterface`) at a priority below 1024 (the default is 0) run after the brand
+  overlay and can change any value **of the manifest JSON**. An overlay with a priority above 1024 runs first, and the
+  brand overwrites what it set. The head tags (`theme-color`, icon links, Apple title) are built from the
+  configuration and the brand only and never see overlays, so an overlay that pins `theme_color` makes the manifest and
+  the head disagree; set the matching `meta.*` value or override the head template (audit IU-I6).
+- The manifest is served `public, max-age=3600` by default, which fits the contract's single brand per instance. A
+  provider that varies per session, cookie or tenant needs `nowo_pwa.http.manifest_public_cache: false`, or a shared
+  cache could serve one tenant's manifest to another (audit IU-I7).
+- Nothing is cached between requests: each manifest or page asks the provider again (providers memoise per request).
 
 ## Route targeting
 

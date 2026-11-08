@@ -29,6 +29,7 @@ This includes running when the kernel is **not** rebooted between requests (`res
 
 - **Web App Manifest** generated from `nowo_pwa.yaml` (name, icons, shortcuts, theme, display mode, scope, start URL)
 - **Manifest overlay** — implement `ManifestOverlayProviderInterface` (tag `nowo_pwa.manifest_overlay_provider`, autoconfigured) to overlay brand/colors onto the manifest
+- **Brand provider (optional)** — with `nowo-tech/brand-contracts` and a `BrandProviderInterface` service (e.g. InstanceSettingsBundle's brand bridge), the manifest and head tags follow the brand name, colours and app icon; the config stays the fallback (`nowo_pwa.brand`, see [USAGE](docs/USAGE.md#brand-from-a-brand-provider))
 - **Service worker** with configurable cache strategy (`network-first`, `cache-first`, `stale-while-revalidate`), precache URLs, and offline fallback
 - **Twig helpers** `nowo_pwa_head()`, `nowo_pwa_install_prompt()`, `nowo_pwa_install_links()`, and `nowo_pwa_enabled()` with route targeting (`all` / `only` / `except`, route names or URL paths)
 - **Web Profiler** panel `nowo_pwa` (manifest/SW status in debug)
