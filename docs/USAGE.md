@@ -15,6 +15,7 @@
   - [1. Server side (optional)](#1-server-side-optional)
   - [2. Stimulus peers (Vite / AssetMapper)](#2-stimulus-peers-vite--assetmapper)
   - [3. Twig partials](#3-twig-partials)
+- [Using it from a DDD / hexagonal application](#using-it-from-a-ddd--hexagonal-application)
 - [Content Security Policy](#content-security-policy)
 - [Overrides](#overrides)
 - [Assets](#assets)
@@ -313,6 +314,46 @@ Or keep `assets/controllers/*_controller.ts` files that re-export the peer (`exp
 `nowo_pwa_web_push()` returns `{enabled, configured, vapid_public_key, test_url, csrf_token_id, csrf_token}`.
 
 The diagnostics controller sets `<html data-push-blocked="1">` when the browser refuses the subscription; `browser-hint` sets `<html data-browser="brave|chrome|edge|firefox|safari|ios|opera|samsung|other">`, so CSS can show browser-specific hints. Default styles live in `pwa.css` (`.nowo-pwa-push-check*`, `.nowo-pwa-browser-hint*`).
+
+## Using it from a DDD / hexagonal application
+
+The bundle is a **presentation / delivery** component (manifest, service worker, offline page, Twig partials) with an
+optional Web Push adapter. It has no entities and no Doctrine mapping, and it never stores push subscriptions: your
+application owns them.
+
+- **Manifest values from your own model** (tenant name, colours, icons): implement
+  `Nowo\PwaBundle\Service\ManifestOverlayProviderInterface` in your infrastructure layer and read your settings
+  through your own application service; or expose a `Nowo\Brand\Contract\BrandProviderInterface`
+  (`nowo-tech/brand-contracts`).
+- **Push subscriptions** stay in your repository. Implement `PushSubscriptionProviderInterface` as an adapter that maps
+  the security user to your domain user id and your stored subscriptions to `PushSubscriptionData`:
+
+```php
+final class PushSubscriptionProvider implements PushSubscriptionProviderInterface
+{
+    public function __construct(private PushSubscriptions $subscriptions) {}   // your domain repository port
+
+    public function findSubscriptions(UserInterface $user): iterable
+    {
+        foreach ($this->subscriptions->ofUser(UserId::fromString($user->getUserIdentifier())) as $s) {
+            yield new PushSubscriptionData($s->endpoint(), $s->p256dh(), $s->authToken(), $s->contentEncoding());
+        }
+    }
+
+    public function removeSubscription(UserInterface $user, PushSubscriptionData $subscription): void
+    {
+        $this->subscriptions->removeByEndpoint(UserId::fromString($user->getUserIdentifier()), $subscription->endpoint);
+    }
+}
+```
+
+- **Sending** from your own use cases: depend on your own `Notifier` port and implement it with
+  `WebPushSenderInterface::send()`. Check `WebPushDeliveryReport::$expired` and remove the subscription in your
+  repository when it is true.
+
+Known limitations: the subscription SPI receives Symfony's security `UserInterface`, not a domain id; no event is
+dispatched when a push service reports a subscription as gone (only the test endpoint calls `removeSubscription()`);
+the offline page requires `nowo-tech/ui-kit-bundle`.
 
 ## Content Security Policy
 
