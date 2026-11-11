@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.16.0] - 2026-11-11](#1160---2026-11-11)
 - [[1.15.0] - 2026-11-09](#1150---2026-11-09)
 - [[1.14.1] - 2026-11-08](#1141---2026-11-08)
 - [[1.14.0] - 2026-11-07](#1140---2026-11-07)
@@ -43,6 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[1.0.0] - 2026-07-05](#100---2026-07-05)
 
 ## [Unreleased]
+
+## [1.16.0] - 2026-11-11
 
 Identifier-keyed push subscription port (REQ-ARCH-001 rule 3). No change is required: an existing
 `PushSubscriptionProviderInterface` keeps working. See [UPGRADING](UPGRADING.md#unreleased).

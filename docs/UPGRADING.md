@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.16.0](#to-1160)
 - [To 1.15.0](#to-1150)
 - [To 1.14.1](#to-1141)
 - [To 1.14.0](#to-1140)
@@ -55,6 +56,14 @@
   - [Twig-CS-Fixer (maintainers)](#twig-cs-fixer-maintainers)
 
 ## Unreleased
+
+## To 1.16.0
+
+From **1.15.0**:
+
+```bash
+composer update nowo-tech/pwa-bundle
+```
 
 **Deprecated: `PushSubscriptionProviderInterface`** (removed in 2.0). Nothing breaks in 1.x: if your app implements it,
 the push test endpoint keeps calling it through an adapter (only for the current user, with the same user object as
