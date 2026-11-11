@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\PwaBundle;
 
+use Nowo\PwaBundle\DependencyInjection\Compiler\PushSubscriptionProviderPass;
 use Nowo\PwaBundle\DependencyInjection\Compiler\TwigPathsPass;
 use Nowo\PwaBundle\DependencyInjection\PwaExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -20,6 +21,7 @@ final class PwaBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new TwigPathsPass());
+        $container->addCompilerPass(new PushSubscriptionProviderPass());
     }
 
     public function getContainerExtension(): ExtensionInterface

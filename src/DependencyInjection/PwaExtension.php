@@ -10,7 +10,7 @@ use Nowo\PwaBundle\Brand\PwaBrand;
 use Nowo\PwaBundle\Controller\PushTestController;
 use Nowo\PwaBundle\Service\ManifestOverlayProviderInterface;
 use Nowo\PwaBundle\WebPush\MinishlinkWebPushSender;
-use Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface;
+use Nowo\PwaBundle\WebPush\PushRecipientSubscriptionProviderInterface;
 use Nowo\PwaBundle\WebPush\WebPushEndpointGuard;
 use Nowo\PwaBundle\WebPush\WebPushHttpClientFactory;
 use Nowo\PwaBundle\WebPush\WebPushRequirements;
@@ -178,9 +178,11 @@ final class PwaExtension extends Extension implements PrependExtensionInterface
             $test[$key] ??= isset($defaults[$key]) ? (string) $defaults[$key] : null;
         }
 
+        // $subscriptionProvider: replaced by PushSubscriptionProviderPass with the deprecated port's adapter when only
+        // that one exists.
         $controller = new Definition(PushTestController::class, [
             '$sender'               => new Reference(WebPushSenderInterface::class),
-            '$subscriptionProvider' => new Reference(PushSubscriptionProviderInterface::class),
+            '$subscriptionProvider' => new Reference(PushRecipientSubscriptionProviderInterface::class),
             '$tokenStorage'         => new Reference('security.token_storage'),
             '$authorizationChecker' => new Reference('security.authorization_checker'),
             '$csrfTokenManager'     => new Reference('security.csrf.token_manager'),

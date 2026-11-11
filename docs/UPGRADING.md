@@ -56,6 +56,31 @@
 
 ## Unreleased
 
+**Deprecated: `PushSubscriptionProviderInterface`** (removed in 2.0). Nothing breaks in 1.x: if your app implements it,
+the push test endpoint keeps calling it through an adapter (only for the current user, with the same user object as
+before) and a deprecation is logged. To migrate, implement the identifier-keyed port; one class may implement both
+while you migrate (the new port wins):
+
+```php
+// Before (deprecated)
+final class AppPushSubscriptionProvider implements PushSubscriptionProviderInterface
+{
+    public function findSubscriptions(UserInterface $user): iterable { /* … */ }
+    public function removeSubscription(UserInterface $user, PushSubscriptionData $subscription): void { /* … */ }
+}
+
+// After (1.16+)
+final class AppPushSubscriptionProvider implements PushRecipientSubscriptionProviderInterface
+{
+    // $userIdentifier === $user->getUserIdentifier() of the authenticated user
+    public function findRecipientSubscriptions(string $userIdentifier): iterable { /* … */ }
+    public function removeRecipientSubscription(string $userIdentifier, PushSubscriptionData $subscription): void { /* … */ }
+}
+```
+
+Return only the subscriptions of that identifier. If your firewall identifier is not the key of your subscription
+storage (for example the e-mail while rows reference a numeric user id), resolve it in the adapter.
+
 ## To 1.15.0
 
 From **1.14.1**:

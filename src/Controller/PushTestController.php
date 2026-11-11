@@ -8,6 +8,8 @@ use Nowo\PwaBundle\PwaBundle;
 use Nowo\PwaBundle\WebPush\Exception\InvalidPushEndpointException;
 use Nowo\PwaBundle\WebPush\Exception\PushTestDeniedException;
 use Nowo\PwaBundle\WebPush\Exception\WebPushDependencyException;
+use Nowo\PwaBundle\WebPush\LegacyPushSubscriptionProviderAdapter;
+use Nowo\PwaBundle\WebPush\PushRecipientSubscriptionProviderInterface;
 use Nowo\PwaBundle\WebPush\PushSubscriptionData;
 use Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface;
 use Nowo\PwaBundle\WebPush\WebPushSenderInterface;
@@ -37,13 +39,17 @@ use const JSON_UNESCAPED_UNICODE;
  * POST endpoint behind the push diagnostics "Send test notification" button.
  *
  * Sends one test notification to every stored subscription of the current user and reports the
- * push service answer per device. Registered only when {@code nowo_pwa.web_push.test_notification.enabled}.
+ * push service answer per device. Subscriptions are looked up by the user identifier through
+ * {@see PushRecipientSubscriptionProviderInterface} (since 1.16; a deprecated {@see PushSubscriptionProviderInterface}
+ * is bridged by {@see LegacyPushSubscriptionProviderAdapter}). Registered only when {@code nowo_pwa.web_push.test_notification.enabled}.
  *
  * JSON: {@code {ok: bool, error?: string, reason?: string, results?: list<{host, ok, status, reason, expired}>}}
  */
 final readonly class PushTestController
 {
     public const CSRF_HEADER = 'X-CSRF-TOKEN';
+
+    private PushRecipientSubscriptionProviderInterface $subscriptionProvider;
 
     /**
      * @param array{
@@ -63,7 +69,7 @@ final readonly class PushTestController
      */
     public function __construct(
         private WebPushSenderInterface $sender,
-        private PushSubscriptionProviderInterface $subscriptionProvider,
+        PushRecipientSubscriptionProviderInterface|PushSubscriptionProviderInterface $subscriptionProvider,
         private TokenStorageInterface $tokenStorage,
         private AuthorizationCheckerInterface $authorizationChecker,
         private CsrfTokenManagerInterface $csrfTokenManager,
@@ -72,6 +78,9 @@ final readonly class PushTestController
         private ?TranslatorInterface $translator = null,
         private ?LoggerInterface $logger = null,
     ) {
+        $this->subscriptionProvider = $subscriptionProvider instanceof PushRecipientSubscriptionProviderInterface
+            ? $subscriptionProvider
+            : new LegacyPushSubscriptionProviderAdapter($subscriptionProvider, $tokenStorage);
     }
 
     public function __invoke(Request $request): JsonResponse
@@ -80,6 +89,8 @@ final readonly class PushTestController
         if (!$user instanceof UserInterface) {
             return $this->error('unauthenticated', Response::HTTP_UNAUTHORIZED);
         }
+
+        $recipient = $user->getUserIdentifier();
 
         if (!$this->isGranted()) {
             return $this->error('forbidden', Response::HTTP_FORBIDDEN);
@@ -95,7 +106,7 @@ final readonly class PushTestController
         }
 
         try {
-            $subscriptions = $this->collectSubscriptions($user);
+            $subscriptions = $this->collectSubscriptions($recipient);
         } catch (PushTestDeniedException $e) {
             return $this->error($e->errorCode, $e->statusCode);
         }
@@ -115,12 +126,12 @@ final readonly class PushTestController
                 $results[] = ['host' => $host, 'ok' => $report->success, 'status' => $report->statusCode, 'reason' => $report->reason, 'expired' => $report->expired];
                 if ($report->expired) {
                     // @igor-ignore - Delegates deletion to the host storage (database), no state kept on the provider.
-                    $this->subscriptionProvider->removeSubscription($user, $subscription);
+                    $this->subscriptionProvider->removeRecipientSubscription($recipient, $subscription);
                 }
             } catch (InvalidPushEndpointException $e) {
                 $results[] = ['host' => $host, 'ok' => false, 'status' => null, 'reason' => $e->getMessage(), 'expired' => true];
                 // @igor-ignore - Delegates deletion to the host storage (database), no state kept on the provider.
-                $this->subscriptionProvider->removeSubscription($user, $subscription);
+                $this->subscriptionProvider->removeRecipientSubscription($recipient, $subscription);
             } catch (WebPushDependencyException $e) {
                 return new JsonResponse(['ok' => false, 'error' => 'client_error', 'reason' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
             } catch (Throwable $e) {
@@ -153,10 +164,10 @@ final readonly class PushTestController
     /**
      * @return list<PushSubscriptionData>
      */
-    private function collectSubscriptions(UserInterface $user): array
+    private function collectSubscriptions(string $recipient): array
     {
         $subscriptions = [];
-        foreach ($this->subscriptionProvider->findSubscriptions($user) as $subscription) {
+        foreach ($this->subscriptionProvider->findRecipientSubscriptions($recipient) as $subscription) {
             $subscriptions[] = $subscription;
             if (count($subscriptions) >= $this->config['max_subscriptions']) {
                 break;

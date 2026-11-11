@@ -44,8 +44,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Identifier-keyed push subscription port (REQ-ARCH-001 rule 3). No change is required: an existing
+`PushSubscriptionProviderInterface` keeps working. See [UPGRADING](UPGRADING.md#unreleased).
+
+### Added
+
+- **`PushRecipientSubscriptionProviderInterface`** (`findRecipientSubscriptions(string $userIdentifier)`,
+  `removeRecipientSubscription(string $userIdentifier, PushSubscriptionData)`): the push test endpoint looks
+  subscriptions up by the authenticated user's identifier, with no Symfony security type in the port. It is preferred
+  when the host defines it (also when the same class implements the old port).
+- Internal `LegacyPushSubscriptionProviderAdapter` (wired by `PushSubscriptionProviderPass`) bridges a host
+  `PushSubscriptionProviderInterface`: it only answers for the user of the current security token and passes that same
+  user object, so recipients are exactly those of 1.15 and a push never reaches another user's devices.
+
+### Deprecated
+
+- `PushSubscriptionProviderInterface` (keyed by `Symfony\Component\Security\Core\User\UserInterface`), removed in
+  2.0. Implement `PushRecipientSubscriptionProviderInterface` instead; a deprecation is triggered when the adapter is
+  built.
+
+### Tests
+
+- Equivalence of the old and new ports (`PushRecipientPortEquivalenceTest`: same responses, sent endpoints and
+  removals per scenario, users alternating on one controller), adapter tests, and a DDD host kernel test
+  (`DddHostPushTest`: XML-mapped host entity on a dedicated entity manager, user referenced by id, only the new port;
+  1,500 requests alternating alice, bob and a guest on one kernel without `services_resetter`, flat memory).
+
 ### Documentation
 
+- USAGE: "Standard Symfony host" and "DDD / hexagonal host" sections; examples use the new port.
 - USAGE: new section "Using it from a DDD / hexagonal application" (where the bundle sits in a hexagonal host, the ports, events and DTOs to build an anti-corruption layer on, and the known limitations).
 
 ## [1.15.0] - 2026-11-09

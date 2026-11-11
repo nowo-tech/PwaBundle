@@ -201,7 +201,7 @@ composer require minishlink/web-push:^11.0 nyholm/psr7
 
 `minishlink/web-push` 11 builds requests through PSR-17 factories and sends them with a PSR-18 client (auto-discovered, or the container services `Psr\Http\Client\ClientInterface`, `Psr\Http\Message\RequestFactoryInterface`, `Psr\Http\Message\StreamFactoryInterface` when they exist). Without a PSR-17 implementation every delivery fails at runtime, so `PwaExtension` runs `WebPushRequirements::assertSatisfied()` and **`cache:clear` fails** with an actionable `WebPushDependencyException` ("Run: composer require nyholm/psr7"). A missing PSR-18 client is reported on the first send (the test endpoint answers `500 {"error":"client_error","reason":"…"}`).
 
-`test_notification.enabled: true` additionally requires `symfony/security-bundle` and `symfony/security-csrf` (also checked at compile time) and a host service implementing `Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface`.
+`test_notification.enabled: true` additionally requires `symfony/security-bundle` and `symfony/security-csrf` (also checked at compile time) and a host service implementing `Nowo\PwaBundle\WebPush\PushRecipientSubscriptionProviderInterface` (since 1.16; the deprecated `PushSubscriptionProviderInterface` still works until 2.0).
 
 ### HTTP timeouts (REQ-RUNTIME-001)
 
