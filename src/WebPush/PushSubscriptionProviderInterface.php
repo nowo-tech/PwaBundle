@@ -12,6 +12,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
  *
  * Required by the test-notification endpoint ({@code nowo_pwa.web_push.test_notification.enabled}).
  * A single implementation in the host {@code src/} is auto-aliased by Symfony autowiring.
+ *
+ * @deprecated since nowo-tech/pwa-bundle 1.16.0, removed in 2.0: implement
+ *             {@see PushRecipientSubscriptionProviderInterface} (keyed by the user identifier string, no Symfony
+ *             type). Until 2.0 this port keeps working through an adapter that only answers for the current user.
  */
 interface PushSubscriptionProviderInterface
 {

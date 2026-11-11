@@ -6,9 +6,12 @@ namespace Nowo\PwaBundle\Tests\Integration;
 
 use Minishlink\WebPush\WebPush;
 use Nowo\PwaBundle\Controller\PushTestController;
+use Nowo\PwaBundle\DependencyInjection\Compiler\PushSubscriptionProviderPass;
 use Nowo\PwaBundle\DependencyInjection\PwaExtension;
 use Nowo\PwaBundle\WebPush\Exception\WebPushDependencyException;
+use Nowo\PwaBundle\WebPush\LegacyPushSubscriptionProviderAdapter;
 use Nowo\PwaBundle\WebPush\MinishlinkWebPushSender;
+use Nowo\PwaBundle\WebPush\PushRecipientSubscriptionProviderInterface;
 use Nowo\PwaBundle\WebPush\PushSubscriptionData;
 use Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface;
 use Nowo\PwaBundle\WebPush\WebPushEndpointGuard;
@@ -17,7 +20,10 @@ use Nowo\PwaBundle\WebPush\WebPushRequirements;
 use Nowo\PwaBundle\WebPush\WebPushSenderInterface;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\RequestContext;
@@ -89,7 +95,63 @@ final class WebPushExtensionTest extends TestCase
         self::assertArrayNotHasKey('enabled', $config);
         self::assertTrue($container->getDefinition(PushTestController::class)->hasTag('controller.service_arguments'));
 
-        // Keep only the web push services, add the host/framework services they need, and compile.
+        $this->compileWith($container, [PushSubscriptionProviderInterface::class => StubPushSubscriptionProvider::class]);
+
+        self::assertInstanceOf(PushTestController::class, $container->get(PushTestController::class));
+        self::assertInstanceOf(MinishlinkWebPushSender::class, $container->get(WebPushSenderInterface::class));
+    }
+
+    public function testDeprecatedPortIsBridgedByTheAdapter(): void
+    {
+        $container = $this->testEndpointContainer();
+        $this->compileWith($container, [PushSubscriptionProviderInterface::class => StubPushSubscriptionProvider::class], public: true);
+
+        self::assertTrue($container->hasDefinition(PushSubscriptionProviderPass::ADAPTER_ID));
+        self::assertSame(LegacyPushSubscriptionProviderAdapter::class, $container->getDefinition(PushSubscriptionProviderPass::ADAPTER_ID)->getClass());
+        self::assertInstanceOf(PushTestController::class, $container->get(PushTestController::class));
+    }
+
+    public function testIdentifierPortIsPreferredAndNoAdapterIsRegistered(): void
+    {
+        $container = $this->testEndpointContainer();
+        $this->compileWith($container, [
+            PushRecipientSubscriptionProviderInterface::class => StubRecipientSubscriptionProvider::class,
+            PushSubscriptionProviderInterface::class          => StubPushSubscriptionProvider::class,
+        ]);
+
+        self::assertFalse($container->hasDefinition(PushSubscriptionProviderPass::ADAPTER_ID));
+        self::assertInstanceOf(PushTestController::class, $container->get(PushTestController::class));
+    }
+
+    public function testMissingProviderNamesTheIdentifierPort(): void
+    {
+        $container = $this->testEndpointContainer();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage(PushRecipientSubscriptionProviderInterface::class);
+        $this->compileWith($container, []);
+    }
+
+    public function testPassIgnoresContainersWithoutTheTestEndpoint(): void
+    {
+        $container = $this->container();
+        (new PushSubscriptionProviderPass())->process($container);
+
+        self::assertFalse($container->hasDefinition(PushSubscriptionProviderPass::ADAPTER_ID));
+    }
+
+    private function testEndpointContainer(): ContainerBuilder
+    {
+        return $this->load(['web_push' => ['enabled' => true, 'test_notification' => ['enabled' => true]]]);
+    }
+
+    /**
+     * Keeps only the web push services, adds the host/framework services they need, and compiles with the bundle pass.
+     *
+     * @param array<class-string, class-string> $providers
+     */
+    private function compileWith(ContainerBuilder $container, array $providers, bool $public = false): void
+    {
         foreach (array_keys($container->getDefinitions()) as $id) {
             if (!in_array($id, ['service_container', PushTestController::class, MinishlinkWebPushSender::class, WebPushEndpointGuard::class, WebPushHttpClientFactory::class], true)) {
                 $container->removeDefinition($id);
@@ -100,11 +162,23 @@ final class WebPushExtensionTest extends TestCase
         $container->register('security.authorization_checker', AuthorizationChecker::class)->setArguments([new Reference('security.token_storage'), new Reference('security.access_decision_manager')]);
         $container->register('security.csrf.token_manager', CsrfTokenManager::class);
         $container->register('router', UrlGenerator::class)->setArguments([new RouteCollection(), new RequestContext()]);
-        $container->register(PushSubscriptionProviderInterface::class, StubPushSubscriptionProvider::class);
-        $container->compile();
+        foreach ($providers as $id => $class) {
+            $container->register($id, $class);
+        }
+        $container->addCompilerPass(new PushSubscriptionProviderPass());
+        $container->addCompilerPass(new class($public) implements CompilerPassInterface {
+            public function __construct(private readonly bool $public)
+            {
+            }
 
-        self::assertInstanceOf(PushTestController::class, $container->get(PushTestController::class));
-        self::assertInstanceOf(MinishlinkWebPushSender::class, $container->get(WebPushSenderInterface::class));
+            public function process(ContainerBuilder $container): void
+            {
+                if ($this->public && $container->hasDefinition(PushSubscriptionProviderPass::ADAPTER_ID)) {
+                    $container->getDefinition(PushSubscriptionProviderPass::ADAPTER_ID)->setPublic(true);
+                }
+            }
+        }, PassConfig::TYPE_BEFORE_OPTIMIZATION, -10);
+        $container->compile();
     }
 
     public function testMissingDependenciesBreakTheContainerBuild(): void
@@ -164,6 +238,21 @@ final class StubPushSubscriptionProvider implements PushSubscriptionProviderInte
     }
 
     public function removeSubscription(UserInterface $user, PushSubscriptionData $subscription): void
+    {
+    }
+}
+
+/**
+ * @internal
+ */
+final class StubRecipientSubscriptionProvider implements PushRecipientSubscriptionProviderInterface
+{
+    public function findRecipientSubscriptions(string $userIdentifier): iterable
+    {
+        return [];
+    }
+
+    public function removeRecipientSubscription(string $userIdentifier, PushSubscriptionData $subscription): void
     {
     }
 }

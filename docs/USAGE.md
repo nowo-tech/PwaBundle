@@ -16,6 +16,8 @@
   - [2. Stimulus peers (Vite / AssetMapper)](#2-stimulus-peers-vite--assetmapper)
   - [3. Twig partials](#3-twig-partials)
 - [Using it from a DDD / hexagonal application](#using-it-from-a-ddd--hexagonal-application)
+  - [Standard Symfony host](#standard-symfony-host)
+  - [DDD / hexagonal host](#ddd--hexagonal-host)
 - [Content Security Policy](#content-security-policy)
 - [Overrides](#overrides)
 - [Assets](#assets)
@@ -227,17 +229,18 @@ Enable the sender and the test endpoint (see [Configuration](CONFIGURATION.md#we
 
 ```php
 use Nowo\PwaBundle\WebPush\Exception\PushTestDeniedException;
+use Nowo\PwaBundle\WebPush\PushRecipientSubscriptionProviderInterface;
 use Nowo\PwaBundle\WebPush\PushSubscriptionData;
-use Nowo\PwaBundle\WebPush\PushSubscriptionProviderInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
-final class AppPushSubscriptionProvider implements PushSubscriptionProviderInterface
+final class AppPushSubscriptionProvider implements PushRecipientSubscriptionProviderInterface
 {
-    public function __construct(private PushSubscriptionRepository $repository, private EntityManagerInterface $em) {}
+    public function __construct(private UserRepository $users, private PushSubscriptionRepository $repository) {}
 
-    public function findSubscriptions(UserInterface $user): iterable
+    // $userIdentifier is the authenticated user's getUserIdentifier() (e.g. the e-mail address).
+    public function findRecipientSubscriptions(string $userIdentifier): iterable
     {
-        if (!$user->isPushNotificationsEnabled()) {
+        $user = $this->users->findOneByEmail($userIdentifier);
+        if ($user === null || !$user->isPushNotificationsEnabled()) {
             throw new PushTestDeniedException('preference_disabled'); // JSON {"error":"preference_disabled"}, HTTP 400
         }
         foreach ($this->repository->findByUser($user) as $row) {
@@ -245,12 +248,16 @@ final class AppPushSubscriptionProvider implements PushSubscriptionProviderInter
         }
     }
 
-    public function removeSubscription(UserInterface $user, PushSubscriptionData $subscription): void
+    public function removeRecipientSubscription(string $userIdentifier, PushSubscriptionData $subscription): void
     {
-        $this->repository->deleteByEndpointHashForUser(hash('sha256', $subscription->endpoint), $user);
+        $this->repository->deleteByEndpointHashForUserEmail(hash('sha256', $subscription->endpoint), $userIdentifier);
     }
 }
 ```
+
+Return only that user's subscriptions: the endpoint pushes to every subscription you return. Before 1.16 the port
+was `PushSubscriptionProviderInterface` (keyed by the Symfony `UserInterface`); it still works until 2.0 through an
+adapter that only answers for the current user, and is deprecated (see [UPGRADING](UPGRADING.md#unreleased)).
 
 `POST nowo_pwa_push_test` (default `/pwa/push/test`) answers JSON:
 
@@ -319,41 +326,58 @@ The diagnostics controller sets `<html data-push-blocked="1">` when the browser 
 
 The bundle is a **presentation / delivery** component (manifest, service worker, offline page, Twig partials) with an
 optional Web Push adapter. It has no entities and no Doctrine mapping, and it never stores push subscriptions: your
-application owns them.
+application owns them. Both host kinds use the same configuration; only the adapters you write differ.
+
+### Standard Symfony host
+
+- Configure `nowo_pwa` (manifest, icons, service worker) and, for push, `web_push` (see
+  [Configuration](CONFIGURATION.md#web-push-sender-and-test-notification)). Nothing else is required.
+- Implement `PushRecipientSubscriptionProviderInterface` over your Doctrine repository as in
+  [Server side](#1-server-side-optional); autowiring aliases a single implementation in `src/`.
+- Override templates with Twig blocks ([Overrides](#overrides)).
+
+### DDD / hexagonal host
 
 - **Manifest values from your own model** (tenant name, colours, icons): implement
   `Nowo\PwaBundle\Service\ManifestOverlayProviderInterface` in your infrastructure layer and read your settings
   through your own application service; or expose a `Nowo\Brand\Contract\BrandProviderInterface`
   (`nowo-tech/brand-contracts`).
-- **Push subscriptions** stay in your repository. Implement `PushSubscriptionProviderInterface` as an adapter that maps
-  the security user to your domain user id and your stored subscriptions to `PushSubscriptionData`:
+- **Push subscriptions** stay in your repository, mapped however you like (XML mapping, a dedicated entity manager,
+  references to the user by id). Implement `PushRecipientSubscriptionProviderInterface`: it receives the user
+  identifier string and returns `PushSubscriptionData` value objects, with no Symfony or Doctrine type:
 
 ```php
-final class PushSubscriptionProvider implements PushSubscriptionProviderInterface
+use Nowo\PwaBundle\WebPush\PushRecipientSubscriptionProviderInterface;
+use Nowo\PwaBundle\WebPush\PushSubscriptionData;
+
+final readonly class PushSubscriptionProvider implements PushRecipientSubscriptionProviderInterface
 {
     public function __construct(private PushSubscriptions $subscriptions) {}   // your domain repository port
 
-    public function findSubscriptions(UserInterface $user): iterable
+    public function findRecipientSubscriptions(string $userIdentifier): iterable
     {
-        foreach ($this->subscriptions->ofUser(UserId::fromString($user->getUserIdentifier())) as $s) {
+        foreach ($this->subscriptions->ofUser(UserId::fromString($userIdentifier)) as $s) {
             yield new PushSubscriptionData($s->endpoint(), $s->p256dh(), $s->authToken(), $s->contentEncoding());
         }
     }
 
-    public function removeSubscription(UserInterface $user, PushSubscriptionData $subscription): void
+    public function removeRecipientSubscription(string $userIdentifier, PushSubscriptionData $subscription): void
     {
-        $this->subscriptions->removeByEndpoint(UserId::fromString($user->getUserIdentifier()), $subscription->endpoint);
+        $this->subscriptions->removeByEndpoint(UserId::fromString($userIdentifier), $subscription->endpoint);
     }
 }
 ```
 
+  The identifier is what your firewall authenticates with (`getUserIdentifier()` of your security user). If that is
+  not your domain id, translate it in this adapter.
 - **Sending** from your own use cases: depend on your own `Notifier` port and implement it with
   `WebPushSenderInterface::send()`. Check `WebPushDeliveryReport::$expired` and remove the subscription in your
   repository when it is true.
+- Tested: `tests/Integration/DddHostPushTest.php` boots a kernel whose host stores subscriptions in an XML-mapped
+  entity on a dedicated `push` entity manager, references users by id string and implements only this port.
 
-Known limitations: the subscription SPI receives Symfony's security `UserInterface`, not a domain id; no event is
-dispatched when a push service reports a subscription as gone (only the test endpoint calls `removeSubscription()`);
-the offline page requires `nowo-tech/ui-kit-bundle`.
+Known limitations: no event is dispatched when a push service reports a subscription as gone (only the test endpoint
+calls `removeRecipientSubscription()`); the offline page requires `nowo-tech/ui-kit-bundle`.
 
 ## Content Security Policy
 

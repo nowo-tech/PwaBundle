@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Package | `nowo-tech/pwa-bundle` (`symfony-bundle`) |
-| Audited revision | `v1.5.1` (post-hardening) |
-| Audit date | 2026-09-24 |
+| Audited revision | `v1.5.1` (post-hardening); push test endpoint re-checked for 1.16.0 |
+| Audit date | 2026-09-24 (push test endpoint and worker test: 2026-11-11) |
 | Method | Manual review of every PHP file under `src/` (controller, Twig extension, subscriber, route loader, data collector, services, DI extension, compiler pass, config) + PHPStan FrankenPHP classic/worker rulesets |
 | **Verdict** | ✅ **100% compatible** with FrankenPHP worker mode when the kernel is **not** rebooted between requests (`reset_kernel` / reboot disabled). Runtime services hold only compiled config; request data is read lazily per call and never stored on shared instances. |
 
@@ -16,6 +16,7 @@
 - [Findings](#findings)
   - [W-01 — Profiler data collector (Info, debug only)](#w-01--profiler-data-collector-info-debug-only)
   - [W-02 — Absolute URLs computed per request (Info)](#w-02--absolute-urls-computed-per-request-info)
+- [Worker test (kernel reset false)](#worker-test-kernel-reset-false)
 - [Hardening in v1.5.1](#hardening-in-v151)
 - [Usage recommendations in worker mode](#usage-recommendations-in-worker-mode)
 - [Re-audit triggers](#re-audit-triggers)
@@ -58,6 +59,9 @@ A bundle that is safe under **B** is safe under **A** and under classic mode / P
 | `PwaRouteTargeting` | yes | none (no properties) | ✅ | ✅ |
 | `PwaRouteLoader` (`routing.loader`) | yes | none (stateless `load()`) | ✅ | ✅ |
 | `PwaDataCollector` (`data_collector`, only when `kernel.debug`) | yes | `$data`, fully overwritten in `collect()`, cleared via `kernel.reset` | ✅ | ✅ (debug only; see W-01) |
+| `PushTestController` (only with `web_push.test_notification.enabled`) | yes | none (`readonly`; the user and identifier are read from the token storage per request) | ✅ | ✅ |
+| `LegacyPushSubscriptionProviderAdapter` (1.16, only when the host implements the deprecated port) | yes | none (`readonly`; reads the token on every call and answers only for that user) | ✅ | ✅ |
+| `MinishlinkWebPushSender` / `WebPushEndpointGuard` / `WebPushHttpClientFactory` | yes | none (config only; the HTTP client is built per send) | ✅ | ✅ |
 
 ## Findings
 
@@ -75,6 +79,22 @@ No findings above Info.
 - **Worker impact:** never cached on the service; multi-host deployments do not leak hosts across requests.
 - **Recommendation:** configure Symfony `trusted_proxies` / `trusted_hosts` as usual (manifest may be publicly cacheable).
 
+## Worker test (kernel reset false)
+
+`tests/Integration/DddHostPushTest::testKeptAliveWorkerWithoutServicesResetterNeverMixesRecipients` boots **one**
+kernel (`DddPushTestKernel`) whose `services_resetter` service is removed, so nothing resets services between
+requests, and drives it with a `KernelBrowser` that never reboots. It sends **1,500** `POST /pwa/push/test` requests
+alternating **alice, bob and a guest** (500 each) and asserts on every request that only that user's subscriptions
+are pushed (the guest gets 401 and nothing is sent, so no previous user's token leaks). Memory, measured after 30
+warm-up requests, must not grow by more than **2 MB**. The host storage lives on a dedicated entity manager that the
+host adapter clears after each read.
+
+`PushRecipientPortEquivalenceTest::testAlternatingUsersOnOneControllerNeverMixRecipients` repeats the alternation
+(200 requests) on one controller instance with the deprecated port (through the adapter) and the new port and
+requires identical results.
+
+Igor (`composer igor`): 0 KO. PHPStan with the FrankenPHP classic and worker rulesets: no errors.
+
 ## Hardening in v1.5.1
 
 | Change | Why |
@@ -91,4 +111,4 @@ No findings above Info.
 
 ## Re-audit triggers
 
-Re-run this audit when a change adds: instance properties to the controller, Twig extension, subscriber or builders; a manifest / SW script cache on a shared service; runtime file reads; a dependency on the security token or session; or any use of `$_SERVER` / `$_ENV` at request time.
+Re-run this audit when a change adds: instance properties to the controller, Twig extension, subscriber or builders; a manifest / SW script cache on a shared service; runtime file reads; a new dependency on the security token or session (the push test endpoint reads the token per request since 1.7); or any use of `$_SERVER` / `$_ENV` at request time.

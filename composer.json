@@ -45,6 +45,8 @@
         "twig/string-extra": "^3.12"
     },
     "require-dev": {
+        "doctrine/doctrine-bundle": "^2.13 || ^3.0",
+        "doctrine/orm": "^3.3",
         "friendsofphp/php-cs-fixer": "^3.0",
         "igor-php/igor-php": "^0.10.0",
         "minishlink/web-push": "^11.0",
@@ -60,6 +62,7 @@
         "symfony/browser-kit": "^7.4 || ^8.0",
         "symfony/dom-crawler": "^7.4 || ^8.0",
         "symfony/http-client": "^7.4 || ^8.0",
+        "symfony/security-bundle": "^7.4 || ^8.0",
         "symfony/security-core": "^7.4 || ^8.0",
         "symfony/security-csrf": "^7.4 || ^8.0",
         "symfony/translation": "^7.4 || ^8.0",
