@@ -39,7 +39,7 @@ A bundle that is safe under **B** is safe under **A** and under classic mode / P
 | `ResetInterface` / `kernel.reset` coverage | ✅ | `PwaDataCollector` tagged `kernel.reset` → `reset()` (debug only); no other shared service needs a reset |
 | Request / user / locale captured in services | ✅ | `PwaTwigExtension` reads `RequestStack::getCurrentRequest()` on each call; controller uses the injected `Request` argument |
 | Superglobals, `$_ENV`, `putenv`, `ini_set`, `setlocale`, timezone | ✅ | None used |
-| Doctrine / EntityManager | ✅ N/A | No persistence |
+| Doctrine / EntityManager | ✅ | The bundle has no persistence of its own; push subscriptions are read and removed through the host's port (`PushRecipientSubscriptionProviderInterface`). The bundle never clears, flushes or resets the host's default EntityManager (rule 7); the test host keeps its storage on a dedicated entity manager |
 | Output, headers, `exit`, shutdown functions | ✅ | Headers and cookies are set on `Response` objects only (`PwaBootstrapStatelessCookieSubscriber` strips `Set-Cookie` on bootstrap paths) |
 | Resources (files, sockets, cURL) held open | ✅ | Only `file_get_contents()` of the Web Push SW snippet at container build time (`PwaExtension`) |
 | Memory growth across requests | ✅ | No caches or accumulating arrays |
@@ -92,6 +92,8 @@ host adapter clears after each read.
 `PushRecipientPortEquivalenceTest::testAlternatingUsersOnOneControllerNeverMixRecipients` repeats the alternation
 (200 requests) on one controller instance with the deprecated port (through the adapter) and the new port and
 requires identical results.
+
+Result: nothing is carried between requests, so the bundle is **safe with kernel reset false**. Rule 7: the bundle never clears, flushes or resets the host's default EntityManager.
 
 Igor (`composer igor`): 0 KO. PHPStan with the FrankenPHP classic and worker rulesets: no errors.
 

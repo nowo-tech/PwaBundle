@@ -45,6 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Docs
+
+- `docs/FRANKENPHP-WORKER-AUDIT.md`: rule 7 note and Doctrine row updated for the push subscription port.
+
 ## [1.16.0] - 2026-11-11
 
 Identifier-keyed push subscription port (REQ-ARCH-001 rule 3). No change is required: an existing
