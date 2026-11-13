@@ -45,6 +45,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Tests
+
+- CI: the `Code Coverage` job runs `composer test-coverage-100`, so a pull request that drops statement coverage below
+  100 % fails the build; before, the threshold was only checked by hand in `make release-check` before a tag.
+
 ### Docs
 
 - `docs/FRANKENPHP-WORKER-AUDIT.md`: rule 7 note and Doctrine row updated for the push subscription port.
