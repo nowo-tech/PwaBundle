@@ -45,6 +45,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Demo `.gitignore` ignores `/.pnpm-store` (REQ-GITIGNORE-003)
+- `make check-no-raw-html-form` added to `release-check` (REQ-TWIG-005)
+- Canonical `.scrutinizer.yml` (PHP coverage + Vitest) (REQ-CI-002)
+- Spec Kit: the nine `src/` files added since the baseline review are mapped in `code-inventory.md` (REQ-SPECKIT-001)
+
 ### Tests
 
 - CI: the `Code Coverage` job runs `composer test-coverage-100`, so a pull request that drops statement coverage below

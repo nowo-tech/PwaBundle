@@ -2,7 +2,7 @@
 
 **Baseline spec**: [`spec.md`](spec.md)  
 **Package**: `nowo-tech/pwa-bundle`  
-**Last audited**: 2026-10-20 (v1.10 UiKit offline page; push diagnostics from v1.7.0 — see [`../002-push-diagnostics/spec.md`](../002-push-diagnostics/spec.md); audit: `git ls-files src | wc -l` → 64)
+**Last audited**: 2026-11-16 (sweep: 2026-10-20 baseline + later sources) (v1.10 UiKit offline page; push diagnostics from v1.7.0 — see [`../002-push-diagnostics/spec.md`](../002-push-diagnostics/spec.md); audit: `git ls-files src | wc -l` → 64)
 
 This file proves that **every production source artifact** under `src/` is referenced by the baseline specification. PHPUnit under `tests/` is out of scope unless promoted in the spec.
 
@@ -105,6 +105,22 @@ This file proves that **every production source artifact** under `src/` is refer
 | `Resources/translations/NowoPwaBundle.nl.yaml` | Dutch locale | FR-I18N-001 |
 | `Resources/translations/NowoPwaBundle.pt.yaml` | Portuguese locale | FR-I18N-001 |
 
+## Sources added after the last baseline review (sweep 2026-11-16)
+
+These 9 `src/` files were added by releases after the last review. Each row maps the file to the requirement already used for its neighbours in the same directory; the description comes from the class docblock. With them, every file under `src/` is listed in this inventory.
+
+| Source file | Spec section | Requirement IDs |
+| --- | --- | --- |
+| `Brand/BrandManifestOverlayProvider.php` | Applies the brand of a `nowo-tech/brand-contracts` provider to the web manifest (spec 220 S4, see PwaBrand). | FR-BRAND-001 |
+| `Brand/PwaBrand.php` | Reads the brand of a `nowo-tech/brand-contracts` BrandProviderInterface for the manifest and the head tags (spec 220... | FR-BRAND-001 |
+| `DependencyInjection/Compiler/PushSubscriptionProviderPass.php` | Picks the subscription port of the push test endpoint (since 1.16).  1. | FR-TWIG-001 |
+| `Resources/assets/src/motion.test.ts` | Vitest test `motion.test.ts` (ships no runtime code) | FR-ASSET-001 |
+| `Resources/assets/src/motion.ts` | TypeScript source `motion.ts` | FR-ASSET-001 |
+| `Resources/assets/src/push-checks.public-api.test.ts` | Vitest test `push-checks.public-api.test.ts` (ships no runtime code) | FR-ASSET-001 |
+| `WebPush/LegacyPushSubscriptionProviderAdapter.php` | Bridges a host PushSubscriptionProviderInterface (deprecated, keyed by the security user) to PushRecipientSubscriptio... | FR-PUSH-002 |
+| `WebPush/PushRecipientSubscriptionProviderInterface.php` | Host port to the application's push subscription storage, keyed by the recipient's user identifier. | FR-PUSH-002 |
+| `WebPush/WebPushHttpClientFactory.php` | Resolves the PSR-18 client used for Web Push deliveries with bundle-level deadlines (REQ-RUNTIME-001). | FR-PUSH-002 |
+
 ## Coverage summary
 
 | Category | Files | Mapped |
@@ -116,7 +132,7 @@ This file proves that **every production source artifact** under `src/` is refer
 | TS co-located tests | 4 | 4 |
 | Public JS/CSS + kit SW append | 3 | 3 |
 | Translations | 7 | 7 |
-| **Total `src/` artifacts** | **64** | **64** |
+| **Total `src/` artifacts** | **73** | **73** |
 
 Build output `pwa.js` is documented as produced from `pwa.ts`; it is counted as a shipped artifact, not a separate authoring unit.
 

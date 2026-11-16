@@ -92,6 +92,12 @@ See user stories US-01…US-06 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 
 ---
 
+### Requirements added by the inventory sweep (2026-11-16)
+
+Areas introduced by releases after the baseline review; each requirement names the area and what its main source does (class docblock).
+
+- **FR-BRAND-001** `src/Brand/`: Applies the brand of a `nowo-tech/brand-contracts` provider to the web manifest (spec 220 S4, see PwaBrand).
+
 ## Success Criteria
 
 - **SC-001**: **64/64** files mapped in [`code-inventory.md`](code-inventory.md).
