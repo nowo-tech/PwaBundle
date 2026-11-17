@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 /** REQ-DEMO-013 — the PWA demo boots, serves manifest / service worker / offline page and shows the install prompt. */
 test.describe('PWA demo', () => {
-  test('home page links the manifest and themes the install prompt', async ({ page }) => {
+  test('home page links the manifest and shows the install prompt', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'Installable Symfony app' })).toBeVisible();
     await expect(page.locator('link[rel="manifest"]')).toHaveAttribute('href', '/manifest.webmanifest');
@@ -11,11 +11,11 @@ test.describe('PWA demo', () => {
     await expect(prompt).toBeHidden();
     await page.getByTestId('demo-preview-prompt').click();
     await expect(prompt).toBeVisible();
-    await expect(prompt.locator('.nowo-pwa-install__panel')).toHaveClass(/nowo-ui-card demo-card/);
+    await expect(prompt.locator('.nowo-pwa-install__panel')).toHaveClass(/nowo-ui-card/);
     await expect(prompt.getByRole('heading', { name: 'Install PWA Demo' })).toBeVisible();
-    await expect(prompt.getByRole('button', { name: 'Install', exact: true })).toHaveClass(/demo-btn--primary/);
+    await expect(prompt.getByRole('button', { name: 'Install', exact: true })).toHaveClass(/nowo-ui-btn--primary/);
     // Host override of one block (pwa_install_mark), the rest from the bundle.
-    await expect(prompt.locator('.demo-mark')).toBeVisible();
+    await expect(prompt.locator('.nowo-pwa-install__mark')).toBeVisible();
     await prompt.getByRole('button', { name: 'Not now' }).click();
     await expect(prompt).toBeHidden();
   });

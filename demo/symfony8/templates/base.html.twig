@@ -1,8 +1,7 @@
-{#
-  Demo host layout on the UiKit document layout (assets from the UiKit asset package, theme tokens printed by UiKit):
-  masthead + content; the PWA head tags and install prompt come from the bundle.
-#}
-{% extends '@NowoUiKit/layout/document.html.twig' %}
+{#- REQ-DEMO-014: the demo shell is UiKit's admin layout with UiKit's default theme (nowo-ui.css from the bundle's own
+    asset package, no CSS framework, no CDN, no token override). The PWA head tags and the install prompt come from the
+    bundle. -#}
+{% extends '@NowoUiKit/layout/admin.html.twig' %}
 
 {% block nowo_ui_document_title %}{% block title %}PWA Demo{% endblock %}{% endblock %}
 
@@ -10,24 +9,25 @@
     {{ nowo_pwa_head() }}
 {% endblock %}
 
-{% block nowo_ui_styles %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('demo/demo.css') }}">
+{% block nowo_ui_navigation %}
+    {% set _route = app.request.attributes.get('_route')|default('') %}
+    <header class="nowo-ui-header" data-testid="demo-masthead">
+        <a class="nowo-ui-brand" href="{{ path('app_home') }}">PWA Bundle demo</a>
+        <nav class="nowo-ui-menu" aria-label="Demo">
+            <a class="nowo-ui-link" href="{{ path('app_home') }}"{% if _route == 'app_home' %} aria-current="page"{% endif %}>Install</a>
+            <a class="nowo-ui-link" href="{{ path('nowo_pwa_offline') }}">Offline page</a>
+            <a class="nowo-ui-link" href="{{ path('nowo_pwa_manifest') }}">Manifest</a>
+            <a class="nowo-ui-link" href="{{ path('nowo_pwa_service_worker') }}">Service worker</a>
+        </nav>
+        <div class="nowo-ui-header__end">
+            {{ include('@NowoUiKitBundle/partials/_theme_toggle.html.twig', { compact: true }, false) }}
+        </div>
+    </header>
 {% endblock %}
 
-{% block nowo_ui_body %}
-    <header class="demo-masthead">
-        <a class="demo-masthead__brand" href="{{ path('app_home') }}">PWA Bundle <span>demo</span></a>
-        <nav class="demo-masthead__nav" aria-label="Demo">
-            <a href="{{ path('app_home') }}"{% if app.request.attributes.get('_route') == 'app_home' %} aria-current="page"{% endif %}>Install</a>
-            <a href="{{ path('nowo_pwa_offline') }}">Offline page</a>
-            <a href="{{ path('nowo_pwa_manifest') }}">Manifest</a>
-            <a href="{{ path('nowo_pwa_service_worker') }}">Service worker</a>
-        </nav>
-    </header>
-    <main class="demo-main" id="content">
-        {% block body %}{% endblock %}
-    </main>
+{% block nowo_ui_content %}{% block body %}{% endblock %}{% endblock %}
+
+{% block nowo_ui_modals %}
     {{ nowo_pwa_install_prompt() }}
 {% endblock %}
 

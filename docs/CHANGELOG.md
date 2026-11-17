@@ -45,6 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Demo
+
+- REQ-DEMO-014: the demo requires `nowo-tech/ui-kit-bundle` `^2.53` and runs on UiKit's default theme: `templates/base.html.twig` extends UiKit's admin layout with the UiKit masthead and theme toggle (the hand-written masthead and `demo.css` are gone), and `nowo_ui_kit` no longer overrides the theme tokens or the button / card classes. The install prompt and the offline page follow UiKit's default tokens. No bundle runtime change.
+
 ### Changed
 
 - Demo `.gitignore` ignores `/.pnpm-store` (REQ-GITIGNORE-003)
