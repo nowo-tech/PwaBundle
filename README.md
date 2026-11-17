@@ -15,7 +15,7 @@ This includes running when the kernel is **not** rebooted between requests (`res
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="docs/images/demo/overview.webp" alt="Install prompt open over the demo page, themed by the host UiKit tokens and slots" />
+      <img src="docs/images/demo/overview.webp" alt="Install prompt open over the demo page, on UiKit's default theme" />
       <br /><sub>Install prompt — host UiKit theme, brand mark from a one-block override</sub>
     </td>
     <td align="center" width="50%">
