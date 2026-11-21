@@ -1,5 +1,10 @@
-# REQ-DEMO-014: UiKit's default theme, unchanged (no CSS framework, no CDN, no token or class override): the PWA widgets
-# and the offline page read UiKit's tokens and slots, so they follow the default theme. Icons are inline SVG.
+# REQ-DEMO-014: UiKit's default theme, unchanged (no CSS framework, no CDN, no token or class override): the demo platform
+# shell (templates/base.html.twig) is the admin and guest layout of every page. The PWA widgets and the offline page read
+# UiKit's tokens and slots. Icons are inline SVG.
 nowo_ui_kit:
     css_framework: custom
+    base_stylesheet: true
     icon_set: svg_inline
+    layouts:
+        admin: 'base.html.twig'
+        guest: 'base.html.twig'

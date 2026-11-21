@@ -31,7 +31,7 @@ test.describe('PWA demo', () => {
 
   test('offline page is self-contained', async ({ page }) => {
     // Requests of the page itself; the dev tooling (WebProfiler toolbar, FrankenPHP hot reload) is not part of it.
-    const devTooling = /^\/(_wdt|_profiler|\.well-known\/mercure)|^\/npm\/(idiomorph|frankenphp-hot-reload)/;
+    const devTooling = /^\/(_wdt|_profiler|_nowo\/hot-reload|\.well-known\/mercure)|^\/npm\/(idiomorph|frankenphp-hot-reload)/;
     const external: string[] = [];
     page.on('request', (req) => {
       const url = new URL(req.url());

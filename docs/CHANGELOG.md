@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Demo: runs in UiKit's demo platform shell (`nowo-tech/ui-kit-bundle` ^2.60); the demo's own header is gone and the pages use the shell page headers and section cards. Demo only, no bundle change.
 - Demo `.gitignore` ignores `/.pnpm-store` (REQ-GITIGNORE-003)
 - `make check-no-raw-html-form` added to `release-check` (REQ-TWIG-005)
 - Canonical `.scrutinizer.yml` (PHP coverage + Vitest) (REQ-CI-002)
