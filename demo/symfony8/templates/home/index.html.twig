@@ -2,28 +2,26 @@
 
 {% block title %}PWA Demo — Install{% endblock %}
 
+{% block nowo_ui_page_header %}
+    {% set _toolbar %}<button type="button" class="nowo-ui-btn nowo-ui-btn--outline" data-demo-preview-prompt data-testid="demo-preview-prompt">Preview the install prompt</button>{% endset %}
+    {{ include(nowo_ui_partial('page_header'), {
+        title: 'Installable Symfony app',
+        intro: 'Manifest, service worker, offline fallback and a dismissible install prompt, all themed by UiKit\'s tokens and slots.',
+        toolbar: _toolbar,
+    }) }}
+{% endblock %}
+
 {% block body %}
-    <h1 class="nowo-ui-page-header__title">Installable Symfony app</h1>
-    <p class="nowo-ui-muted">Manifest, service worker, offline fallback and a dismissible install prompt — all
-        themed by UiKit's tokens and slots.</p>
-
-    <section class="{{ nowo_ui_class('card') }}" aria-labelledby="pwa-install-heading">
-        <div class="{{ nowo_ui_class('card_body') }}">
-            <h2 id="pwa-install-heading" class="{{ nowo_ui_class('card_title') }}">Install</h2>
-            <p>The install link appears when the browser offers installation (Chrome / Edge on localhost or HTTPS); the
-                uninstall hint when the app already runs installed.</p>
+    {% embed '@NowoUiKit/demo_platform/_section.html.twig' with {title: 'Install', intro: 'The install link appears when the browser offers installation (Chrome / Edge on localhost or HTTPS); the uninstall hint when the app already runs installed.', kind: 'content'} %}
+        {% block section_body %}
             {{ nowo_pwa_install_links() }}
-            <p class="{{ nowo_ui_class('muted') }}">The prompt below opens on <code>beforeinstallprompt</code>.
-                Browsers without the event (or this demo in a headless run) can preview it:</p>
-            <button type="button" class="{{ nowo_ui_class('btn_secondary') }}" data-demo-preview-prompt data-testid="demo-preview-prompt">Preview the install prompt</button>
-        </div>
-    </section>
+            <p>The prompt opens on <code>beforeinstallprompt</code>. Browsers without the event (or this demo in a headless run) can preview it with the button above.</p>
+        {% endblock %}
+    {% endembed %}
 
-    <section class="{{ nowo_ui_class('card') }}" aria-labelledby="pwa-offline-heading">
-        <div class="{{ nowo_ui_class('card_body') }}">
-            <h2 id="pwa-offline-heading" class="{{ nowo_ui_class('card_title') }}">Offline</h2>
-            <p>The service worker precaches <a href="{{ path('nowo_pwa_offline') }}">the offline page</a>: a self-contained
-                UiKit status page (inline CSS, no requests) shown when a navigation fails without network.</p>
-        </div>
-    </section>
+    {% embed '@NowoUiKit/demo_platform/_section.html.twig' with {title: 'Offline', kind: 'content'} %}
+        {% block section_body %}
+            <p>The service worker precaches <a href="{{ path('nowo_pwa_offline') }}">the offline page</a>: a self-contained UiKit status page (inline CSS, no requests) shown when a navigation fails without network.</p>
+        {% endblock %}
+    {% endembed %}
 {% endblock %}

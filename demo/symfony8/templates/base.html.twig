@@ -1,31 +1,23 @@
-{#- REQ-DEMO-014: the demo shell is UiKit's admin layout with UiKit's default theme (nowo-ui.css from the bundle's own
-    asset package, no CSS framework, no CDN, no token override). The PWA head tags and the install prompt come from the
-    bundle. -#}
-{% extends '@NowoUiKit/layout/admin.html.twig' %}
-
+{#- REQ-DEMO-014: the demo runs inside UiKit's shared demo platform shell. This file only declares the demo; the PWA head
+    tags and the install prompt come from the bundle. -#}
+{% extends '@NowoUiKit/demo_platform/layout.html.twig' %}
+{% set nowo_ui_demo_platform = {
+    bundle: 'PWA',
+    home_route: 'app_home',
+    repository: 'https://github.com/nowo-tech/PwaBundle',
+    translation_domain: false,
+    nav: [
+        {label: 'Install', route: 'app_home', section: 'Demo'},
+        {label: 'Offline page', route: 'nowo_pwa_offline', section: 'Bundle endpoints', active: []},
+        {label: 'Manifest', route: 'nowo_pwa_manifest', section: 'Bundle endpoints', active: []},
+        {label: 'Service worker', route: 'nowo_pwa_service_worker', section: 'Bundle endpoints', active: []},
+    ],
+} %}
 {% block nowo_ui_document_title %}{% block title %}PWA Demo{% endblock %}{% endblock %}
 
 {% block nowo_ui_head %}
     {{ nowo_pwa_head() }}
 {% endblock %}
-
-{% block nowo_ui_navigation %}
-    {% set _route = app.request.attributes.get('_route')|default('') %}
-    <header class="nowo-ui-header" data-testid="demo-masthead">
-        <a class="nowo-ui-brand" href="{{ path('app_home') }}">PWA Bundle demo</a>
-        <nav class="nowo-ui-menu" aria-label="Demo">
-            <a class="nowo-ui-link" href="{{ path('app_home') }}"{% if _route == 'app_home' %} aria-current="page"{% endif %}>Install</a>
-            <a class="nowo-ui-link" href="{{ path('nowo_pwa_offline') }}">Offline page</a>
-            <a class="nowo-ui-link" href="{{ path('nowo_pwa_manifest') }}">Manifest</a>
-            <a class="nowo-ui-link" href="{{ path('nowo_pwa_service_worker') }}">Service worker</a>
-        </nav>
-        <div class="nowo-ui-header__end">
-            {{ include('@NowoUiKitBundle/partials/_theme_toggle.html.twig', { compact: true }, false) }}
-        </div>
-    </header>
-{% endblock %}
-
-{% block nowo_ui_content %}{% block body %}{% endblock %}{% endblock %}
 
 {% block nowo_ui_modals %}
     {{ nowo_pwa_install_prompt() }}
