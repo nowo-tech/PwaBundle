@@ -258,7 +258,7 @@ final class AppPushSubscriptionProvider implements PushRecipientSubscriptionProv
 
 Return only that user's subscriptions: the endpoint pushes to every subscription you return. Before 1.16 the port
 was `PushSubscriptionProviderInterface` (keyed by the Symfony `UserInterface`); it still works until 2.0 through an
-adapter that only answers for the current user, and is deprecated (see [UPGRADING](UPGRADING.md#unreleased)).
+adapter that only answers for the current user, and is deprecated (see [UPGRADING](UPGRADING.md#to-1170)).
 
 `POST nowo_pwa_push_test` (default `/pwa/push/test`) answers JSON:
 
