@@ -66,6 +66,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `docs/FRANKENPHP-WORKER-AUDIT.md`: rule 7 note and Doctrine row updated for the push subscription port.
 
+### Added
+
+- **Console**: `pwa.js` logs one line on load, `📦 [pwa] script loaded, build: 2026-11-23 14:05 UTC`, with the house `createBundleLogger`. The build time is read from the committed `build-info.json` (`{sourceHash, builtAt}`): it is reused while the sources are unchanged and renewed only when they change, so rebuilding unchanged sources never rewrites the committed assets (no wall-clock stamp, no user data). Quiet switch: `<html data-nowo-console="quiet">` or `globalThis.NOWO_CONSOLE = 'quiet'` prints nothing; the default is unchanged.
+
 ## [1.16.0] - 2026-11-11
 
 Identifier-keyed push subscription port (REQ-ARCH-001 rule 3). No change is required: an existing

@@ -22,6 +22,7 @@
 - [Overrides](#overrides)
 - [Assets](#assets)
 - [Web Profiler (dev)](#web-profiler-dev)
+- [Browser console](#browser-console)
 
 ## Layout integration
 
@@ -427,3 +428,7 @@ When `APP_DEBUG=1` and `symfony/web-profiler-bundle` is installed, a **PWA** too
 - Service worker strategy, cache version, and install UI flags
 
 Click the toolbar entry or open the **PWA** panel in the profiler for full details.
+
+## Browser console
+
+The bundle's script logs one line when it loads (`📦 [pwa] script loaded, build: 2026-11-23 14:05 UTC`) so a developer can tell which build a page runs. To silence it, set `<html data-nowo-console="quiet">` or `globalThis.NOWO_CONSOLE = 'quiet'` before the script loads; nothing is printed then. The default is unchanged.
