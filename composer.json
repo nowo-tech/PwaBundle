@@ -48,7 +48,7 @@
         "doctrine/doctrine-bundle": "^2.13 || ^3.0",
         "doctrine/orm": "^3.3",
         "friendsofphp/php-cs-fixer": "^3.0",
-        "igor-php/igor-php": "^0.10.0",
+        "igor-php/igor-php": "^0.10.0 || ^0.11.0",
         "minishlink/web-push": "^11.0",
         "nowo-tech/brand-contracts": "^1.0",
         "nowo-tech/phpstan-frankenphp": "^1.0",
