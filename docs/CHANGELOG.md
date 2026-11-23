@@ -66,6 +66,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `docs/FRANKENPHP-WORKER-AUDIT.md`: rule 7 note and Doctrine row updated for the push subscription port.
 
+### Added
+
+- **Console**: `pwa.js` logs one line on load, `📦 [pwa] script loaded, build: <id>`, with the house `createBundleLogger`. The build id is a deterministic hash of the sources and `pnpm-lock.yaml`, so the committed asset stays reproducible and carries no timestamp or user data.
+
 ## [1.16.0] - 2026-11-11
 
 Identifier-keyed push subscription port (REQ-ARCH-001 rule 3). No change is required: an existing

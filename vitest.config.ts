@@ -13,6 +13,7 @@ export default defineConfig({
                 'src/Resources/assets/src/pwa-client.ts',
                 'src/Resources/assets/src/push-checks.ts',
                 'src/Resources/assets/src/browser-detect.ts',
+                'src/Resources/assets/src/logger.ts',
                 'src/Resources/assets/stimulus-peers/*.ts',
             ],
             exclude: ['**/*.test.ts', '**/node_modules/**'],

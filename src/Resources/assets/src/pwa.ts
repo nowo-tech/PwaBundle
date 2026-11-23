@@ -2,6 +2,13 @@
  * Registers the configurable service worker and optional install prompt UI.
  */
 import { registerServiceWorker, setupInstallLinks, setupInstallPrompt } from './pwa-client';
+import { createBundleLogger } from './logger';
+
+declare const __PWA_BUILD_TIME__: string;
+
+createBundleLogger('pwa', {
+    buildTime: typeof __PWA_BUILD_TIME__ !== 'undefined' ? __PWA_BUILD_TIME__ : undefined,
+}).scriptLoaded();
 
 const script = document.querySelector('script[data-pwa-sw-url]') as HTMLScriptElement | null;
 
