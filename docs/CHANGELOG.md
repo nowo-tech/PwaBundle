@@ -68,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Console**: `pwa.js` logs one line on load, `📦 [pwa] script loaded, build: <id>`, with the house `createBundleLogger`. The build id is a deterministic hash of the sources and `pnpm-lock.yaml`, so the committed asset stays reproducible and carries no timestamp or user data.
+- **Console**: `pwa.js` logs one line on load, `📦 [pwa] script loaded, build: 2026-11-23 14:05 UTC`, with the house `createBundleLogger`. The build time is read from the committed `build-info.json` (`{sourceHash, builtAt}`): it is reused while the sources are unchanged and renewed only when they change, so rebuilding unchanged sources never rewrites the committed assets (no wall-clock stamp, no user data). Quiet switch: `<html data-nowo-console="quiet">` or `globalThis.NOWO_CONSOLE = 'quiet'` prints nothing; the default is unchanged.
 
 ## [1.16.0] - 2026-11-11
 
