@@ -2,7 +2,7 @@
 
 **Baseline spec**: [`spec.md`](spec.md)  
 **Package**: `nowo-tech/pwa-bundle`  
-**Last audited**: 2026-11-16 (sweep: 2026-10-20 baseline + later sources) (v1.10 UiKit offline page; push diagnostics from v1.7.0 — see [`../002-push-diagnostics/spec.md`](../002-push-diagnostics/spec.md); audit: `git ls-files src | wc -l` → 64)
+**Last audited**: 2026-11-26 (sweep: 2026-10-20 baseline + later sources; 1.17 script-loaded logger) (v1.10 UiKit offline page; push diagnostics from v1.7.0 — see [`../002-push-diagnostics/spec.md`](../002-push-diagnostics/spec.md); audit: `git ls-files src | wc -l` → 76)
 
 This file proves that **every production source artifact** under `src/` is referenced by the baseline specification. PHPUnit under `tests/` is out of scope unless promoted in the spec.
 
@@ -73,6 +73,7 @@ This file proves that **every production source artifact** under `src/` is refer
 | `Resources/assets/src/pwa-client.ts` | Client library API | FR-ASSET-002 |
 | `Resources/assets/src/push-checks.ts` | Web Push step checks | 002: FR-PUSH-009 |
 | `Resources/assets/src/browser-detect.ts` | Browser family detection | 002: FR-PUSH-011 |
+| `Resources/assets/src/logger.ts` | House bundle logger: the once-per-page `📦 [pwa] script loaded` console line with the quiet switch; other levels stay behind the debug flag (REQ-ASSETS-005) | FR-ASSET-005 |
 | `Resources/assets/stimulus-peers/push_diagnostics_controller.ts` | Stimulus `push-diagnostics` | 002: FR-PUSH-010 |
 | `Resources/assets/stimulus-peers/browser_hint_controller.ts` | Stimulus `browser-hint` | 002: FR-PUSH-011 |
 
@@ -81,6 +82,8 @@ This file proves that **every production source artifact** under `src/` is refer
 | Source file | Spec section | Requirement IDs |
 | --- | --- | --- |
 | `Resources/assets/src/pwa-client.test.ts` | Vitest coverage for client | FR-TEST-001 |
+| `Resources/assets/src/logger.test.ts` | Vitest logger suite: banner with and without build id, both quiet switches, debug gate | FR-ASSET-005, FR-TEST-001 |
+| `Resources/assets/src/pwa.test.ts` | Vitest entry suite: the shipped `pwa.ts` logs the banner exactly once when evaluated | FR-ASSET-005, FR-TEST-001 |
 | `Resources/assets/src/push-checks.test.ts` | Vitest push checks | 002: SC-PUSH-002 |
 | `Resources/assets/stimulus-peers/push_diagnostics_controller.test.ts` | Vitest diagnostics peer | 002: SC-PUSH-002 |
 | `Resources/assets/stimulus-peers/browser_hint_controller.test.ts` | Vitest browser hint peer | 002: SC-PUSH-002 |
@@ -128,11 +131,11 @@ These 9 `src/` files were added by releases after the last review. Each row maps
 | PHP classes | 32 | 32 |
 | YAML config | 2 | 2 |
 | Twig / SVG views | 10 | 10 |
-| TS production | 6 | 6 |
-| TS co-located tests | 4 | 4 |
+| TS production | 7 | 7 |
+| TS co-located tests | 6 | 6 |
 | Public JS/CSS + kit SW append | 3 | 3 |
 | Translations | 7 | 7 |
-| **Total `src/` artifacts** | **73** | **73** |
+| **Total `src/` artifacts** | **76** | **76** |
 
 Build output `pwa.js` is documented as produced from `pwa.ts`; it is counted as a shipped artifact, not a separate authoring unit.
 

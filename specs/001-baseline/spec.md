@@ -82,6 +82,7 @@ See user stories US-01…US-06 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 
 - **FR-ASSET-001 / FR-ASSET-002**: TypeScript entry and library MUST register SW, handle updates, install prompt/links, dismiss storage.
 - **FR-ASSET-003 / FR-ASSET-004**: Published `pwa.js` / `pwa.css` MUST ship via asset package; build documented in README/Makefile.
+- **FR-ASSET-005**: Every shipped browser script MUST print one `📦 [pwa] script loaded` console line per page (once-guard, even if the script is loaded twice) unless `<html data-nowo-console="quiet">` or `globalThis.NOWO_CONSOLE === 'quiet'`; all other console output MUST stay behind the debug flag (REQ-ASSETS-005, `logger.ts`).
 - **FR-TEST-001**: `pwa-client.test.ts` MUST maintain Vitest coverage contract (see `REQ-TEST-009` in SDD).
 - **FR-I18N-001**: Seven locale files MUST share keys `install.*` and `offline.*` under domain `NowoPwaBundle`.
 - **FR-BUILD-001**: `src/Resources/public/pwa.js` MUST be the committed Vite build output of the TypeScript sources in `src/Resources/assets/src/` (`pnpm run build`), not hand-edited.
@@ -100,7 +101,7 @@ Areas introduced by releases after the baseline review; each requirement names t
 
 ## Success Criteria
 
-- **SC-001**: **64/64** files mapped in [`code-inventory.md`](code-inventory.md).
+- **SC-001**: **76/76** files mapped in [`code-inventory.md`](code-inventory.md).
 - **SC-002**: Config keys in [`docs/CONFIGURATION.md`](../../docs/CONFIGURATION.md) match `Configuration.php` and node definitions.
 - **SC-003**: `make release-check` passes (PHPUnit 100%, Vitest 100%, PHPStan).
 - **SC-004**: Demo healthcheck returns valid manifest JSON and SW with cache prefix.
