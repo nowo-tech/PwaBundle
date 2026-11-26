@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.17.1] - 2026-11-26](#1171---2026-11-26)
 - [[1.17.0] - 2026-11-23](#1170---2026-11-23)
 - [[1.16.0] - 2026-11-11](#1160---2026-11-11)
 - [[1.15.0] - 2026-11-09](#1150---2026-11-09)
@@ -45,6 +46,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[1.0.0] - 2026-07-05](#100---2026-07-05)
 
 ## [Unreleased]
+
+## [1.17.1] - 2026-11-26
+
+### Fixed
+
+- The `📦 [name] script loaded` console banner now prints once per page, even when the script is loaded twice: per-name once-guard (a `Set` on `globalThis`) in `logger.ts`, with a Vitest test and rebuilt assets (REQ-ASSETS-005).
 
 ## [1.17.0] - 2026-11-23
 
