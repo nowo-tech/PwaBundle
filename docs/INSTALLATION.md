@@ -19,7 +19,7 @@ This guide covers installing **PWA Bundle** in a Symfony application.
 
 ## Requirements
 
-- **PHP** >= 8.2, < 8.6
+- **PHP** >= 8.2, < 8.7
 - **Symfony** ^7.4 || ^8.0
 - **symfony/framework-bundle**, **symfony/twig-bundle**, **symfony/routing**, **symfony/yaml**
 - **symfony/asset** (recommended) — used by the head partial for `asset('pwa.js', 'nowo_pwa')`
